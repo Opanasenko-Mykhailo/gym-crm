@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+          http://www.liquibase.org/xml/ns/dbchangelog
+          http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.21.xsd">
+
+    <changeSet id="GCA-49-insert-sample-data" author="Opanasenko-Mykhailo">
+        <insert tableName="users">
+            <column name="first_name" value="John"/>
+            <column name="last_name" value="Smith"/>
+            <column name="username" value="John.Smith"/>
+            <column name="password" value="$2a$10$ri96OzaJCTUZwWQRR3XW6Oljy9DXpePDWMgbtOZx199d8ReqiaIfi"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+        <insert tableName="users">
+            <column name="first_name" value="John"/>
+            <column name="last_name" value="Smith"/>
+            <column name="username" value="John.Smith1"/>
+            <column name="password" value="$2a$10$/ZQ.3itOdeX/6kUVzEnkzOtFuEjKh3wn7MvFGnAKG9ZdB2YPIfCXu"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+        <insert tableName="users">
+            <column name="first_name" value="Anna"/>
+            <column name="last_name" value="Johnson"/>
+            <column name="username" value="Anna.Johnson"/>
+            <column name="password" value="$2a$10$iP2CN6ybR0/28pCHpfZPGe/w2EF53ELy821qAlGiIW/dCfWwBwfK6"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+        <insert tableName="users">
+            <column name="first_name" value="Jane"/>
+            <column name="last_name" value="Doe"/>
+            <column name="username" value="Jane.Doe"/>
+            <column name="password" value="$2a$10$77ers8mkYk4iR/xbSGtKGOS84XtR2lRtza5CONM.PpYOW0/C3480e"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+        <insert tableName="users">
+            <column name="first_name" value="Mike"/>
+            <column name="last_name" value="Wilson"/>
+            <column name="username" value="Mike.Wilson"/>
+            <column name="password" value="$2a$10$eClIzveNMssCIS7hrybs0.kMVrrUoHXcwc4.XkwuKBVszNuwTcFQe"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+
+        <insert tableName="training_types">
+            <column name="training_type_name" value="YOGA"/>
+        </insert>
+        <insert tableName="training_types">
+            <column name="training_type_name" value="CARDIO"/>
+        </insert>
+        <insert tableName="training_types">
+            <column name="training_type_name" value="STRENGTH"/>
+        </insert>
+
+        <insert tableName="trainees">
+            <column name="date_of_birth" valueDate="1990-01-01"/>
+            <column name="address" value="123 Main St"/>
+            <column name="user_id" valueNumeric="1"/>
+        </insert>
+        <insert tableName="trainees">
+            <column name="date_of_birth" valueDate="1995-01-01"/>
+            <column name="address" value="12 Main St"/>
+            <column name="user_id" valueNumeric="2"/>
+        </insert>
+        <insert tableName="trainees">
+            <column name="date_of_birth" valueDate="1995-02-15"/>
+            <column name="address" value="456 Oak Ave"/>
+            <column name="user_id" valueNumeric="3"/>
+        </insert>
+
+        <insert tableName="trainers">
+            <column name="specialization_id" valueNumeric="1"/>
+            <column name="user_id" valueNumeric="4"/>
+        </insert>
+        <insert tableName="trainers">
+            <column name="specialization_id" valueNumeric="2"/>
+            <column name="user_id" valueNumeric="5"/>
+        </insert>
+
+        <insert tableName="trainings">
+            <column name="training_name" value="Cardio Session"/>
+            <column name="training_date" valueDate="2025-10-23"/>
+            <column name="training_duration" valueNumeric="30"/>
+            <column name="trainee_id" valueNumeric="2"/>
+            <column name="trainer_id" valueNumeric="1"/>
+            <column name="type_id" valueNumeric="2"/>
+        </insert>
+        <insert tableName="trainings">
+            <column name="training_name" value="Strength Training"/>
+            <column name="training_date" valueDate="2025-10-24"/>
+            <column name="training_duration" valueNumeric="60"/>
+            <column name="trainee_id" valueNumeric="3"/>
+            <column name="trainer_id" valueNumeric="2"/>
+            <column name="type_id" valueNumeric="3"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

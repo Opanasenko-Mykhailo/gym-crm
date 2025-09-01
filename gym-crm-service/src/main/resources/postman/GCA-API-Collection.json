@@ -1,0 +1,1439 @@
+{
+  "info": {
+    "_postman_id": "f7b3c9a2-4a8d-4e7f-9c1b-8f6e7e3a2b1c",
+    "name": "GCA API",
+    "description": "API for managing trainees, trainers, their profiles, and training schedules",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Trainee",
+      "item": [
+        {
+          "name": "Register new trainee",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Smith\",\n  \"dateOfBirth\": \"1990-01-01\",\n  \"address\": \"123 Main St\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/trainees/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "trainees",
+                "register"
+              ]
+            },
+            "description": "Registers a new trainee with basic information and generates username/password"
+          },
+          "response": [
+            {
+              "name": "Registration successful",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Smith\",\n  \"dateOfBirth\": \"1990-01-01\",\n  \"address\": \"123 Main St\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/trainees/register",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "trainees",
+                    "register"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [],
+              "body": "{\n  \"username\": \"John.Smith2\",\n  \"password\": \"generated-password\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get trainee profile",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/trainees/John.Smith",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "trainees",
+                "John.Smith"
+              ]
+            },
+            "description": "Retrieves detailed information about a trainee including assigned trainers"
+          },
+          "response": [
+            {
+              "name": "Trainee profile retrieved successfully",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/trainees/John.Smith",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "trainees",
+                    "John.Smith"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [],
+              "body": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Smith\",\n  \"dateOfBirth\": \"1990-01-01\",\n  \"address\": \"123 Main St\",\n  \"username\": \"John.Smith\",\n  \"isActive\": true,\n  \"trainers\": []\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update trainee profile",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Smith\",\n  \"dateOfBirth\": \"1990-01-01\",\n  \"address\": \"789 New St\",\n  \"isActive\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/trainees/John.Smith",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "trainees",
+                "John.Smith"
+              ]
+            },
+            "description": "Updates trainee's personal information and activation status"
+          },
+          "response": [
+            {
+              "name": "Profile updated successfully",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Smith\",\n  \"dateOfBirth\": \"1990-01-01\",\n  \"address\": \"789 New St\",\n  \"isActive\": true\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/trainees/John.Smith",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "trainees",
+                    "John.Smith"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [],
+              "body": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Smith\",\n  \"dateOfBirth\": \"1990-01-01\",\n  \"address\": \"789 New St\",\n  \"username\": \"John.Smith\",\n  \"isActive\": true,\n  \"trainers\": []\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete trainee profile",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/trainees/John.Smith",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "trainees",
+                "John.Smith"
+              ]
+            },
+            "description": "Hard delete trainee profile with cascade deletion of related trainings"
+          },
+          "response": [
+            {
+              "name": "Trainee profile deleted successfully",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/trainees/John.Smith",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "trainees",
+                    "John.Smith"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "Change trainee activation status",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"isActive\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/trainees/John.Smith/change-activation-status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "trainees",
+                "John.Smith",
+                "change-activation-status"
+              ]
+            },
+            "description": "Activates or deactivates a trainee profile"
+          },
+          "response": [
+            {
+              "name": "Activation status updated successfully",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"isActive\": false\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/trainees/John.Smith/change-activation-status",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "trainees",
+                    "John.Smith",
+                    "change-activation-status"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "Get available trainers",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/trainees/John.Smith/available-trainers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "trainees",
+                "John.Smith",
+                "available-trainers"
+              ]
+            },
+            "description": "Retrieves list of active trainers not yet assigned to the trainee"
+          },
+          "response": [
+            {
+              "name": "List of available trainers",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/trainees/John.Smith/available-trainers",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "trainees",
+                    "John.Smith",
+                    "available-trainers"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [],
+              "body": "[\n  {\n    \"firstName\": \"Jane\",\n    \"lastName\": \"Doe\",\n    \"specialization\": \"YOGA\",\n    \"username\": \"Jane.Doe\",\n    \"isActive\": true\n  },\n  {\n    \"firstName\": \"Mike\",\n    \"lastName\": \"Wilson\",\n    \"specialization\": \"CARDIO\",\n    \"username\": \"Mike.Wilson\",\n    \"isActive\": true\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Update trainee's trainer list",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"trainerUsernames\": [\"Jane.Doe\", \"Mike.Wilson\"]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/trainees/John.Smith/trainers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "trainees",
+                "John.Smith",
+                "trainers"
+              ]
+            },
+            "description": "Updates the list of trainers assigned to a trainee"
+          },
+          "response": [
+            {
+              "name": "Trainers list updated successfully",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"trainerUsernames\": [\"Jane.Doe\", \"Mike.Wilson\"]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/trainees/John.Smith/trainers",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "trainees",
+                    "John.Smith",
+                    "trainers"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [],
+              "body": "{\n  \"trainers\": [\n    {\n      \"username\": \"Jane.Doe\",\n      \"firstName\": \"Jane\",\n      \"lastName\": \"Doe\",\n      \"specialization\": \"YOGA\"\n    },\n    {\n      \"username\": \"Mike.Wilson\",\n      \"firstName\": \"Mike\",\n      \"lastName\": \"Wilson\",\n      \"specialization\": \"CARDIO\"\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get trainee's training schedule",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/trainees/John.Smith1/trainings?fromDate=2025-10-01&toDate=2025-10-31&trainerName=Jane",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "trainees",
+                "John.Smith1",
+                "trainings"
+              ],
+              "query": [
+                {
+                  "key": "fromDate",
+                  "value": "2025-10-01"
+                },
+                {
+                  "key": "toDate",
+                  "value": "2025-10-31"
+                },
+                {
+                  "key": "trainerName",
+                  "value": "Jane"
+                }
+              ]
+            },
+            "description": "Retrieves trainee's training schedule with optional filtering by date range and trainer name"
+          },
+          "response": [
+            {
+              "name": "List of trainings",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/trainees/John.Smith1/trainings?fromDate=2025-10-01&toDate=2025-10-31&trainerName=Jane",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "trainees",
+                    "John.Smith1",
+                    "trainings"
+                  ],
+                  "query": [
+                    {
+                      "key": "fromDate",
+                      "value": "2025-10-01"
+                    },
+                    {
+                      "key": "toDate",
+                      "value": "2025-10-31"
+                    },
+                    {
+                      "key": "trainerName",
+                      "value": "Jane"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [],
+              "body": "[\n  {\n    \"trainingName\": \"Cardio Session\",\n    \"trainingDate\": \"2025-10-23\",\n    \"trainingType\": \"CARDIO\",\n    \"trainingDuration\": 30,\n    \"trainerName\": \"Jane\"\n  }\n]"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Trainer",
+      "item": [
+        {
+          "name": "Register new trainer",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Jane\",\n  \"lastName\": \"Doe\",\n  \"specialization\": \"YOGA\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/trainers/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "trainers",
+                "register"
+              ]
+            },
+            "description": "Registers a new trainer with basic information and generates username/password"
+          },
+          "response": [
+            {
+              "name": "Registration successful",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"firstName\": \"Jane\",\n  \"lastName\": \"Doe\",\n  \"specialization\": \"YOGA\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/trainers/register",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "trainers",
+                    "register"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [],
+              "body": "{\n  \"username\": \"Jane.Doe1\",\n  \"password\": \"generated-password\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get trainer profile",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/trainers/Jane.Doe",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "trainers",
+                "Jane.Doe"
+              ]
+            },
+            "description": "Retrieves detailed information about a trainer including assigned trainees"
+          },
+          "response": [
+            {
+              "name": "Trainer profile retrieved successfully",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/trainers/Jane.Doe",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "trainers",
+                    "Jane.Doe"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [],
+              "body": "{\n  \"firstName\": \"Jane\",\n  \"lastName\": \"Doe\",\n  \"specialization\": \"YOGA\",\n  \"username\": \"Jane.Doe\",\n  \"isActive\": true,\n  \"trainees\": [\n    {\n      \"username\": \"John.Smith1\",\n      \"firstName\": \"John\",\n      \"lastName\": \"Smith\"\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update trainer profile",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Jane\",\n  \"lastName\": \"Doe\",\n  \"isActive\": true,\n  \"specialization\": \"YOGA\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/trainers/Jane.Doe",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "trainers",
+                "Jane.Doe"
+              ]
+            },
+            "description": "Updates trainer's personal information and activation status"
+          },
+          "response": [
+            {
+              "name": "Profile updated successfully",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"firstName\": \"Jane\",\n  \"lastName\": \"Doe\",\n  \"isActive\": true,\n  \"specialization\": \"YOGA\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/trainers/Jane.Doe",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "trainers",
+                    "Jane.Doe"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [],
+              "body": "{\n  \"firstName\": \"Jane\",\n  \"lastName\": \"Doe\",\n  \"specialization\": \"YOGA\",\n  \"username\": \"Jane.Doe\",\n  \"isActive\": true,\n  \"trainees\": [\n    {\n      \"username\": \"John.Smith1\",\n      \"firstName\": \"John\",\n      \"lastName\": \"Smith\"\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Change trainer activation status",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"isActive\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/trainers/Jane.Doe/change-activation-status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "trainers",
+                "Jane.Doe",
+                "change-activation-status"
+              ]
+            },
+            "description": "Activates or deactivates a trainer profile"
+          },
+          "response": [
+            {
+              "name": "Activation status updated successfully",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"isActive\": false\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/trainers/Jane.Doe/change-activation-status",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "trainers",
+                    "Jane.Doe",
+                    "change-activation-status"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "Get trainer's training schedule",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/trainers/Jane.Doe/trainings?fromDate=2025-10-01&toDate=2025-10-31&traineeName=John",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "trainers",
+                "Jane.Doe",
+                "trainings"
+              ],
+              "query": [
+                {
+                  "key": "fromDate",
+                  "value": "2025-10-01"
+                },
+                {
+                  "key": "toDate",
+                  "value": "2025-10-31"
+                },
+                {
+                  "key": "traineeName",
+                  "value": "John"
+                }
+              ]
+            },
+            "description": "Retrieves trainer's training schedule with optional filtering by date range and trainee name"
+          },
+          "response": [
+            {
+              "name": "List of trainings",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/trainers/Jane.Doe/trainings?fromDate=2025-10-01&toDate=2025-10-31&traineeName=John",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "trainers",
+                    "Jane.Doe",
+                    "trainings"
+                  ],
+                  "query": [
+                    {
+                      "key": "fromDate",
+                      "value": "2025-10-01"
+                    },
+                    {
+                      "key": "toDate",
+                      "value": "2025-10-31"
+                    },
+                    {
+                      "key": "traineeName",
+                      "value": "John"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [],
+              "body": "[\n  {\n    \"trainingName\": \"Cardio Session\",\n    \"trainingDate\": \"2025-10-23\",\n    \"trainingType\": \"CARDIO\",\n    \"trainingDuration\": 30,\n    \"traineeName\": \"John\"\n  }\n]"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "User login",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"John.Smith\",\n  \"password\": \"password123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "login"
+              ]
+            },
+            "description": "Authenticates a user (trainee or trainer) with username and password and returns JWT access and refresh tokens"
+          },
+          "response": [
+            {
+              "name": "Login successful",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"username\": \"John.Smith\",\n  \"password\": \"password123\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/login",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "login"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [],
+              "body": "{\n  \"success\": true,\n  \"accessToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n  \"refreshToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Refresh access token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Refresh-Token",
+                "value": "{{refreshToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/refresh-token",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "refresh-token"
+              ]
+            },
+            "description": "Generates a new JWT access token using a valid refresh token"
+          },
+          "response": [
+            {
+              "name": "New access token generated successfully",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "X-Refresh-Token",
+                    "value": "{{refreshToken}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/refresh-token",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "refresh-token"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [],
+              "body": "{\n  \"success\": true,\n  \"accessToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n  \"refreshToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\"\n}"
+            },
+            {
+              "name": "Invalid or expired refresh token",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "X-Refresh-Token",
+                    "value": "{{refreshToken}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/refresh-token",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "refresh-token"
+                  ]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [],
+              "body": "{\n  \"errorCode\": 401,\n  \"errorMessage\": \"Invalid or expired refresh token\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Log out user",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Refresh-Token",
+                "value": "{{refreshToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/logout",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "logout"
+              ]
+            },
+            "description": "Invalidates the refresh token and logs out the user"
+          },
+          "response": [
+            {
+              "name": "Successfully logged out",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "X-Refresh-Token",
+                    "value": "{{refreshToken}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/logout",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "logout"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [],
+              "body": ""
+            },
+            {
+              "name": "Invalid or expired refresh token",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "X-Refresh-Token",
+                    "value": "{{refreshToken}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/logout",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "logout"
+                  ]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [],
+              "body": "{\n  \"errorCode\": 401,\n  \"errorMessage\": \"Invalid or expired refresh token\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Change user password",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"John.Smith\",\n  \"oldPassword\": \"password123\",\n  \"newPassword\": \"newpassword456\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/change-password",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "change-password"
+              ]
+            },
+            "description": "Changes the password for a trainee or trainer"
+          },
+          "response": [
+            {
+              "name": "Password changed successfully",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"username\": \"John.Smith\",\n  \"oldPassword\": \"password123\",\n  \"newPassword\": \"newpassword456\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/change-password",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "change-password"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [],
+              "body": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Training",
+      "item": [
+        {
+          "name": "Add new training",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"traineeUsername\": \"John.Smith1\",\n  \"trainerUsername\": \"Jane.Doe\",\n  \"trainingName\": \"Cardio Session\",\n  \"trainingDate\": \"2025-10-23\",\n  \"trainingDuration\": 30,\n  \"trainingTypeName\": \"CARDIO\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/trainings",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "trainings"
+              ]
+            },
+            "description": "Creates a new training session for a trainee and trainer"
+          },
+          "response": [
+            {
+              "name": "Training created successfully",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"traineeUsername\": \"John.Smith1\",\n  \"trainerUsername\": \"Jane.Doe\",\n  \"trainingName\": \"Cardio Session\",\n  \"trainingDate\": \"2025-10-23\",\n  \"trainingDuration\": 30,\n  \"trainingTypeName\": \"CARDIO\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/trainings",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "trainings"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "Get training types",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/training-types",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "training-types"
+              ]
+            },
+            "description": "Retrieves the list of available training types"
+          },
+          "response": [
+            {
+              "name": "List of training types",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/training-types",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "training-types"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [],
+              "body": "[\n  {\n    \"trainingType\": \"YOGA\",\n    \"trainingTypeId\": 1\n  },\n  {\n    \"trainingType\": \"CARDIO\",\n    \"trainingTypeId\": 2\n  },\n  {\n    \"trainingType\": \"STRENGTH\",\n    \"trainingTypeId\": 3\n  }\n]"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Actuator",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{actuatorUrl}}/actuator/health",
+              "host": [
+                "{{actuatorUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "health"
+              ]
+            },
+            "description": "Checks the health status of the application"
+          },
+          "response": [
+            {
+              "name": "Health check successful",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{actuatorUrl}}/actuator/health",
+                  "host": [
+                    "{{actuatorUrl}}"
+                  ],
+                  "path": [
+                    "actuator",
+                    "health"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [],
+              "body": "{\n  \"status\": \"UP\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Prometheus Metrics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{actuatorUrl}}/actuator/prometheus",
+              "host": [
+                "{{actuatorUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "prometheus"
+              ]
+            },
+            "description": "Retrieves Prometheus metrics for the application"
+          },
+          "response": [
+            {
+              "name": "Prometheus metrics retrieved successfully",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{actuatorUrl}}/actuator/prometheus",
+                  "host": [
+                    "{{actuatorUrl}}"
+                  ],
+                  "path": [
+                    "actuator",
+                    "prometheus"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain; version=0.0.4; charset=utf-8"
+                }
+              ],
+              "body": "# HELP jvm_memory_used_bytes Used memory in bytes\n# TYPE jvm_memory_used_bytes gauge\njvm_memory_used_bytes{area=\"heap\",id=\"PS Survivor Space\",} 123456.0\njvm_memory_used_bytes{area=\"heap\",id=\"PS Old Gen\",} 654321.0\n# HELP http_server_requests_seconds Duration of HTTP server requests\n# TYPE http_server_requests_seconds summary\nhttp_server_requests_seconds_count{uri=\"/actuator/health\",method=\"GET\",status=\"200\",} 10.0\nhttp_server_requests_seconds_sum{uri=\"/actuator/health\",method=\"GET\",status=\"200\",} 0.5\n"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080/gym-crm-core/api/v1",
+      "description": "Base URL for the GCA API"
+    },
+    {
+      "key": "actuatorUrl",
+      "value": "http://localhost:8080",
+      "description": "Base URL for Actuator endpoints"
+    },
+    {
+      "key": "username",
+      "value": "John.Smith",
+      "description": "Username for authentication"
+    },
+    {
+      "key": "password",
+      "value": "password123",
+      "description": "Password for authentication"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "description": "JWT access token for authentication"
+    },
+    {
+      "key": "refreshToken",
+      "value": "",
+      "description": "JWT refresh token for refreshing access token or logging out"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  }
+}
