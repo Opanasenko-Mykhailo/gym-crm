@@ -162,5 +162,11 @@ jobs:
             }
 
       - name: Fail workflow if Quality Gate or issues failed
-        if: always() && (steps.check-sonar.outputs.quality_gate_status != 'OK' || steps.check-sonar.outputs.issues_count != '0')
-        run: exit 1
+        run: |
+          echo "Quality Gate status: ${{ steps.check-sonar.outputs.quality_gate_status }}"
+          echo "Issues count: ${{ steps.check-sonar.outputs.issues_count }}"
+
+          if [[ "${{ steps.check-sonar.outputs.quality_gate_status }}" != "OK" ]] || [[ "${{ steps.check-sonar.outputs.issues_count }}" != "0" ]]; then
+            echo "SonarCloud Quality Gate failed or issues found. Failing workflow."
+            exit 1
+          fi
