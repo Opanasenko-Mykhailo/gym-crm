@@ -1,9 +1,10 @@
 package com.gcm.service;
 
-import com.gcm.model.TrainerSummary;
-import com.gcm.model.TrainerWorkloadRequest;
+import com.gcm.app.rest.TrainerSummaryRequest;
+import com.gcm.app.rest.TrainerWorkloadRequest;
 
 public interface WorkloadService {
-    public void processTrainerWorkload(TrainerWorkloadRequest request, String transactionId);
-    public TrainerSummary getTrainerSummary(String username);
+    void processTrainerWorkload(TrainerWorkloadRequest request, String transactionId);
+
+    TrainerSummaryRequest getTrainerSummary(String username);
 }

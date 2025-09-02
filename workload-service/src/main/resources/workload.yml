@@ -1,0 +1,113 @@
+openapi: 3.0.3
+info:
+  title: Workload API
+  version: 1.0.0
+
+paths:
+  /api/workload:
+    post:
+      summary: Process trainer workload
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrainerWorkloadRequest'
+      responses:
+        "200":
+          description: Workload processed successfully
+
+  /api/workload/{username}:
+    get:
+      summary: Get trainer summary
+      parameters:
+        - name: username
+          in: path
+          required: true
+          schema:
+            type: string
+            example: trainer.petrov
+      responses:
+        "200":
+          description: Trainer summary found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrainerSummaryRequest'
+        "404":
+          description: Trainer not found
+
+components:
+  schemas:
+    TrainerWorkloadRequest:
+      type: object
+      required:
+        - username
+        - firstName
+        - lastName
+        - trainingDate
+        - durationInMinutes
+        - actionType
+      properties:
+        username:
+          type: string
+          example: trainer.ivanov
+        firstName:
+          type: string
+          example: Ivan
+        lastName:
+          type: string
+          example: Ivanov
+        active:
+          type: boolean
+          example: true
+        trainingDate:
+          type: string
+          format: date
+          example: 2025-09-02
+        durationInMinutes:
+          type: integer
+          minimum: 1
+          example: 60
+        actionType:
+          type: string
+          enum: [ADD, DELETE]
+          example: ADD
+
+    TrainerSummaryRequest:
+      type: object
+      required:
+        - username
+        - firstName
+        - lastName
+        - active
+      properties:
+        username:
+          type: string
+          example: trainer.ivanov
+        firstName:
+          type: string
+          example: Ivan
+        lastName:
+          type: string
+          example: Ivanov
+        active:
+          type: boolean
+          example: true
+        years:
+          type: array
+          items:
+            $ref: '#/components/schemas/YearlySummary'
+
+    YearlySummary:
+      type: object
+      required:
+        - year
+        - totalDuration
+      properties:
+        year:
+          type: integer
+          example: 2025
+        totalDuration:
+          type: integer
+          example: 1200
