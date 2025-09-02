@@ -47,13 +47,7 @@ public class WorkloadServiceImpl implements WorkloadService {
 
     private TrainerSummary getOrCreateTrainer(TrainerWorkloadRequest request) {
         return trainerRepo.findByUsername(request.getUsername())
-                .orElseGet(() -> TrainerSummary.builder()
-                        .username(request.getUsername())
-                        .firstName(request.getFirstName())
-                        .lastName(request.getLastName())
-                        .active(request.getActive())
-                        .years(new ArrayList<>())
-                        .build());
+                .orElseGet(() -> buildNewTrainerSummary(request));
     }
 
     private YearlySummary getOrCreateYearlySummary(TrainerSummary trainer, int year) {
@@ -64,15 +58,7 @@ public class WorkloadServiceImpl implements WorkloadService {
         return trainer.getYears().stream()
                 .filter(y -> y.getYearNumber() == year)
                 .findFirst()
-                .orElseGet(() -> {
-                    YearlySummary y = YearlySummary.builder()
-                            .yearNumber(year)
-                            .trainerSummary(trainer)
-                            .months(new ArrayList<>())
-                            .build();
-                    trainer.getYears().add(y);
-                    return y;
-                });
+                .orElseGet(() -> buildNewYearlySummary(trainer, year));
     }
 
     private MonthlySummary getOrCreateMonthlySummary(YearlySummary yearly, int month) {
@@ -83,15 +69,41 @@ public class WorkloadServiceImpl implements WorkloadService {
         return yearly.getMonths().stream()
                 .filter(m -> m.getMonthNumber() == month)
                 .findFirst()
-                .orElseGet(() -> {
-                    MonthlySummary m = MonthlySummary.builder()
-                            .monthNumber(month)
-                            .totalDurationMinutes(0)
-                            .yearlySummary(yearly)
-                            .build();
-                    yearly.getMonths().add(m);
-                    return m;
-                });
+                .orElseGet(() -> buildNewMonthlySummary(yearly, month));
+    }
+
+    private TrainerSummary buildNewTrainerSummary(TrainerWorkloadRequest request) {
+        return TrainerSummary.builder()
+                .username(request.getUsername())
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .active(request.getActive())
+                .years(new ArrayList<>())
+                .build();
+    }
+
+    private YearlySummary buildNewYearlySummary(TrainerSummary trainer, int year) {
+        YearlySummary yearly = YearlySummary.builder()
+                .yearNumber(year)
+                .trainerSummary(trainer)
+                .months(new ArrayList<>())
+                .build();
+
+        trainer.getYears().add(yearly);
+
+        return yearly;
+    }
+
+    private MonthlySummary buildNewMonthlySummary(YearlySummary yearly, int month) {
+        MonthlySummary monthly = MonthlySummary.builder()
+                .monthNumber(month)
+                .totalDurationMinutes(0)
+                .yearlySummary(yearly)
+                .build();
+
+        yearly.getMonths().add(monthly);
+
+        return monthly;
     }
 
     private void updateMonthlyDuration(MonthlySummary monthly, TrainerWorkloadRequest request) {
