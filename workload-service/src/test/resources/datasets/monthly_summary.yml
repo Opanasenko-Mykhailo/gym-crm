@@ -1,0 +1,10 @@
+monthly_summary:
+  - id: 1
+    month_number: 1
+    total_duration_minutes: 120
+  - id: 2
+    month_number: 2
+    total_duration_minutes: 150
+  - id: 3
+    month_number: 3
+    total_duration_minutes: 130

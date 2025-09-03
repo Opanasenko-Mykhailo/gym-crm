@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class GymCrmMicroservicesApplication {
+public class GymCrmWorkloadApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(GymCrmMicroservicesApplication.class, args);
+        SpringApplication.run(GymCrmWorkloadApplication.class, args);
     }
 
 }
