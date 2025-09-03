@@ -65,10 +65,9 @@ class WorkloadServiceImplTest {
     @Test
     void givenExistingTrainer_whenDeleteWorkload_thenDurationReduced() {
         TrainerSummary trainer = createTrainerWithWorkload();
-        when(trainerRepo.findByUsername("bob.jones")).thenReturn(Optional.of(trainer));
-
         TrainerWorkloadRequest request = createWorkloadRequest("bob.jones", DELETE, 30, LocalDate.of(2025, 9, 2));
 
+        when(trainerRepo.findByUsername("bob.jones")).thenReturn(Optional.of(trainer));
         service.processTrainerWorkload(request, "txn-002");
 
         MonthlySummary month = trainer.getYears().get(0).getMonths().get(0);
@@ -81,10 +80,10 @@ class WorkloadServiceImplTest {
     @Test
     void givenTrainer_whenGetTrainerSummary_thenMappedToRestModel() {
         TrainerSummary trainer = createTrainer("charlie.brown");
-        when(trainerRepo.findByUsername("charlie.brown")).thenReturn(Optional.of(trainer));
-
         TrainerSummaryRequest mapped = new TrainerSummaryRequest();
+
         mapped.setUsername("charlie.brown");
+        when(trainerRepo.findByUsername("charlie.brown")).thenReturn(Optional.of(trainer));
         when(trainerMapper.toRestModel(trainer)).thenReturn(mapped);
 
         TrainerSummaryRequest result = service.getTrainerSummary("charlie.brown");

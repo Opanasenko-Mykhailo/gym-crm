@@ -29,14 +29,26 @@ class YearlySummaryRepositoryTest extends AbstractRepositoryTest {
     @Test
     @DataSet(cleanBefore = true)
     void save_shouldPersistYearlySummary_withTrainer_andMonths() {
-        TrainerSummary trainer = TrainerSummary.builder()
+        TrainerSummary trainer = trainerSummaryRepository.save(sampleTrainer());
+        YearlySummary yearly = sampleYearly(trainer);
+
+        YearlySummary actual = repository.save(yearly);
+
+        assertThat(actual.getId()).isNotNull();
+        assertThat(actual.getTrainerSummary()).isNotNull();
+        assertThat(actual.getMonths()).hasSize(1);
+    }
+
+    private TrainerSummary sampleTrainer() {
+        return TrainerSummary.builder()
                 .username("bob.builder")
                 .firstName("Bob")
                 .lastName("Builder")
                 .active(true)
                 .build();
-        trainer = trainerSummaryRepository.save(trainer);
+    }
 
+    private YearlySummary sampleYearly(TrainerSummary trainer) {
         MonthlySummary month = MonthlySummary.builder()
                 .monthNumber(5)
                 .totalDurationMinutes(100)
@@ -50,10 +62,6 @@ class YearlySummaryRepositoryTest extends AbstractRepositoryTest {
 
         month.setYearlySummary(yearly);
 
-        YearlySummary saved = repository.save(yearly);
-
-        assertThat(saved.getId()).isNotNull();
-        assertThat(saved.getTrainerSummary()).isNotNull();
-        assertThat(saved.getMonths()).hasSize(1);
+        return yearly;
     }
 }
