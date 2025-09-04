@@ -1,0 +1,4 @@
+<dataset>
+    <refresh_tokens token="tokenHash123" username="Steve.Vai" expiry_date="2022-12-31 23:59:59"/>
+    <refresh_tokens token="tokenHash456" username="Garry.Moore" expiry_date="2024-12-31 23:59:59"/>
+</dataset>
