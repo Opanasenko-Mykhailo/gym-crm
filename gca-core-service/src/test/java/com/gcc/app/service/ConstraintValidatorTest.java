@@ -97,7 +97,7 @@ public class ConstraintValidatorTest {
         }
 
         @ParameterizedTest
-        @MethodSource("com.gcs.app.service.ConstraintValidatorTest#provideInvalidPasswordChangeDtos")
+        @MethodSource("com.gcc.app.service.ConstraintValidatorTest#provideInvalidPasswordChangeDtos")
         void givenInvalidPasswordChangeDto_whenChangePassword_thenShouldThrowConstraintViolationException(
                 PasswordChangeRequestDto dto, String expectedMessage) {
             ConstraintViolationException ex = assertThrows(ConstraintViolationException.class, () -> userService.changePassword(dto));
@@ -124,7 +124,7 @@ public class ConstraintValidatorTest {
         }
 
         @ParameterizedTest
-        @MethodSource("com.gcs.app.service.ConstraintValidatorTest#provideInvalidTraineeCreateDtos")
+        @MethodSource("com.gcc.app.service.ConstraintValidatorTest#provideInvalidTraineeCreateDtos")
         void givenInvalidTraineeCreateDto_whenCreateTrainee_thenShouldThrowConstraintViolationException(
                 TraineeCreateRequestDto dto, String expectedMessage) {
             ConstraintViolationException ex = assertThrows(ConstraintViolationException.class, () -> traineeService.createTrainee(dto));
@@ -144,7 +144,7 @@ public class ConstraintValidatorTest {
         }
 
         @ParameterizedTest
-        @MethodSource("com.gcs.app.service.ConstraintValidatorTest#provideInvalidTraineeTrainingDtos")
+        @MethodSource("com.gcc.app.service.ConstraintValidatorTest#provideInvalidTraineeTrainingDtos")
         void givenInvalidTraineeTrainingDto_whenGetTraineeTrainings_thenShouldThrowConstraintViolationException(
                 TraineeTrainingSearchCriteriaDto dto, String expectedMessage) {
             ConstraintViolationException ex = assertThrows(ConstraintViolationException.class, () -> traineeService.getTraineeTrainings(dto));
@@ -170,7 +170,7 @@ public class ConstraintValidatorTest {
         }
 
         @ParameterizedTest
-        @MethodSource("com.gcs.app.service.ConstraintValidatorTest#provideInvalidTraineeUpdateDtos")
+        @MethodSource("com.gcc.app.service.ConstraintValidatorTest#provideInvalidTraineeUpdateDtos")
         void givenInvalidTraineeUpdateDto_whenUpdateTrainee_thenShouldThrowConstraintViolationException(
                 TraineeUpdateRequestDto dto, String expectedMessage) {
             ConstraintViolationException ex = assertThrows(ConstraintViolationException.class, () -> traineeService.updateTrainee(dto));
@@ -199,7 +199,7 @@ public class ConstraintValidatorTest {
         }
 
         @ParameterizedTest
-        @MethodSource("com.gcs.app.service.ConstraintValidatorTest#provideInvalidTrainerTrainingDtos")
+        @MethodSource("com.gcc.app.service.ConstraintValidatorTest#provideInvalidTrainerTrainingDtos")
         void givenInvalidTrainerTrainingDto_whenGetTrainerTrainings_thenShouldThrowConstraintViolationException(
                 TrainerTrainingSearchCriteriaDto dto, String expectedMessage) {
             ConstraintViolationException ex = assertThrows(ConstraintViolationException.class, () -> trainerService.getTrainerTrainings(dto));

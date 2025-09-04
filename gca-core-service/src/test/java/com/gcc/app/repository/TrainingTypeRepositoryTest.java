@@ -44,6 +44,7 @@ class TrainingTypeRepositoryTest extends AbstractRepositoryTest {
     }
 
     @Test
+    @DataSet(cleanBefore = true, cleanAfter = true)
     void findAll_returnsAllTrainingTypes() {
         trainingTypeRepository.save(TrainingType.builder().name("Yoga").build());
         trainingTypeRepository.save(TrainingType.builder().name("HIIT").build());
