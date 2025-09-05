@@ -28,4 +28,4 @@ jwt:
 
 workload:
   service:
-    url: http://localhost:8081
+    base-url: http://workload-service

@@ -49,7 +49,7 @@ import com.gcc.app.service.TrainerService;
 import com.gcc.app.service.TrainingService;
 import com.gcc.app.service.TrainingTypeService;
 import com.gcc.app.service.UserService;
-import com.gcc.app.service.integration.workload.WorkloadService;
+import com.gcc.app.service.integration.workload.WorkloadServiceConnector;
 import com.gcc.app.service.integration.workload.dto.TrainerSummaryResponseDto;
 import com.gcc.app.service.integration.workload.dto.TrainerWorkloadRequestDto;
 import org.junit.jupiter.api.Test;
@@ -126,7 +126,7 @@ class GymFacadeTest {
     @Mock
     private AuthService authService;
     @Mock
-    private WorkloadService workloadService;
+    private WorkloadServiceConnector workloadServiceConnector;
     @Mock
     private TraineeMapper traineeMapper;
     @Mock
@@ -304,7 +304,7 @@ class GymFacadeTest {
 
         verify(trainingMapper).toTrainingCreateRequestDto(restRequest);
         verify(trainingService).createTraining(dto);
-        verify(workloadService).processTrainerWorkload(workloadCaptor.capture());
+        verify(workloadServiceConnector).processTrainerWorkload(workloadCaptor.capture());
 
         TrainerWorkloadRequestDto capturedWorkload = workloadCaptor.getValue();
         assertEquals(TRAINER_USERNAME, capturedWorkload.getUsername());
@@ -475,7 +475,7 @@ class GymFacadeTest {
         expectedSummary.setFirstName(TRAINER_FIRST_NAME);
         expectedSummary.setLastName(TRAINER_LAST_NAME);
 
-        when(workloadService.getTrainerSummary(TRAINER_USERNAME)).thenReturn(expectedSummary);
+        when(workloadServiceConnector.getTrainerSummary(TRAINER_USERNAME)).thenReturn(expectedSummary);
 
         TrainerSummaryResponseDto actual = facade.getTrainerSummary(TRAINER_USERNAME);
 
@@ -483,7 +483,7 @@ class GymFacadeTest {
         assertEquals(expectedSummary.getFirstName(), actual.getFirstName());
         assertEquals(expectedSummary.getLastName(), actual.getLastName());
 
-        verify(workloadService).getTrainerSummary(TRAINER_USERNAME);
+        verify(workloadServiceConnector).getTrainerSummary(TRAINER_USERNAME);
     }
 
     private Trainee createTrainee() {
