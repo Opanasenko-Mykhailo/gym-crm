@@ -8,6 +8,8 @@ app:
     file-name: gym.yml
 
 spring:
+  application:
+    name: gca-core-service
   datasource:
     url: jdbc:postgresql://localhost:5432/gym_db
     username: gcs
@@ -59,6 +61,11 @@ management:
     health:
       show-details: always
 
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
 workload:
   service:
-    url: http://localhost:8081
+    base-url: http://workload-service
