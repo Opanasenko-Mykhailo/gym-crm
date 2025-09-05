@@ -25,3 +25,7 @@ jwt:
   secret: gym-crm-testing-key-1234567890XXABCD
   expiration: 86400000
   refresh-expiration: 604800000
+
+workload:
+  service:
+    url: http://localhost:8081

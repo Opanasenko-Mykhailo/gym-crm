@@ -1,7 +1,7 @@
 package com.gcm.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gcm.app.rest.TrainerSummaryRequest;
+import com.gcm.app.rest.TrainerSummaryResponse;
 import com.gcm.app.rest.TrainerWorkloadRequest;
 import com.gcm.service.WorkloadService;
 import org.junit.jupiter.api.Test;
@@ -67,7 +67,7 @@ class WorkloadControllerTest {
 
     @Test
     void givenExistingTrainer_whenGetSummary_thenReturnsOk() throws Exception {
-        TrainerSummaryRequest summary = new TrainerSummaryRequest();
+        TrainerSummaryResponse summary = new TrainerSummaryResponse();
         summary.setUsername("alice.smith");
         given(service.getTrainerSummary("alice.smith")).willReturn(summary);
 

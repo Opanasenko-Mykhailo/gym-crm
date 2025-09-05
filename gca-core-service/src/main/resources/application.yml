@@ -58,3 +58,7 @@ management:
   endpoint:
     health:
       show-details: always
+
+workload:
+  service:
+    url: http://localhost:8081
