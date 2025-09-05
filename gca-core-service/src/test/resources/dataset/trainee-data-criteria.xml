@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+    <users id="1" username="sophia.martinez" password="encoded" first_name="Sophia" last_name="Martinez" is_active="true"/>
+    <users id="2" username="coach.smith" password="encoded" first_name="Coach" last_name="Smith" is_active="true"/>
+    <users id="3" username="trainee2" password="encoded" first_name="John" last_name="Doe" is_active="true"/>
+    <users id="4" username="trainer2" password="encoded" first_name="Anna" last_name="Taylor" is_active="true"/>
+    <users id="5" username="admin" password="encoded" first_name="Admin" last_name="Admin" is_active="true"/>
+
+    <training_types id="1" training_type_name="Pilates"/>
+    <training_types id="2" training_type_name="CrossFit"/>
+    <training_types id="3" training_type_name="Yoga"/>
+
+    <trainees id="1" user_id="1" date_of_birth="2000-01-01" address="Trainee Address"/>
+    <trainees id="2" user_id="3" date_of_birth="2001-01-01" address="Another Address"/>
+
+    <trainers id="1" user_id="2" specialization_id="1"/>
+    <trainers id="2" user_id="4" specialization_id="2"/>
+
+    <trainings id="1"
+               training_name="Morning Pilates"
+               training_date="2025-01-01"
+               training_duration="60"
+               trainee_id="1"
+               trainer_id="1"
+               type_id="1"/>
+    <trainings id="2"
+               training_name="Evening Pilates"
+               training_date="2026-05-20"
+               training_duration="90"
+               trainee_id="1"
+               trainer_id="1"
+               type_id="1"/>
+    <trainings id="3"
+               training_name="CrossFit Blast"
+               training_date="2025-03-15"
+               training_duration="45"
+               trainee_id="2"
+               trainer_id="2"
+               type_id="2"/>
+    <trainings id="4"
+               training_name="Yoga Relax"
+               training_date="2024-12-10"
+               training_duration="30"
+               trainee_id="1"
+               trainer_id="2"
+               type_id="3"/>
+</dataset>

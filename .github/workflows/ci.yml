@@ -1,0 +1,229 @@
+name: CI - Build, Test and SonarCloud
+
+on:
+  push:
+    branches: [ dev ]
+  pull_request:
+    branches: [ dev ]
+
+jobs:
+  build:
+    name: Build and run tests + SonarCloud (${{ matrix.service }})
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+    strategy:
+      matrix:
+        service: [ workload-service, gca-core-service ]
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Install dependencies (libxml2-utils and jq)
+        run: sudo apt-get update && sudo apt-get install -y libxml2-utils jq
+
+      - name: Extract sonar.projectKey from pom.xml
+        id: extract-key
+        working-directory: ${{ matrix.service }}
+        run: |
+          PROJECT_KEY=$(xmllint --xpath "string(//*[local-name()='project']/*[local-name()='properties']/*[local-name()='sonar.projectKey'])" pom.xml)
+          if [ -z "$PROJECT_KEY" ]; then
+            echo "Error: sonar.projectKey not found in pom.xml"
+            exit 1
+          fi
+          echo "PROJECT_KEY=$PROJECT_KEY" >> $GITHUB_ENV
+          echo "Extracted sonar.projectKey: $PROJECT_KEY"
+
+      - name: Build, test and analyze with SonarCloud
+        working-directory: ${{ matrix.service }}
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          PROJECT_KEY: ${{ env.PROJECT_KEY }}
+        continue-on-error: true
+        run: |
+          echo "Using PROJECT_KEY=$PROJECT_KEY"
+          mvn clean verify sonar:sonar \
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
+            -Dsonar.projectKey=$PROJECT_KEY \
+            -Dsonar.projectBaseDir=. \
+            -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
+            -Dsonar.exclusions=**/mapper/**,**/constant/**,**/dto/**,**/model/**,**/config/**
+
+      - name: Wait for SonarCloud analysis to finish
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          PROJECT_KEY: ${{ env.PROJECT_KEY }}
+        run: |
+          echo "Waiting for SonarCloud analysis to finish for project: $PROJECT_KEY"
+          TASK_ID=$(curl -s -u "${SONAR_TOKEN}:" \
+            "https://sonarcloud.io/api/ce/component?component=${PROJECT_KEY}" \
+            | jq -r '.queue[0].id // .current.id')
+
+          STATUS="IN_PROGRESS"
+          ATTEMPTS=0
+          while [ "$STATUS" = "IN_PROGRESS" ] && [ $ATTEMPTS -lt 60 ]; do
+            sleep 10
+            STATUS=$(curl -s -u "${SONAR_TOKEN}:" \
+              "https://sonarcloud.io/api/ce/task?id=${TASK_ID}" \
+              | jq -r '.task.status')
+            echo "Current status: $STATUS"
+            ATTEMPTS=$((ATTEMPTS+1))
+          done
+
+          if [ "$STATUS" != "SUCCESS" ]; then
+            echo "SonarCloud analysis failed or timed out."
+            exit 1
+          fi
+
+      - name: Check SonarCloud issues and Quality Gate status
+        id: check-sonar
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          PROJECT_KEY: ${{ env.PROJECT_KEY }}
+          PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number || '' }}
+        run: |
+          echo "PROJECT_KEY=$PROJECT_KEY"
+
+          if [ -n "${PULL_REQUEST_NUMBER}" ]; then
+            QG_STATUS=$(curl -s -u "${SONAR_TOKEN}:" \
+              "https://sonarcloud.io/api/qualitygates/project_status?projectKey=${PROJECT_KEY}&pullRequest=${PULL_REQUEST_NUMBER}" \
+              | jq -r '.projectStatus.status')
+
+            curl -s -u "${SONAR_TOKEN}:" \
+              "https://sonarcloud.io/api/issues/search?componentKeys=${PROJECT_KEY}&severities=BLOCKER,CRITICAL,MAJOR&resolved=false&pullRequest=${PULL_REQUEST_NUMBER}" \
+              > sonar_issues.json
+
+            curl -s -u "${SONAR_TOKEN}:" \
+              "https://sonarcloud.io/api/hotspots/search?projectKey=${PROJECT_KEY}&pullRequest=${PULL_REQUEST_NUMBER}&status=TO_REVIEW&ps=500" \
+              > sonar_security_hotspots.json
+
+          else
+            QG_STATUS=$(curl -s -u "${SONAR_TOKEN}:" \
+              "https://sonarcloud.io/api/qualitygates/project_status?projectKey=${PROJECT_KEY}" \
+              | jq -r '.projectStatus.status')
+
+            curl -s -u "${SONAR_TOKEN}:" \
+              "https://sonarcloud.io/api/issues/search?componentKeys=${PROJECT_KEY}&severities=BLOCKER,CRITICAL,MAJOR&resolved=false" \
+              > sonar_issues.json
+
+            curl -s -u "${SONAR_TOKEN}:" \
+              "https://sonarcloud.io/api/hotspots/search?projectKey=${PROJECT_KEY}&status=TO_REVIEW&ps=500" \
+              > sonar_security_hotspots.json
+          fi
+
+          echo "Quality Gate status: $QG_STATUS"
+          ISSUES_COUNT=$(jq '.total' sonar_issues.json)
+          echo "Total Blocker/Critical/Major issues: $ISSUES_COUNT"
+
+          echo "quality_gate_status=$QG_STATUS" >> $GITHUB_OUTPUT
+          echo "issues_count=$ISSUES_COUNT" >> $GITHUB_OUTPUT
+
+      - name: Post SonarCloud issues summary to PR
+        if: github.event_name == 'pull_request' && steps.check-sonar.outputs.issues_count != ''
+        uses: actions/github-script@v6
+        env:
+          PROJECT_KEY: ${{ env.PROJECT_KEY }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+
+            const issuesData = fs.readFileSync('sonar_issues.json', 'utf8');
+            const issues = JSON.parse(issuesData).issues || [];
+            const totalIssues = parseInt('${{ steps.check-sonar.outputs.issues_count }}', 10);
+
+            const hotspotsData = fs.readFileSync('sonar_security_hotspots.json', 'utf8');
+            const hotspots = JSON.parse(hotspotsData).hotspots || [];
+            const totalHotspots = hotspots.length;
+
+            const projectKey = process.env.PROJECT_KEY;
+            let commentBody = '';
+
+            if (totalIssues > 0) {
+              const severityOrder = { BLOCKER: 1, CRITICAL: 2, MAJOR: 3, MINOR: 4, INFO: 5 };
+              issues.sort((a, b) => severityOrder[a.severity] - severityOrder[b.severity]);
+
+              let markdownTable = '| Severity | Description | File:Line |\n';
+              markdownTable += '|----------|-------------|-----------|\n';
+
+              for (const issue of issues) {
+                const severityText = (issue.severity === 'BLOCKER' || issue.severity === 'CRITICAL')
+                  ? `:warning: **${issue.severity}**`
+                  : `**${issue.severity}**`;
+                const fileLine = issue.component.split(':').slice(1).join(':') + ':' + (issue.line || '');
+                markdownTable += `| ${severityText} | ${issue.message} | ${fileLine} |\n`;
+              }
+
+              commentBody =
+                '## SonarCloud Issues Report\n' +
+                `Found **${totalIssues}** Blocker/Critical/Major issues that need to be resolved:\n\n` +
+                markdownTable + '\n';
+            } else {
+              commentBody =
+                '## SonarCloud Issues Report\n' +
+                '🎉 No Blocker, Critical or Major issues found. Great job!\n';
+            }
+
+            if (totalHotspots > 0) {
+              commentBody +=
+                `\n\n## Security Hotspots Detected\n` +
+                `Found **${totalHotspots}** Security Hotspots that need review:\n\n`;
+
+              let hotspotTable = '| Message | File:Line |\n';
+              hotspotTable += '|---------|-----------|\n';
+
+              for (const hotspot of hotspots) {
+                const fileLine = hotspot.component.split(':').slice(1).join(':') + ':' + (hotspot.line || '');
+                hotspotTable += `| **${hotspot.message}** | ${fileLine} |\n`;
+              }
+
+              commentBody += hotspotTable + '\n';
+            } else {
+              commentBody += '\n\n🎉 No Security Hotspots found.\n';
+            }
+
+            commentBody += `[View project in SonarCloud](https://sonarcloud.io/project/issues?id=${projectKey}).`;
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const existingComment = comments.find(c => c.body.includes('SonarCloud Issues Report'));
+            if (existingComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existingComment.id,
+                body: commentBody,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: commentBody,
+              });
+            }
+
+      - name: Fail the workflow if SonarCloud issues or Quality Gate failed
+        if: always() && (steps.check-sonar.outputs.quality_gate_status != 'OK' || steps.check-sonar.outputs.issues_count != '0')
+        run: |
+          echo "Failing workflow due to SonarCloud issues or Quality Gate failure."
+          exit 1

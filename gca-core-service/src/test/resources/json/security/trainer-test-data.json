@@ -1,0 +1,15 @@
+{
+  "trainerCreateRequest": {
+    "firstName": "Rowan",
+    "lastName": "Atkinson",
+    "specialization": "Yoga"
+  },
+  "trainerUpdateRequest": {
+    "firstName": "Updated",
+    "lastName": "Trainer",
+    "isActive": true
+  },
+  "activationStatusRequest": {
+    "isActive": false
+  }
+}
