@@ -68,6 +68,7 @@ class WorkloadServiceImplTest {
         TrainerWorkloadRequest request = createWorkloadRequest("bob.jones", DELETE, 30, LocalDate.of(2025, 9, 2));
 
         when(trainerRepo.findByUsername("bob.jones")).thenReturn(Optional.of(trainer));
+
         service.processTrainerWorkload(request, "txn-002");
 
         MonthlySummary month = trainer.getYears().get(0).getMonths().get(0);
@@ -83,6 +84,7 @@ class WorkloadServiceImplTest {
         TrainerSummaryResponse mapped = new TrainerSummaryResponse();
 
         mapped.setUsername("charlie.brown");
+
         when(trainerRepo.findByUsername("charlie.brown")).thenReturn(Optional.of(trainer));
         when(trainerMapper.toRestModel(trainer)).thenReturn(mapped);
 
