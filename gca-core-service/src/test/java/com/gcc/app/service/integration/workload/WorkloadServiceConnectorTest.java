@@ -1,4 +1,4 @@
-package com.gcc.app.service.integration.workload.impl;
+package com.gcc.app.service.integration.workload;
 
 import com.gcc.app.service.integration.workload.dto.TrainerSummaryResponseDto;
 import com.gcc.app.service.integration.workload.dto.TrainerWorkloadRequestDto;
@@ -17,14 +17,15 @@ import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class WorkloadServiceImplTest {
-
-    private static MockWebServer mockWebServer;
-    private WorkloadServiceImpl service;
+class WorkloadServiceConnectorTest {
 
     private static final String TRAINER_USERNAME = "alice.smith";
     private static final String TRAINER_FIRST_NAME = "Alice";
     private static final String TRAINER_LAST_NAME = "Smith";
+
+    private static MockWebServer mockWebServer;
+
+    private WorkloadServiceConnector service;
 
     @BeforeAll
     static void setupServer() throws IOException {
@@ -40,7 +41,7 @@ class WorkloadServiceImplTest {
     @BeforeEach
     void setUp() {
         WebClient.Builder builder = WebClient.builder();
-        service = new WorkloadServiceImpl(builder);
+        service = new WorkloadServiceConnector(builder);
         ReflectionTestUtils.setField(service, "baseUrl", mockWebServer.url("/").toString());
     }
 

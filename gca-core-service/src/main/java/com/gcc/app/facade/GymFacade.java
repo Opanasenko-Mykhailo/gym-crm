@@ -46,7 +46,7 @@ import com.gcc.app.service.TrainerService;
 import com.gcc.app.service.TrainingService;
 import com.gcc.app.service.TrainingTypeService;
 import com.gcc.app.service.UserService;
-import com.gcc.app.service.integration.workload.WorkloadService;
+import com.gcc.app.service.integration.workload.WorkloadServiceConnector;
 import com.gcc.app.service.integration.workload.dto.TrainerSummaryResponseDto;
 import com.gcc.app.service.integration.workload.dto.TrainerWorkloadRequestDto;
 import lombok.RequiredArgsConstructor;
@@ -66,7 +66,7 @@ public class GymFacade {
     private final TrainingTypeService trainingTypeService;
     private final UserService userService;
     private final AuthService authService;
-    private final WorkloadService workloadService;
+    private final WorkloadServiceConnector workloadServiceConnector;
     private final TraineeMapper traineeMapper;
     private final TrainerMapper trainerMapper;
     private final TrainingMapper trainingMapper;
@@ -171,7 +171,7 @@ public class GymFacade {
         workloadRequest.setDurationInMinutes(training.getDuration());
         workloadRequest.setActionType(TrainerWorkloadRequestDto.ActionType.ADD);
 
-        workloadService.processTrainerWorkload(workloadRequest);
+        workloadServiceConnector.processTrainerWorkload(workloadRequest);
     }
 
     public TrainingResponseDto getTraining(Long id) {
@@ -240,6 +240,6 @@ public class GymFacade {
     }
 
     public TrainerSummaryResponseDto getTrainerSummary(String username) {
-        return workloadService.getTrainerSummary(username);
+        return workloadServiceConnector.getTrainerSummary(username);
     }
 }

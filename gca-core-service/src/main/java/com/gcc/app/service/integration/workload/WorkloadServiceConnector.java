@@ -1,6 +1,5 @@
-package com.gcc.app.service.integration.workload.impl;
+package com.gcc.app.service.integration.workload;
 
-import com.gcc.app.service.integration.workload.WorkloadService;
 import com.gcc.app.service.integration.workload.dto.TrainerSummaryResponseDto;
 import com.gcc.app.service.integration.workload.dto.TrainerWorkloadRequestDto;
 import lombok.RequiredArgsConstructor;
@@ -10,14 +9,13 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
 @RequiredArgsConstructor
-public class WorkloadServiceImpl implements WorkloadService {
+public class WorkloadServiceConnector {
 
     private final WebClient.Builder webClientBuilder;
 
     @Value("${workload.service.base-url}")
     private String baseUrl;
 
-    @Override
     public void processTrainerWorkload(TrainerWorkloadRequestDto request) {
         webClientBuilder.build()
                 .post()
@@ -28,7 +26,6 @@ public class WorkloadServiceImpl implements WorkloadService {
                 .block();
     }
 
-    @Override
     public TrainerSummaryResponseDto getTrainerSummary(String username) {
         return webClientBuilder.build()
                 .get()
