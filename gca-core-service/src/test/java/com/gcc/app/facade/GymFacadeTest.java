@@ -49,8 +49,13 @@ import com.gcc.app.service.TrainerService;
 import com.gcc.app.service.TrainingService;
 import com.gcc.app.service.TrainingTypeService;
 import com.gcc.app.service.UserService;
+import com.gcc.app.service.integration.workload.WorkloadService;
+import com.gcc.app.service.integration.workload.dto.TrainerSummaryResponseDto;
+import com.gcc.app.service.integration.workload.dto.TrainerWorkloadRequestDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -121,6 +126,8 @@ class GymFacadeTest {
     @Mock
     private AuthService authService;
     @Mock
+    private WorkloadService workloadService;
+    @Mock
     private TraineeMapper traineeMapper;
     @Mock
     private TrainerMapper trainerMapper;
@@ -128,12 +135,14 @@ class GymFacadeTest {
     private TrainingMapper trainingMapper;
     @Mock
     private TrainingTypeMapper trainingTypeMapper;
-
     @Mock
     private UserMapper userMapper;
 
     @InjectMocks
     private GymFacade facade;
+
+    @Captor
+    private ArgumentCaptor<TrainerWorkloadRequestDto> workloadCaptor;
 
     @Test
     void createTrainee_callsServiceAndReturnsUserCreationResponse() {
@@ -289,11 +298,21 @@ class GymFacadeTest {
         TrainingCreateRequestDto dto = createTrainingCreateRequestDto();
 
         when(trainingMapper.toTrainingCreateRequestDto(restRequest)).thenReturn(dto);
+        when(trainingService.createTraining(dto)).thenReturn(training);
 
         facade.createTraining(restRequest);
 
         verify(trainingMapper).toTrainingCreateRequestDto(restRequest);
         verify(trainingService).createTraining(dto);
+        verify(workloadService).processTrainerWorkload(workloadCaptor.capture());
+
+        TrainerWorkloadRequestDto capturedWorkload = workloadCaptor.getValue();
+        assertEquals(TRAINER_USERNAME, capturedWorkload.getUsername());
+        assertEquals(TRAINER_FIRST_NAME, capturedWorkload.getFirstName());
+        assertEquals(TRAINER_LAST_NAME, capturedWorkload.getLastName());
+        assertEquals(TRAINING_DATE, capturedWorkload.getTrainingDate());
+        assertEquals(TRAINING_DURATION, capturedWorkload.getDurationInMinutes());
+        assertEquals(TrainerWorkloadRequestDto.ActionType.ADD, capturedWorkload.getActionType());
     }
 
     @Test
@@ -449,6 +468,24 @@ class GymFacadeTest {
         verifyNoMoreInteractions(userMapper, authService);
     }
 
+    @Test
+    void getTrainerSummary_callsWorkloadService_returnsTrainerSummaryRequestDto() {
+        TrainerSummaryResponseDto expectedSummary = new TrainerSummaryResponseDto();
+        expectedSummary.setUsername(TRAINER_USERNAME);
+        expectedSummary.setFirstName(TRAINER_FIRST_NAME);
+        expectedSummary.setLastName(TRAINER_LAST_NAME);
+
+        when(workloadService.getTrainerSummary(TRAINER_USERNAME)).thenReturn(expectedSummary);
+
+        TrainerSummaryResponseDto actual = facade.getTrainerSummary(TRAINER_USERNAME);
+
+        assertEquals(expectedSummary.getUsername(), actual.getUsername());
+        assertEquals(expectedSummary.getFirstName(), actual.getFirstName());
+        assertEquals(expectedSummary.getLastName(), actual.getLastName());
+
+        verify(workloadService).getTrainerSummary(TRAINER_USERNAME);
+    }
+
     private Trainee createTrainee() {
         return Trainee.builder()
                 .id(TRAINEE_ID)
@@ -501,7 +538,10 @@ class GymFacadeTest {
     }
 
     private Trainer createTrainerForTraining() {
-        return Trainer.builder().id(TRAINER_ID).build();
+        return Trainer.builder()
+                .id(TRAINER_ID)
+                .user(createTrainerUser())
+                .build();
     }
 
     private TrainingType createTrainingType() {

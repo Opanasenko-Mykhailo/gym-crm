@@ -1,6 +1,6 @@
 package com.gcm.controller;
 
-import com.gcm.app.rest.TrainerSummaryRequest;
+import com.gcm.app.rest.TrainerSummaryResponse;
 import com.gcm.app.rest.TrainerWorkloadRequest;
 import com.gcm.exeption.ResourceNotFoundException;
 import com.gcm.service.WorkloadService;
@@ -31,11 +31,11 @@ public class WorkloadController {
     }
 
     @GetMapping("/{username}")
-    public ResponseEntity<TrainerSummaryRequest> getTrainerSummary(@PathVariable String username) {
-        TrainerSummaryRequest summary = service.getTrainerSummary(username);
+    public ResponseEntity<TrainerSummaryResponse> getTrainerSummary(@PathVariable String username) {
+        TrainerSummaryResponse summary = service.getTrainerSummary(username);
 
         if (summary == null) {
-            throw new ResourceNotFoundException("Trainer with username " + username + " not found");
+            throw new ResourceNotFoundException(String.format("Trainer with username %s not found", username));
         }
 
         return ResponseEntity.ok(summary);

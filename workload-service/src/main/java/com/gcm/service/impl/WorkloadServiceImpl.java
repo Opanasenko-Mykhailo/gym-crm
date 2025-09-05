@@ -1,6 +1,6 @@
 package com.gcm.service.impl;
 
-import com.gcm.app.rest.TrainerSummaryRequest;
+import com.gcm.app.rest.TrainerSummaryResponse;
 import com.gcm.app.rest.TrainerWorkloadRequest;
 import com.gcm.mapper.TrainerSummaryMapper;
 import com.gcm.model.MonthlySummary;
@@ -39,7 +39,7 @@ public class WorkloadServiceImpl implements WorkloadService {
     }
 
     @Override
-    public TrainerSummaryRequest getTrainerSummary(String username) {
+    public TrainerSummaryResponse getTrainerSummary(String username) {
         return trainerMapper.toRestModel(
                 trainerRepo.findByUsername(username).orElse(null)
         );

@@ -46,6 +46,9 @@ import com.gcc.app.service.TrainerService;
 import com.gcc.app.service.TrainingService;
 import com.gcc.app.service.TrainingTypeService;
 import com.gcc.app.service.UserService;
+import com.gcc.app.service.integration.workload.WorkloadService;
+import com.gcc.app.service.integration.workload.dto.TrainerSummaryResponseDto;
+import com.gcc.app.service.integration.workload.dto.TrainerWorkloadRequestDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -63,6 +66,7 @@ public class GymFacade {
     private final TrainingTypeService trainingTypeService;
     private final UserService userService;
     private final AuthService authService;
+    private final WorkloadService workloadService;
     private final TraineeMapper traineeMapper;
     private final TrainerMapper trainerMapper;
     private final TrainingMapper trainingMapper;
@@ -156,7 +160,18 @@ public class GymFacade {
         log.info("Creating training: {}", request.getTrainingName());
         TrainingCreateRequestDto createRequestDto = trainingMapper.toTrainingCreateRequestDto(request);
 
-        trainingService.createTraining(createRequestDto);
+        Training training = trainingService.createTraining(createRequestDto);
+
+        TrainerWorkloadRequestDto workloadRequest = new TrainerWorkloadRequestDto();
+        workloadRequest.setUsername(training.getTrainer().getUser().getUsername());
+        workloadRequest.setFirstName(training.getTrainer().getUser().getFirstName());
+        workloadRequest.setLastName(training.getTrainer().getUser().getLastName());
+        workloadRequest.setTrainingDate(training.getDate());
+        workloadRequest.setActive(true);
+        workloadRequest.setDurationInMinutes(training.getDuration());
+        workloadRequest.setActionType(TrainerWorkloadRequestDto.ActionType.ADD);
+
+        workloadService.processTrainerWorkload(workloadRequest);
     }
 
     public TrainingResponseDto getTraining(Long id) {
@@ -222,5 +237,9 @@ public class GymFacade {
     public void logout(RefreshTokenRequest request) {
         authService.logout(userMapper.toLogoutRequestDto(request));
         log.info("User logged out successfully");
+    }
+
+    public TrainerSummaryResponseDto getTrainerSummary(String username) {
+        return workloadService.getTrainerSummary(username);
     }
 }

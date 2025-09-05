@@ -33,7 +33,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TrainerSummaryRequest'
+                $ref: '#/components/schemas/TrainerSummaryResponse'
         "404":
           description: Trainer not found
 
@@ -74,7 +74,7 @@ components:
           enum: [ADD, DELETE]
           example: ADD
 
-    TrainerSummaryRequest:
+    TrainerSummaryResponse:
       type: object
       required:
         - username
@@ -97,9 +97,9 @@ components:
         years:
           type: array
           items:
-            $ref: '#/components/schemas/YearlySummary'
+            $ref: '#/components/schemas/YearlySummaryResponse'
 
-    YearlySummary:
+    YearlySummaryResponse:
       type: object
       required:
         - year
