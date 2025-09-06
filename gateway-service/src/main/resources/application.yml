@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: gateway-service
+
+server:
+  port: 8080
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+
+logging:
+  level:
+    root: INFO
+
+gateway:
+  routes:
+    - id: gca-core
+      path: /gym-crm-core/api/**
+      service-id: gca-core-service
+      add-request-headers:
+        X-From-Gateway: gateway-service
+    - id: workload
+      path: /api/workload/**
+      service-id: workload-service
+      add-request-headers:
+        X-From-Gateway: gateway-service
