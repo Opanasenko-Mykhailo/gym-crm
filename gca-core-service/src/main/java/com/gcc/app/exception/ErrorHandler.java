@@ -130,6 +130,13 @@ public class ErrorHandler {
         return buildErrorResponse(INVALID_REQUEST_ERROR, ex.getMessage());
     }
 
+    @ExceptionHandler(MicroserviceUnavailableException.class)
+    public ResponseEntity<ErrorResponse> handleMicroserviceUnavailable(MicroserviceUnavailableException ex) {
+        log.error("WorkloadServiceUnavailableException: {}", ex.getMessage(), ex);
+
+        return buildErrorResponse(ApiError.MICROSERVICE_UNAVAILABLE, ex.getMessage());
+    }
+
     private ResponseEntity<ErrorResponse> buildErrorResponse(ApiError apiError) {
         return buildErrorResponse(apiError, null);
     }

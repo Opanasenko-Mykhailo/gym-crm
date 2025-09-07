@@ -69,3 +69,19 @@ eureka:
 workload:
   service:
     base-url: http://workload-service
+
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        registerHealthIndicator: true
+        slidingWindowSize: 5
+        minimumNumberOfCalls: 3
+        failureRateThreshold: 50
+        waitDurationInOpenState: 5s
+        permittedNumberOfCallsInHalfOpenState: 2
+        slowCallRateThreshold: 100
+        slowCallDurationThreshold: 60s
+    instances:
+      workload-service:
+        baseConfig: default

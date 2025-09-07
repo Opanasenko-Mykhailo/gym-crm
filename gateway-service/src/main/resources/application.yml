@@ -28,3 +28,19 @@ gateway:
       service-id: workload-service
       add-request-headers:
         X-From-Gateway: gateway-service
+
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        registerHealthIndicator: true
+        slidingWindowSize: 5
+        minimumNumberOfCalls: 3
+        failureRateThreshold: 50
+        waitDurationInOpenState: 5s
+        permittedNumberOfCallsInHalfOpenState: 2
+    instances:
+      gca-core-service:
+        baseConfig: default
+      workload-service:
+        baseConfig: default
