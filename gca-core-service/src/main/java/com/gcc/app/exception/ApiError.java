@@ -16,7 +16,8 @@ enum ApiError {
     NOT_FOUND_ERROR(2835, "Requested data was not found: ", HttpStatus.NOT_FOUND),
     BRUTE_FORCE_BLOCKED(2901,  "Too many failed login attempts, try again later", HttpStatus.TOO_MANY_REQUESTS),
     SERVER_ERROR(3200, "Internal processing error", HttpStatus.INTERNAL_SERVER_ERROR),
-    DATABASE_ERROR(3358, "Unexpected database access failure", HttpStatus.INTERNAL_SERVER_ERROR);
+    DATABASE_ERROR(3358, "Unexpected database access failure", HttpStatus.INTERNAL_SERVER_ERROR),
+    MICROSERVICE_UNAVAILABLE(3500, "External service is temporarily unavailable: ", HttpStatus.SERVICE_UNAVAILABLE);
 
     private final int code;
     private final String message;

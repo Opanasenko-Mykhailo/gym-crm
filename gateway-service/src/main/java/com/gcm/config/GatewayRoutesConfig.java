@@ -12,6 +12,8 @@ import org.springframework.context.annotation.Configuration;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -43,14 +45,22 @@ public class GatewayRoutesConfig implements RouteDefinitionRepository {
     private RouteDefinition createRouteDefinition(RouteConfig route) {
         RouteDefinition definition = new RouteDefinition();
         definition.setId(route.getId());
-        definition.setUri(java.net.URI.create("lb://" + route.getServiceId()));
+        definition.setUri(URI.create("lb://" + route.getServiceId()));
         definition.setPredicates(List.of(createPathPredicate(route.getPath())));
-
-        if (route.getAddRequestHeaders() != null) {
-            definition.setFilters(createFilters(route.getAddRequestHeaders()));
-        }
+        definition.setFilters(createRouteFilters(route));
 
         return definition;
+    }
+
+    private List<FilterDefinition> createRouteFilters(RouteConfig route) {
+        List<FilterDefinition> filters = new ArrayList<>();
+
+        if (route.getAddRequestHeaders() != null) {
+            filters.addAll(createFilters(route.getAddRequestHeaders()));
+        }
+        filters.add(createCircuitBreakerFilter(route.getServiceId()));
+
+        return filters;
     }
 
     private PredicateDefinition createPathPredicate(String path) {
@@ -72,6 +82,15 @@ public class GatewayRoutesConfig implements RouteDefinitionRepository {
         filter.setName("AddRequestHeader");
         filter.addArg("name", entry.getKey());
         filter.addArg("value", entry.getValue());
+
+        return filter;
+    }
+
+    private FilterDefinition createCircuitBreakerFilter(String serviceId) {
+        FilterDefinition filter = new FilterDefinition();
+        filter.setName("CircuitBreaker");
+        filter.addArg("name", serviceId);
+        filter.addArg("fallbackUri", "forward:/fallback/" + serviceId);
 
         return filter;
     }

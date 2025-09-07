@@ -59,6 +59,7 @@ class ErrorHandlerTest {
     private static final String INVALID_CREDENTIALS_MSG = "Invalid username or password";
     private static final String BRUTE_FORCE_BLOCKED_MSG =  "Too many failed login attempts, try again later";
     private static final String ACCESS_DENIED_MSG = "Access denied: insufficient permissions";
+    private static final String MICROSERVICE_UNAVAILABLE_MSG = "External service is temporarily unavailable: Workload service is temporarily unavailable for processing trainer workload";
 
     @InjectMocks
     private ErrorHandler errorHandler;
@@ -243,6 +244,18 @@ class ErrorHandlerTest {
         assertTrue(actualMessage.contains(INVALID_REQUEST_ERROR.getMessage()));
         assertTrue(actualMessage.contains("periodFrom"));
         assertTrue(actualMessage.contains(TYPE_MISMATCH_MSG));
+    }
+
+    @Test
+    void handleMicroserviceUnavailableException_whenThrown_returnsMicroserviceUnavailableError() {
+        MicroserviceUnavailableException ex = new MicroserviceUnavailableException(MICROSERVICE_UNAVAILABLE_MSG, null);
+
+        ResponseEntity<ErrorResponse> result = errorHandler.handleMicroserviceUnavailable(ex);
+
+        assertNotNull(result.getBody());
+        assertEquals(ApiError.MICROSERVICE_UNAVAILABLE.getHttpStatus(), result.getStatusCode());
+        assertEquals(ApiError.MICROSERVICE_UNAVAILABLE.getCode(), result.getBody().getErrorCode());
+        assertTrue(result.getBody().getErrorMessage().contains(MICROSERVICE_UNAVAILABLE_MSG));
     }
 
     public void dummyMethod(String param) {

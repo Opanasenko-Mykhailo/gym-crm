@@ -21,6 +21,14 @@ spring:
     enabled: true
     drop-first: true
 
+bruteforce:
+  max-attempts: 3
+  max-size: 10000
+  expire-minutes: 5
+
+cors:
+  allowed-origins: "*"
+
 jwt:
   secret: gym-crm-testing-key-1234567890XXABCD
   expiration: 86400000
