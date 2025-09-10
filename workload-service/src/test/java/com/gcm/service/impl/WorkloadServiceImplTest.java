@@ -7,7 +7,6 @@ import com.gcm.model.MonthlySummary;
 import com.gcm.model.TrainerSummary;
 import com.gcm.model.YearlySummary;
 import com.gcm.repository.TrainerSummaryRepository;
-import com.gcm.util.TransactionLogger;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -34,9 +33,6 @@ class WorkloadServiceImplTest {
     @Mock
     private TrainerSummaryMapper trainerMapper;
 
-    @Mock
-    private TransactionLogger logger;
-
     @InjectMocks
     private WorkloadServiceImpl service;
 
@@ -45,7 +41,7 @@ class WorkloadServiceImplTest {
         TrainerWorkloadRequest request = createWorkloadRequest("alice.smith", ADD, 45, LocalDate.of(2025, 9, 1));
         when(trainerRepo.findByUsername("alice.smith")).thenReturn(Optional.empty());
 
-        service.processTrainerWorkload(request, "txn-001");
+        service.processTrainerWorkload(request);
 
         ArgumentCaptor<TrainerSummary> captor = ArgumentCaptor.forClass(TrainerSummary.class);
         verify(trainerRepo).save(captor.capture());
@@ -57,9 +53,6 @@ class WorkloadServiceImplTest {
         assertThat(saved.getActive()).isTrue();
         assertThat(saved.getYears()).hasSize(1);
         assertThat(saved.getYears().get(0).getMonths().get(0).getTotalDurationMinutes()).isEqualTo(45);
-
-        verify(logger).log("txn-001", "Processing workload for alice.smith");
-        verify(logger).log("txn-001", "Updated trainer summary for alice.smith");
     }
 
     @Test
@@ -69,13 +62,11 @@ class WorkloadServiceImplTest {
 
         when(trainerRepo.findByUsername("bob.jones")).thenReturn(Optional.of(trainer));
 
-        service.processTrainerWorkload(request, "txn-002");
+        service.processTrainerWorkload(request);
 
         MonthlySummary month = trainer.getYears().get(0).getMonths().get(0);
         assertThat(month.getTotalDurationMinutes()).isEqualTo(90);
         verify(trainerRepo).save(trainer);
-        verify(logger).log("txn-002", "Processing workload for bob.jones");
-        verify(logger).log("txn-002", "Updated trainer summary for bob.jones");
     }
 
     @Test

@@ -63,7 +63,7 @@ class WorkloadControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk());
 
-        then(service).should().processTrainerWorkload(workloadCaptor.capture(), org.mockito.ArgumentMatchers.anyString());
+        then(service).should().processTrainerWorkload(workloadCaptor.capture());
         assertThat(workloadCaptor.getValue())
                 .extracting(TrainerWorkloadRequest::getUsername)
                 .isEqualTo("alice.smith");

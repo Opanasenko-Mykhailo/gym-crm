@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.UUID;
-
 @RestController
 @RequestMapping("/api/workload")
 @RequiredArgsConstructor
@@ -25,7 +23,7 @@ public class WorkloadController {
 
     @PostMapping
     public ResponseEntity<Void> processWorkload(@Valid @RequestBody TrainerWorkloadRequest request) {
-        service.processTrainerWorkload(request, UUID.randomUUID().toString());
+        service.processTrainerWorkload(request);
 
         return ResponseEntity.ok().build();
     }

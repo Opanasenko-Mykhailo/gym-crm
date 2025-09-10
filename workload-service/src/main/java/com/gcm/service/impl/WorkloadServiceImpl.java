@@ -8,25 +8,25 @@ import com.gcm.model.TrainerSummary;
 import com.gcm.model.YearlySummary;
 import com.gcm.repository.TrainerSummaryRepository;
 import com.gcm.service.WorkloadService;
-import com.gcm.util.TransactionLogger;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class WorkloadServiceImpl implements WorkloadService {
 
     private final TrainerSummaryRepository trainerRepo;
     private final TrainerSummaryMapper trainerMapper;
-    private final TransactionLogger logger;
 
     @Override
     @Transactional
-    public void processTrainerWorkload(TrainerWorkloadRequest request, String transactionId) {
-        logger.log(transactionId, "Processing workload for " + request.getUsername());
+    public void processTrainerWorkload(TrainerWorkloadRequest request) {
+        log.info("Processing workload for {}", request.getUsername());
 
         TrainerSummary trainer = getOrCreateTrainer(request);
         YearlySummary yearly = getOrCreateYearlySummary(trainer, request.getTrainingDate().getYear());
@@ -35,7 +35,7 @@ public class WorkloadServiceImpl implements WorkloadService {
         updateMonthlyDuration(monthly, request);
 
         trainerRepo.save(trainer);
-        logger.log(transactionId, "Updated trainer summary for " + request.getUsername());
+        log.info("Updated trainer summary for {}", request.getUsername());
     }
 
     @Override
