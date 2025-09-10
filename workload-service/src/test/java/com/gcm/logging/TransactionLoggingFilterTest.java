@@ -34,7 +34,6 @@ class TransactionLoggingFilterTest {
     void givenRequestWithoutTransactionId_whenFilter_thenGeneratesTransactionIdAndAddsHeader() throws ServletException, IOException {
         MockHttpServletRequest request = new MockHttpServletRequest("GET", "/test");
         MockHttpServletResponse response = new MockHttpServletResponse();
-
         doAnswer(invocation -> null).when(filterChain).doFilter(request, response);
 
         filter.doFilterInternal(request, response, filterChain);
@@ -42,8 +41,7 @@ class TransactionLoggingFilterTest {
         verify(filterChain, times(1)).doFilter(request, response);
 
         String transactionIdInHeader = response.getHeader(TRANSACTION_ID_HEADER);
-        assertThat(transactionIdInHeader).isNotNull();
-        assertThat(transactionIdInHeader).isNotEmpty();
+        assertThat(transactionIdInHeader).isNotNull().isNotEmpty();
 
         String transactionIdInMDC = MDC.get(TRANSACTION_ID_MDC);
         assertThat(transactionIdInMDC).isNull();
@@ -55,7 +53,6 @@ class TransactionLoggingFilterTest {
         MockHttpServletRequest request = new MockHttpServletRequest("POST", "/submit");
         request.addHeader(TRANSACTION_ID_HEADER, existingId);
         MockHttpServletResponse response = new MockHttpServletResponse();
-
         doAnswer(invocation -> null).when(filterChain).doFilter(request, response);
 
         filter.doFilterInternal(request, response, filterChain);

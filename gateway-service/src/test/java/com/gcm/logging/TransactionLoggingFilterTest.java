@@ -43,9 +43,7 @@ class TransactionLoggingFilterTest {
         Mono<Void> actual = filter.filter(exchange, chain);
 
         StepVerifier.create(actual).verifyComplete();
-
         verify(chain, times(1)).filter(any());
-
         String transactionId = MDC.get(TRANSACTION_ID_MDC);
         assertThat(transactionId).isNotNull();
         assertThat(transactionId).isNotEmpty();
@@ -65,9 +63,7 @@ class TransactionLoggingFilterTest {
         Mono<Void> actual = filter.filter(exchange, chain);
 
         StepVerifier.create(actual).verifyComplete();
-
         verify(chain, times(1)).filter(any());
-
         String transactionId = MDC.get(TRANSACTION_ID_MDC);
         assertThat(transactionId).isEqualTo(existingId);
     }
