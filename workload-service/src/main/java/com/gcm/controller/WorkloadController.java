@@ -25,7 +25,7 @@ public class WorkloadController {
 
     @PostMapping
     public ResponseEntity<Void> processWorkload(@Valid @RequestBody TrainerWorkloadRequest request) {
-        service.processTrainerWorkload(request, UUID.randomUUID().toString());
+        service.processTrainerWorkload(request);
 
         return ResponseEntity.ok().build();
     }
