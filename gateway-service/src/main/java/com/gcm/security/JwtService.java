@@ -48,7 +48,7 @@ public class JwtService {
 
         return roles.stream()
                 .map(role -> new SimpleGrantedAuthority(role.toString()))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private Claims parseClaims(String token) {
