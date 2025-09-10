@@ -2,6 +2,8 @@ package com.gcc.app.logging;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
 import org.junit.jupiter.api.Test;
 import org.slf4j.MDC;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -9,9 +11,10 @@ import org.springframework.mock.web.MockHttpServletResponse;
 
 import java.io.IOException;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -21,17 +24,45 @@ class TransactionIdFilterTest {
     private final TransactionIdFilter filter = new TransactionIdFilter();
 
     @Test
-    void shouldPutAndRemoveTransactionIdInMdcDuringFilter() throws IOException, ServletException {
+    void shouldCallChainDirectlyForNonHttpRequests() throws IOException, ServletException {
+        ServletRequest request = mock(ServletRequest.class);
+        ServletResponse response = mock(ServletResponse.class);
+        FilterChain chain = mock(FilterChain.class);
+
+        filter.doFilter(request, response, chain);
+
+        verify(chain, times(1)).doFilter(request, response);
+        assertThat(MDC.get("transactionId")).isNull();
+    }
+
+    @Test
+    void shouldGenerateTransactionIdIfMissing() throws IOException, ServletException {
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
         FilterChain chain = mock(FilterChain.class);
 
         filter.doFilter(request, response, chain);
 
-        assertNull(MDC.get("transactionId"), "transactionId should be removed from MDC after filter");
-        verify(chain, times(1)).doFilter(request, response);
         String txId = response.getHeader("X-Transaction-Id");
-        assertNotNull(txId, "X-Transaction-Id header should be set");
+        assertThat(txId).isNotNull().isNotEmpty();
+        assertThat(MDC.get("transactionId")).isNull();
+        verify(chain, times(1)).doFilter(request, response);
+    }
+
+    @Test
+    void shouldUseExistingTransactionId() throws IOException, ServletException {
+        String existingId = "12345";
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader("X-Transaction-Id", existingId);
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        FilterChain chain = mock(FilterChain.class);
+
+        filter.doFilter(request, response, chain);
+
+        String txId = response.getHeader("X-Transaction-Id");
+        assertThat(txId).isEqualTo(existingId);
+        assertThat(MDC.get("transactionId")).isNull();
+        verify(chain, times(1)).doFilter(request, response);
     }
 
     @Test
@@ -42,7 +73,7 @@ class TransactionIdFilterTest {
 
         doAnswer(invocation -> {
             String idInMdc = MDC.get("transactionId");
-            assertNotNull(idInMdc, "transactionId should be set in MDC during filter chain execution");
+            assertThat(idInMdc).isNotNull().isNotEmpty();
             return null;
         }).when(chain).doFilter(request, response);
 
@@ -52,17 +83,16 @@ class TransactionIdFilterTest {
     }
 
     @Test
-    void shouldUseExistingTransactionIdIfPresent() throws IOException, ServletException {
-        String existingId = "12345";
+    void shouldClearMdcEvenIfChainThrows() {
         MockHttpServletRequest request = new MockHttpServletRequest();
-        request.addHeader("X-Transaction-Id", existingId);
         MockHttpServletResponse response = new MockHttpServletResponse();
         FilterChain chain = mock(FilterChain.class);
 
-        filter.doFilter(request, response, chain);
+        assertThrows(RuntimeException.class, () -> {
+            doThrow(new RuntimeException("Chain error")).when(chain).doFilter(request, response);
+            filter.doFilter(request, response, chain);
+        });
 
-        String txId = response.getHeader("X-Transaction-Id");
-        assertNotNull(txId);
-        assert (txId.equals(existingId));
+        assertThat(MDC.get("transactionId")).isNull();
     }
 }

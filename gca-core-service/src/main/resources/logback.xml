@@ -10,7 +10,7 @@
     </appender>
 
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>logs/crm-gym.log</file>
+        <file>logs/workload-service.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>logs/crm-gym.%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>30</maxHistory>
@@ -24,7 +24,7 @@
     </appender>
 
     <appender name="FILE_ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>logs/crm-gym-error.log</file>
+        <file>logs/workload-service-error.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>logs/crm-gym-error.%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>30</maxHistory>
