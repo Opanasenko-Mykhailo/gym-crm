@@ -1,4 +1,6 @@
 spring:
+  config:
+    import: optional:file:./workload-service/.env[.properties]
   application:
     name: workload-service
   datasource:
@@ -9,8 +11,12 @@ spring:
   h2:
     console:
       enabled: true
+
 server:
   port: 8082
+
+jwt:
+  secret: ${JWT_SECRET}
 
 logging:
   level:

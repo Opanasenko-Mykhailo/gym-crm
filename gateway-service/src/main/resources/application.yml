@@ -1,9 +1,14 @@
 spring:
+  config:
+    import: optional:file:./gateway-service/.env[.properties]
   application:
     name: gateway-service
 
 server:
   port: 8080
+
+jwt:
+  secret: ${JWT_SECRET}
 
 eureka:
   client:

@@ -8,6 +8,8 @@ app:
     file-name: gym.yml
 
 spring:
+  config:
+    import: optional:file:./gca-core-service/.env[.properties]
   application:
     name: gca-core-service
   datasource:
@@ -31,7 +33,7 @@ spring:
     enabled: true
 
 jwt:
-  secret: gym-crm-secret-key-1234567890XXABCD
+  secret: ${JWT_SECRET}
   expiration: 900000
   refresh-expiration: 604800000
 

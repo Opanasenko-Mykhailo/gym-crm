@@ -116,7 +116,7 @@ class JwtAuthFilterTest {
         UsernamePasswordAuthenticationToken auth = authCaptor.getValue();
 
         assertEquals(userDetails, auth.getPrincipal());
-        assertNull(auth.getCredentials());
+        assertEquals(token, auth.getCredentials());
         assertEquals(userDetails.getAuthorities(), auth.getAuthorities());
         verify(filterChain).doFilter(request, response);
     }

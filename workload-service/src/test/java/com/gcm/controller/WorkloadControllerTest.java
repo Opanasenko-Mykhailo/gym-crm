@@ -3,6 +3,7 @@ package com.gcm.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gcm.app.rest.TrainerSummaryResponse;
 import com.gcm.app.rest.TrainerWorkloadRequest;
+import com.gcm.security.JwtService;
 import com.gcm.service.WorkloadService;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -38,6 +39,9 @@ class WorkloadControllerTest {
 
     @MockitoBean
     private WorkloadService service;
+
+    @MockitoBean
+    private JwtService jwtService;
 
     @Captor
     private ArgumentCaptor<TrainerWorkloadRequest> workloadCaptor;
