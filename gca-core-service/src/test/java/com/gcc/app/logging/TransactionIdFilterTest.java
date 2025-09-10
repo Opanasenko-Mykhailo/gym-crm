@@ -83,15 +83,14 @@ class TransactionIdFilterTest {
     }
 
     @Test
-    void shouldClearMdcEvenIfChainThrows() {
+    void shouldClearMdcEvenIfChainThrows() throws ServletException, IOException {
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
         FilterChain chain = mock(FilterChain.class);
 
-        assertThrows(RuntimeException.class, () -> {
-            doThrow(new RuntimeException("Chain error")).when(chain).doFilter(request, response);
-            filter.doFilter(request, response, chain);
-        });
+        doThrow(new RuntimeException("Chain error")).when(chain).doFilter(request, response);
+
+        assertThrows(RuntimeException.class, () -> filter.doFilter(request, response, chain));
 
         assertThat(MDC.get("transactionId")).isNull();
     }
