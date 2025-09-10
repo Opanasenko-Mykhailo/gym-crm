@@ -32,7 +32,7 @@ class JwtAuthFilterTest {
     private JwtService jwtService;
 
     @InjectMocks
-    private JwtAuthFilter jwtAuthFilter;
+    private JwtAuthFilter filter;
 
     @Test
     void givenValidToken_whenFilter_thenAuthenticationSetInContext() {
@@ -45,7 +45,7 @@ class JwtAuthFilterTest {
         when(jwtService.extractUsername(TEST_TOKEN)).thenReturn(TEST_USERNAME);
         when(jwtService.getAuthorities(TEST_TOKEN)).thenReturn(List.of());
 
-        Mono<Void> actual = jwtAuthFilter.filter(exchange, (ex) -> ReactiveSecurityContextHolder.getContext()
+        Mono<Void> actual = filter.filter(exchange, (ex) -> ReactiveSecurityContextHolder.getContext()
                 .map(SecurityContext::getAuthentication)
                 .doOnNext(auth -> {
                     assertThat(auth).isNotNull();
@@ -65,7 +65,7 @@ class JwtAuthFilterTest {
         MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
         MockServerWebExchange exchange = MockServerWebExchange.from(request);
 
-        Mono<Void> actual = jwtAuthFilter.filter(exchange, (ex) -> Mono.empty());
+        Mono<Void> actual = filter.filter(exchange, (ex) -> Mono.empty());
 
         StepVerifier.create(actual)
                 .verifyComplete();
@@ -87,7 +87,7 @@ class JwtAuthFilterTest {
         MockServerWebExchange exchange = MockServerWebExchange.from(request);
         when(jwtService.isTokenValid(TEST_TOKEN)).thenReturn(false);
 
-        Mono<Void> actual = jwtAuthFilter.filter(exchange, (ex) -> Mono.empty());
+        Mono<Void> actual = filter.filter(exchange, (ex) -> Mono.empty());
 
         StepVerifier.create(actual)
                 .verifyComplete();

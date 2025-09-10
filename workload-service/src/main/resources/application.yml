@@ -1,4 +1,6 @@
 spring:
+  config:
+    import: optional:file:./workload-service/.env[.properties]
   application:
     name: workload-service
   datasource:
@@ -14,7 +16,7 @@ server:
   port: 8082
 
 jwt:
-  secret: gym-crm-secret-key-1234567890XXABCD
+  secret: ${JWT_SECRET}
 
 logging:
   level:

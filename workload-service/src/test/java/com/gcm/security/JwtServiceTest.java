@@ -18,22 +18,24 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @TestPropertySource(properties = "jwt.secret=my-super-secret-key-which-is-long-enough-for-hmacsha")
 class JwtServiceTest {
 
-    @Autowired
-    private JwtService jwtService;
-
     private static final String TEST_USERNAME = "alice.smith";
+    private static final String TEST_SECRET = "my-super-secret-key-which-is-long-enough-for-hmacsha";
+    private static final String INVALID_TOKEN = "invalid.token.here";
+
+    @Autowired
+    private JwtService service;
 
     @Test
     void givenValidToken_whenIsTokenValid_thenReturnsTrue() {
         String token = Jwts.builder()
                 .setSubject(TEST_USERNAME)
                 .setExpiration(new Date(System.currentTimeMillis() + 60_000))
-                .signWith(Keys.hmacShaKeyFor("my-super-secret-key-which-is-long-enough-for-hmacsha".getBytes()))
+                .signWith(Keys.hmacShaKeyFor(TEST_SECRET.getBytes()))
                 .compact();
 
-        boolean valid = jwtService.isTokenValid(token);
+        boolean isActual = service.isTokenValid(token);
 
-        assertThat(valid).isTrue();
+        assertThat(isActual).isTrue();
     }
 
     @Test
@@ -41,10 +43,10 @@ class JwtServiceTest {
         String token = Jwts.builder()
                 .setSubject(TEST_USERNAME)
                 .setExpiration(new Date(System.currentTimeMillis() - 10_000))
-                .signWith(Keys.hmacShaKeyFor("my-super-secret-key-which-is-long-enough-for-hmacsha".getBytes()))
+                .signWith(Keys.hmacShaKeyFor(TEST_SECRET.getBytes()))
                 .compact();
 
-        boolean valid = jwtService.isTokenValid(token);
+        boolean valid = service.isTokenValid(token);
 
         assertThat(valid).isFalse();
     }
@@ -54,10 +56,10 @@ class JwtServiceTest {
         String token = Jwts.builder()
                 .setSubject(TEST_USERNAME)
                 .setExpiration(new Date(System.currentTimeMillis() + 60_000))
-                .signWith(Keys.hmacShaKeyFor("my-super-secret-key-which-is-long-enough-for-hmacsha".getBytes()))
+                .signWith(Keys.hmacShaKeyFor(TEST_SECRET.getBytes()))
                 .compact();
 
-        String username = jwtService.extractUsername(token);
+        String username = service.extractUsername(token);
 
         assertThat(username).isEqualTo(TEST_USERNAME);
     }
@@ -69,10 +71,10 @@ class JwtServiceTest {
                 .setSubject(TEST_USERNAME)
                 .claim("roles", roles)
                 .setExpiration(new Date(System.currentTimeMillis() + 60_000))
-                .signWith(Keys.hmacShaKeyFor("my-super-secret-key-which-is-long-enough-for-hmacsha".getBytes()))
+                .signWith(Keys.hmacShaKeyFor(TEST_SECRET.getBytes()))
                 .compact();
 
-        List<SimpleGrantedAuthority> authorities = jwtService.getAuthorities(token);
+        List<SimpleGrantedAuthority> authorities = service.getAuthorities(token);
 
         assertThat(authorities).hasSize(2);
         assertThat(authorities).extracting("authority")
@@ -80,11 +82,17 @@ class JwtServiceTest {
     }
 
     @Test
-    void givenInvalidToken_whenParse_thenThrowsException() {
-        String invalidToken = "invalid.token.here";
+    void givenInvalidToken_whenExtractUsername_thenThrowsException() {
+        assertThrows(Exception.class, () -> service.extractUsername(INVALID_TOKEN));
+    }
 
-        assertThrows(Exception.class, () -> jwtService.extractUsername(invalidToken));
-        assertThrows(Exception.class, () -> jwtService.getAuthorities(invalidToken));
-        assertThat(jwtService.isTokenValid(invalidToken)).isFalse();
+    @Test
+    void givenInvalidToken_whenGetAuthorities_thenThrowsException() {
+        assertThrows(Exception.class, () -> service.getAuthorities(INVALID_TOKEN));
+    }
+
+    @Test
+    void givenInvalidToken_whenIsTokenActual_thenReturnsFalse() {
+        assertThat(service.isTokenValid(INVALID_TOKEN)).isFalse();
     }
 }

@@ -1,4 +1,6 @@
 spring:
+  config:
+    import: optional:file:./gateway-service/.env[.properties]
   application:
     name: gateway-service
 
@@ -6,7 +8,7 @@ server:
   port: 8080
 
 jwt:
-  secret: gym-crm-secret-key-1234567890XXABCD
+  secret: ${JWT_SECRET}
 
 eureka:
   client:

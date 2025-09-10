@@ -30,21 +30,21 @@ public class JwtAuthFilter implements WebFilter {
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
         String token = extractToken(exchange);
 
-        if (token != null && jwtService.isTokenValid(token)) {
-            String username = jwtService.extractUsername(token);
-
-            List<SimpleGrantedAuthority> authorities = jwtService.getAuthorities(token);
-
-            UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(username, null, authorities);
-            SecurityContext context = new SecurityContextImpl(auth);
-
-            log.info("Authenticated user: {}", username);
-
-            return chain.filter(exchange)
-                    .contextWrite(ReactiveSecurityContextHolder.withSecurityContext(Mono.just(context)));
+        if (token == null || !jwtService.isTokenValid(token)) {
+            return chain.filter(exchange);
         }
 
-        return chain.filter(exchange);
+        String username = jwtService.extractUsername(token);
+        List<SimpleGrantedAuthority> authorities = jwtService.getAuthorities(token);
+
+        UsernamePasswordAuthenticationToken auth =
+                new UsernamePasswordAuthenticationToken(username, null, authorities);
+        SecurityContext context = new SecurityContextImpl(auth);
+
+        log.info("Authenticated user: {}", username);
+
+        return chain.filter(exchange)
+                .contextWrite(ReactiveSecurityContextHolder.withSecurityContext(Mono.just(context)));
     }
 
     private String extractToken(ServerWebExchange exchange) {

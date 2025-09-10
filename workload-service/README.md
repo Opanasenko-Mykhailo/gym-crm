@@ -1,10 +1,8 @@
-# Gateway Service
+# Workload-Service
 
-Spring Cloud Gateway service that serves as the unified entry point and traffic orchestrator for the microservices ecosystem.
+Spring Boot microservice that serves as a dedicated service for calculating and tracking trainers' monthly workload.
 
-Routes incoming requests to appropriate backend services, handles cross-cutting concerns, and provides a centralized layer for API management, security, and monitoring across all registered microservices.
-
-Includes Resilience4j Circuit Breaker to isolate failures, prevent cascading errors, and provide graceful fallbacks when downstream services are unavailable.
+Receives updates whenever a training session is added or canceled for a trainer, processes the data, and stores monthly summaries in an in-memory database. Handles requests to retrieve trainer workload and returns the calculated data to requesting services.
 
 ---
 
