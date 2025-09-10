@@ -9,8 +9,12 @@ spring:
   h2:
     console:
       enabled: true
+
 server:
   port: 8082
+
+jwt:
+  secret: gym-crm-secret-key-1234567890XXABCD
 
 logging:
   level:

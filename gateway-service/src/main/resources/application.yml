@@ -5,6 +5,9 @@ spring:
 server:
   port: 8080
 
+jwt:
+  secret: gym-crm-secret-key-1234567890XXABCD
+
 eureka:
   client:
     service-url:
