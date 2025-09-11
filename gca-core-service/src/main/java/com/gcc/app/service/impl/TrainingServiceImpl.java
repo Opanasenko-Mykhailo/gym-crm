@@ -61,6 +61,18 @@ public class TrainingServiceImpl implements TrainingService {
         return training;
     }
 
+    @Override
+    @Transactional
+    public void deleteById(Long id) {
+        log.info("Deleting Training by id: {}", id);
+
+        Training training = trainingRepository.findById(id)
+                .orElseThrow(() -> new ServiceException(String.format("Training not found with id: %d", id)));
+
+        trainingRepository.delete(training);
+        log.info("Deleted Training with id: {}", id);
+    }
+
     private Optional<Training> validateTrainingExists(Long id) {
         Optional<Training> training = trainingRepository.findById(id);
 

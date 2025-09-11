@@ -8,4 +8,6 @@ public interface TrainingService {
     Training createTraining(@Valid TrainingCreateRequestDto createRequestDto);
 
     Training getTraining(Long id);
+
+    void deleteById(Long id);
 }

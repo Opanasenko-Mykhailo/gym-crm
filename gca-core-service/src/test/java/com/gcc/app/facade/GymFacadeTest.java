@@ -335,6 +335,25 @@ class GymFacadeTest {
     }
 
     @Test
+    void deleteTrainingById_callsServiceAndProcessesWorkload() {
+        when(trainingService.getTraining(TRAINING_ID)).thenReturn(training);
+
+        facade.deleteTrainingById(TRAINING_ID);
+
+        verify(trainingService).getTraining(TRAINING_ID);
+        verify(trainingService).deleteById(TRAINING_ID);
+        verify(workloadServiceConnector).processTrainerWorkload(workloadCaptor.capture());
+
+        TrainerWorkloadRequestDto capturedWorkload = workloadCaptor.getValue();
+        assertEquals(TRAINER_USERNAME, capturedWorkload.getUsername());
+        assertEquals(TRAINER_FIRST_NAME, capturedWorkload.getFirstName());
+        assertEquals(TRAINER_LAST_NAME, capturedWorkload.getLastName());
+        assertEquals(TRAINING_DATE, capturedWorkload.getTrainingDate());
+        assertEquals(TRAINING_DURATION, capturedWorkload.getDurationInMinutes());
+        assertEquals(TrainerWorkloadRequestDto.ActionType.DELETE, capturedWorkload.getActionType());
+    }
+
+    @Test
     void getTraineeTrainings_callsServiceAndMapper_returnsListOfTraineeTrainingGetResponse() {
         TraineeTrainingSearchCriteriaDto criteria = new TraineeTrainingSearchCriteriaDto();
         List<Training> trainings = List.of(training);

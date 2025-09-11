@@ -162,16 +162,17 @@ public class GymFacade {
 
         Training training = trainingService.createTraining(createRequestDto);
 
-        TrainerWorkloadRequestDto workloadRequest = new TrainerWorkloadRequestDto();
-        workloadRequest.setUsername(training.getTrainer().getUser().getUsername());
-        workloadRequest.setFirstName(training.getTrainer().getUser().getFirstName());
-        workloadRequest.setLastName(training.getTrainer().getUser().getLastName());
-        workloadRequest.setTrainingDate(training.getDate());
-        workloadRequest.setActive(true);
-        workloadRequest.setDurationInMinutes(training.getDuration());
-        workloadRequest.setActionType(TrainerWorkloadRequestDto.ActionType.ADD);
+        workloadServiceConnector.processTrainerWorkload(buildWorkloadRequest(training, TrainerWorkloadRequestDto.ActionType.ADD));
+    }
 
-        workloadServiceConnector.processTrainerWorkload(workloadRequest);
+    public void deleteTrainingById(Long trainingId) {
+        log.info("Deleting training with id: {}", trainingId);
+        Training training = trainingService.getTraining(trainingId);
+
+        trainingService.deleteById(trainingId);
+        log.info("Deleted training with id: {}", trainingId);
+
+        workloadServiceConnector.processTrainerWorkload(buildWorkloadRequest(training, TrainerWorkloadRequestDto.ActionType.DELETE));
     }
 
     public TrainingResponseDto getTraining(Long id) {
@@ -241,5 +242,18 @@ public class GymFacade {
 
     public TrainerSummaryResponseDto getTrainerSummary(String username) {
         return workloadServiceConnector.getTrainerSummary(username);
+    }
+
+    private TrainerWorkloadRequestDto buildWorkloadRequest(Training training, TrainerWorkloadRequestDto.ActionType actionType) {
+        TrainerWorkloadRequestDto request = new TrainerWorkloadRequestDto();
+        request.setUsername(training.getTrainer().getUser().getUsername());
+        request.setFirstName(training.getTrainer().getUser().getFirstName());
+        request.setLastName(training.getTrainer().getUser().getLastName());
+        request.setTrainingDate(training.getDate());
+        request.setActive(true);
+        request.setDurationInMinutes(training.getDuration());
+        request.setActionType(actionType);
+
+        return request;
     }
 }
