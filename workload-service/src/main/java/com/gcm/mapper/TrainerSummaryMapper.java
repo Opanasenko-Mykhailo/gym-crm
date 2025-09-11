@@ -1,5 +1,6 @@
 package com.gcm.mapper;
 
+import com.gcm.app.rest.MonthlySummaryResponse;
 import com.gcm.app.rest.TrainerSummaryResponse;
 import com.gcm.app.rest.YearlySummaryResponse;
 import com.gcm.model.MonthlySummary;
@@ -23,7 +24,18 @@ public interface TrainerSummaryMapper {
                                 .orElse(List.of())
                                 .stream()
                                 .mapToInt(MonthlySummary::getTotalDurationMinutes)
-                                .sum()))
+                                .sum(),
+                        mapMonths(y.getMonths())
+                ))
+                .toList();
+    }
+
+    default List<MonthlySummaryResponse> mapMonths(List<MonthlySummary> months) {
+        return Optional.ofNullable(months).orElse(List.of()).stream()
+                .map(m -> new MonthlySummaryResponse(
+                        m.getMonthNumber(),
+                        m.getTotalDurationMinutes()
+                ))
                 .toList();
     }
 }
