@@ -194,7 +194,6 @@ class GymFacadeTest {
         assertEquals(TRAINING_DATE, captured.getTrainingDate());
         assertEquals(TRAINING_DURATION, captured.getDurationInMinutes());
         assertEquals(TrainerWorkloadRequestDto.ActionType.DELETE, captured.getActionType());
-
         verify(traineeService).deleteTraineeByUsername(TRAINEE_USERNAME);
     }
 

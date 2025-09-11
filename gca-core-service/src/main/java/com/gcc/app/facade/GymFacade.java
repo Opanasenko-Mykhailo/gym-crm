@@ -49,6 +49,7 @@ import com.gcc.app.service.UserService;
 import com.gcc.app.service.integration.workload.WorkloadServiceConnector;
 import com.gcc.app.service.integration.workload.dto.TrainerSummaryResponseDto;
 import com.gcc.app.service.integration.workload.dto.TrainerWorkloadRequestDto;
+import com.gcc.app.service.integration.workload.dto.TrainerWorkloadRequestDto.ActionType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -102,7 +103,7 @@ public class GymFacade {
 
         traineeService.getTraineeTrainings(criteria)
                 .forEach(training -> workloadServiceConnector.processTrainerWorkload(
-                        buildWorkloadRequest(training, TrainerWorkloadRequestDto.ActionType.DELETE)));
+                        buildWorkloadRequest(training, ActionType.DELETE)));
 
         traineeService.deleteTraineeByUsername(username);
     }
@@ -169,7 +170,7 @@ public class GymFacade {
 
         Training training = trainingService.createTraining(createRequestDto);
 
-        workloadServiceConnector.processTrainerWorkload(buildWorkloadRequest(training, TrainerWorkloadRequestDto.ActionType.ADD));
+        workloadServiceConnector.processTrainerWorkload(buildWorkloadRequest(training, ActionType.ADD));
     }
 
     public TrainingResponseDto getTraining(Long id) {
@@ -241,7 +242,7 @@ public class GymFacade {
         return workloadServiceConnector.getTrainerSummary(username);
     }
 
-    private TrainerWorkloadRequestDto buildWorkloadRequest(Training training, TrainerWorkloadRequestDto.ActionType actionType) {
+    private TrainerWorkloadRequestDto buildWorkloadRequest(Training training, ActionType actionType) {
         TrainerWorkloadRequestDto request = new TrainerWorkloadRequestDto();
         request.setUsername(training.getTrainer().getUser().getUsername());
         request.setFirstName(training.getTrainer().getUser().getFirstName());
