@@ -52,6 +52,7 @@ import com.gcc.app.service.UserService;
 import com.gcc.app.service.integration.workload.WorkloadServiceConnector;
 import com.gcc.app.service.integration.workload.dto.TrainerSummaryResponseDto;
 import com.gcc.app.service.integration.workload.dto.TrainerWorkloadRequestDto;
+import com.gcc.app.service.integration.workload.dto.TrainerWorkloadRequestDto.ActionType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -193,7 +194,7 @@ class GymFacadeTest {
         assertEquals(TRAINER_LAST_NAME, captured.getLastName());
         assertEquals(TRAINING_DATE, captured.getTrainingDate());
         assertEquals(TRAINING_DURATION, captured.getDurationInMinutes());
-        assertEquals(TrainerWorkloadRequestDto.ActionType.DELETE, captured.getActionType());
+        assertEquals(ActionType.DELETE, captured.getActionType());
         verify(traineeService).deleteTraineeByUsername(TRAINEE_USERNAME);
     }
 
