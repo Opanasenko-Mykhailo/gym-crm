@@ -49,6 +49,7 @@ import com.gcc.app.service.UserService;
 import com.gcc.app.service.integration.workload.WorkloadServiceConnector;
 import com.gcc.app.service.integration.workload.dto.TrainerSummaryResponseDto;
 import com.gcc.app.service.integration.workload.dto.TrainerWorkloadRequestDto;
+import com.gcc.app.service.integration.workload.dto.TrainerWorkloadRequestDto.ActionType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -96,6 +97,13 @@ public class GymFacade {
 
     public void deleteTraineeByUsername(String username) {
         log.info("Deleting trainee with username: {}", username);
+
+        TraineeTrainingSearchCriteriaDto criteria = new TraineeTrainingSearchCriteriaDto();
+        criteria.setUsername(username);
+
+        traineeService.getTraineeTrainings(criteria)
+                .forEach(training -> workloadServiceConnector.processTrainerWorkload(
+                        buildWorkloadRequest(training, ActionType.DELETE)));
 
         traineeService.deleteTraineeByUsername(username);
     }
@@ -162,16 +170,7 @@ public class GymFacade {
 
         Training training = trainingService.createTraining(createRequestDto);
 
-        TrainerWorkloadRequestDto workloadRequest = new TrainerWorkloadRequestDto();
-        workloadRequest.setUsername(training.getTrainer().getUser().getUsername());
-        workloadRequest.setFirstName(training.getTrainer().getUser().getFirstName());
-        workloadRequest.setLastName(training.getTrainer().getUser().getLastName());
-        workloadRequest.setTrainingDate(training.getDate());
-        workloadRequest.setActive(true);
-        workloadRequest.setDurationInMinutes(training.getDuration());
-        workloadRequest.setActionType(TrainerWorkloadRequestDto.ActionType.ADD);
-
-        workloadServiceConnector.processTrainerWorkload(workloadRequest);
+        workloadServiceConnector.processTrainerWorkload(buildWorkloadRequest(training, ActionType.ADD));
     }
 
     public TrainingResponseDto getTraining(Long id) {
@@ -241,5 +240,18 @@ public class GymFacade {
 
     public TrainerSummaryResponseDto getTrainerSummary(String username) {
         return workloadServiceConnector.getTrainerSummary(username);
+    }
+
+    private TrainerWorkloadRequestDto buildWorkloadRequest(Training training, ActionType actionType) {
+        TrainerWorkloadRequestDto request = new TrainerWorkloadRequestDto();
+        request.setUsername(training.getTrainer().getUser().getUsername());
+        request.setFirstName(training.getTrainer().getUser().getFirstName());
+        request.setLastName(training.getTrainer().getUser().getLastName());
+        request.setTrainingDate(training.getDate());
+        request.setActive(true);
+        request.setDurationInMinutes(training.getDuration());
+        request.setActionType(actionType);
+
+        return request;
     }
 }

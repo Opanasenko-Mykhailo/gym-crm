@@ -52,6 +52,7 @@ import com.gcc.app.service.UserService;
 import com.gcc.app.service.integration.workload.WorkloadServiceConnector;
 import com.gcc.app.service.integration.workload.dto.TrainerSummaryResponseDto;
 import com.gcc.app.service.integration.workload.dto.TrainerWorkloadRequestDto;
+import com.gcc.app.service.integration.workload.dto.TrainerWorkloadRequestDto.ActionType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -176,8 +177,24 @@ class GymFacadeTest {
     }
 
     @Test
-    void deleteTraineeByUsername_callsService() {
+    void givenTraineeWithTrainings_whenDeleteTraineeByUsername_thenProcessesWorkloadBeforeDeletingTrainee() {
+        TraineeTrainingSearchCriteriaDto criteria = new TraineeTrainingSearchCriteriaDto();
+        criteria.setUsername(TRAINEE_USERNAME);
+        List<Training> trainings = List.of(training);
+
+        when(traineeService.getTraineeTrainings(criteria)).thenReturn(trainings);
+
         facade.deleteTraineeByUsername(TRAINEE_USERNAME);
+
+        verify(workloadServiceConnector).processTrainerWorkload(workloadCaptor.capture());
+        TrainerWorkloadRequestDto captured = workloadCaptor.getValue();
+
+        assertEquals(TRAINER_USERNAME, captured.getUsername());
+        assertEquals(TRAINER_FIRST_NAME, captured.getFirstName());
+        assertEquals(TRAINER_LAST_NAME, captured.getLastName());
+        assertEquals(TRAINING_DATE, captured.getTrainingDate());
+        assertEquals(TRAINING_DURATION, captured.getDurationInMinutes());
+        assertEquals(ActionType.DELETE, captured.getActionType());
         verify(traineeService).deleteTraineeByUsername(TRAINEE_USERNAME);
     }
 
