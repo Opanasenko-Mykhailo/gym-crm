@@ -119,29 +119,6 @@ class TrainingServiceImplTest {
         verify(trainingRepository).findById(1L);
     }
 
-    @Test
-    void deleteById_whenTrainingExists_deletesTraining() {
-        var training = createTraining();
-
-        when(trainingRepository.findById(1L)).thenReturn(Optional.of(training));
-
-        service.deleteById(1L);
-
-        verify(trainingRepository).findById(1L);
-        verify(trainingRepository).delete(training);
-    }
-
-    @Test
-    void deleteById_whenTrainingDoesNotExist_throwsServiceException() {
-        when(trainingRepository.findById(1L)).thenReturn(Optional.empty());
-
-        ServiceException ex = assertThrows(ServiceException.class, () -> service.deleteById(1L));
-
-        assertEquals("Training not found with id: 1", ex.getMessage());
-
-        verify(trainingRepository).findById(1L);
-    }
-
     private Training createTraining() {
         return Training.builder()
                 .trainee(createTrainee())

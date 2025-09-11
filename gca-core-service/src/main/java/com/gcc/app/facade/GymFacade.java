@@ -97,6 +97,13 @@ public class GymFacade {
     public void deleteTraineeByUsername(String username) {
         log.info("Deleting trainee with username: {}", username);
 
+        TraineeTrainingSearchCriteriaDto criteria = new TraineeTrainingSearchCriteriaDto();
+        criteria.setUsername(username);
+
+        traineeService.getTraineeTrainings(criteria)
+                .forEach(training -> workloadServiceConnector.processTrainerWorkload(
+                        buildWorkloadRequest(training, TrainerWorkloadRequestDto.ActionType.DELETE)));
+
         traineeService.deleteTraineeByUsername(username);
     }
 
@@ -163,16 +170,6 @@ public class GymFacade {
         Training training = trainingService.createTraining(createRequestDto);
 
         workloadServiceConnector.processTrainerWorkload(buildWorkloadRequest(training, TrainerWorkloadRequestDto.ActionType.ADD));
-    }
-
-    public void deleteTrainingById(Long trainingId) {
-        log.info("Deleting training with id: {}", trainingId);
-        Training training = trainingService.getTraining(trainingId);
-
-        trainingService.deleteById(trainingId);
-        log.info("Deleted training with id: {}", trainingId);
-
-        workloadServiceConnector.processTrainerWorkload(buildWorkloadRequest(training, TrainerWorkloadRequestDto.ActionType.DELETE));
     }
 
     public TrainingResponseDto getTraining(Long id) {
