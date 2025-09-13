@@ -17,6 +17,12 @@ spring:
     username: gcs
     password: gcs
     driver-class-name: org.postgresql.Driver
+  activemq:
+    broker-url: tcp://localhost:61616
+    user: gca
+    password: gca
+    pool:
+      enabled: false
 
   jpa:
     open-in-view: true
@@ -87,3 +93,6 @@ resilience4j:
     instances:
       workload-service:
         baseConfig: default
+
+jms:
+  request-timeout-ms: 5000

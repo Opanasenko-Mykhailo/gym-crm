@@ -11,6 +11,12 @@ spring:
   h2:
     console:
       enabled: true
+  activemq:
+    broker-url: tcp://localhost:61616
+    user: gca
+    password: gca
+    pool:
+      enabled: false
 
 server:
   port: 8082
@@ -26,3 +32,6 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka/
+
+jms:
+  request-timeout-ms: 5000
