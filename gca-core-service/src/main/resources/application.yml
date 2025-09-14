@@ -77,6 +77,8 @@ eureka:
 workload:
   service:
     base-url: http://workload-service
+  queue:
+    name: trainer.workload.queue
 
 resilience4j:
   circuitbreaker:

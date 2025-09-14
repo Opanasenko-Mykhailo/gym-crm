@@ -137,6 +137,13 @@ public class ErrorHandler {
         return buildErrorResponse(ApiError.MICROSERVICE_UNAVAILABLE, ex.getMessage());
     }
 
+    @ExceptionHandler(JmsMessageException.class)
+    public ResponseEntity<ErrorResponse> handleJmsMessageException(JmsMessageException ex) {
+        log.error("JMS message error: {}", ex.getMessage(), ex);
+
+        return buildErrorResponse(ApiError.JMS_ERROR, ex.getMessage());
+    }
+
     private ResponseEntity<ErrorResponse> buildErrorResponse(ApiError apiError) {
         return buildErrorResponse(apiError, null);
     }

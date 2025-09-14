@@ -1,7 +1,6 @@
 package com.gcc.app.service.integration.workload;
 
 import com.gcc.app.exception.MicroserviceUnavailableException;
-import com.gcc.app.service.integration.workload.dto.TrainerWorkloadRequestDto;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.AfterAll;
@@ -50,17 +49,5 @@ class WorkloadServiceConnectorFallbackTest {
         assertThatThrownBy(() -> service.getTrainerSummary(TEST_USERNAME))
                 .isInstanceOf(MicroserviceUnavailableException.class)
                 .hasMessageContaining("Workload service is temporarily unavailable for retrieving trainer summary");
-    }
-
-    @Test
-    void givenWorkloadServiceReturns500_whenProcessTrainerWorkload_thenFallbackThrowsServiceUnavailable() {
-        mockWebServer.enqueue(new MockResponse().setResponseCode(500));
-
-        TrainerWorkloadRequestDto requestDto = new TrainerWorkloadRequestDto();
-        requestDto.setUsername(TEST_USERNAME);
-
-        assertThatThrownBy(() -> service.processTrainerWorkload(requestDto))
-                .isInstanceOf(MicroserviceUnavailableException.class)
-                .hasMessageContaining("Workload service is temporarily unavailable for processing trainer workload");
     }
 }

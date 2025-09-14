@@ -1,5 +1,6 @@
 package com.gcc.app.service.integration.workload;
 
+import com.gcc.app.exception.JmsMessageException;
 import com.gcc.app.exception.MicroserviceUnavailableException;
 import com.gcc.app.exception.UserNotAuthenticatedException;
 import com.gcc.app.service.integration.workload.dto.TrainerSummaryResponseDto;
@@ -9,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -23,26 +25,27 @@ public class WorkloadServiceConnector {
     private static final String TRANSACTION_ID_HEADER = "X-Transaction-Id";
 
     private final WebClient.Builder webClientBuilder;
+    private final JmsTemplate jmsTemplate;
 
     @Value("${workload.service.base-url}")
     private String baseUrl;
 
-    @CircuitBreaker(name = "workload-service", fallbackMethod = "processTrainerWorkloadFallback")
+    @Value("${workload.queue.name}")
+    private String workloadQueue;
+
     public void processTrainerWorkload(TrainerWorkloadRequestDto request) {
-        String token = getCurrentUserToken();
         String transactionId = getCurrentTransactionId();
+        log.info("Sending trainer workload request via JMS. payload={}", request);
 
-        log.info("Processing trainer workload for request: {}", request);
-
-        webClientBuilder.build()
-                .post()
-                .uri(baseUrl + "/api/workload")
-                .header("Authorization", "Bearer " + token)
-                .header(TRANSACTION_ID_HEADER, transactionId)
-                .bodyValue(request)
-                .retrieve()
-                .toBodilessEntity()
-                .block();
+        try {
+            jmsTemplate.convertAndSend(workloadQueue, request, message -> {
+                message.setStringProperty(TRANSACTION_ID_HEADER, transactionId);
+                return message;
+            });
+        } catch (Exception ex) {
+            throw new JmsMessageException(
+                    "Failed to send workload request to JMS queue", ex);
+        }
     }
 
     @CircuitBreaker(name = "workload-service", fallbackMethod = "getTrainerSummaryFallback")
@@ -74,11 +77,6 @@ public class WorkloadServiceConnector {
     private String getCurrentTransactionId() {
         String transactionId = MDC.get("transactionId");
         return transactionId != null ? transactionId : UUID.randomUUID().toString();
-    }
-
-    public void processTrainerWorkloadFallback(TrainerWorkloadRequestDto request, Exception ex) {
-        throw new MicroserviceUnavailableException(
-                "Workload service is temporarily unavailable for processing trainer workload", ex);
     }
 
     public TrainerSummaryResponseDto getTrainerSummaryFallback(String username, Exception ex) {
