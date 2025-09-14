@@ -16,17 +16,16 @@ import java.io.IOException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
-class WorkloadServiceConnectorFallbackTest {
+class TrainerSummaryClientFallbackTest {
 
     private static final String TEST_USERNAME = "alice.smith";
-
     private static MockWebServer mockWebServer;
 
     @Autowired
-    private WorkloadServiceConnector service;
+    private TrainerSummaryClient client;
 
     @BeforeAll
-    static void startServer() throws IOException {
+    static void setupServer() throws IOException {
         mockWebServer = new MockWebServer();
         mockWebServer.start();
     }
@@ -37,16 +36,16 @@ class WorkloadServiceConnectorFallbackTest {
     }
 
     @BeforeEach
-    void setBaseUrl() {
+    void init() {
         String mockBaseUrl = mockWebServer.url("/").toString();
-        ReflectionTestUtils.setField(service, "baseUrl", mockBaseUrl);
+        ReflectionTestUtils.setField(client, "baseUrl", mockBaseUrl);
     }
 
     @Test
-    void givenWorkloadServiceReturns500_whenGetTrainerSummary_thenFallbackThrowsServiceUnavailable() {
+    void getTrainerSummary_whenServiceReturns500_thenFallbackThrowsMicroserviceUnavailable() {
         mockWebServer.enqueue(new MockResponse().setResponseCode(500));
 
-        assertThatThrownBy(() -> service.getTrainerSummary(TEST_USERNAME))
+        assertThatThrownBy(() -> client.getTrainerSummary(TEST_USERNAME))
                 .isInstanceOf(MicroserviceUnavailableException.class)
                 .hasMessageContaining("Workload service is temporarily unavailable for retrieving trainer summary");
     }
