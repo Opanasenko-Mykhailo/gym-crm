@@ -51,8 +51,8 @@ public class TrainerSummaryClient {
 
     private String getCurrentUserToken() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.getCredentials() instanceof String) {
-            return (String) auth.getCredentials();
+        if (auth != null && auth.getCredentials() instanceof String token) {
+            return token;
         }
         throw new UserNotAuthenticatedException("No JWT token found for current user");
     }
