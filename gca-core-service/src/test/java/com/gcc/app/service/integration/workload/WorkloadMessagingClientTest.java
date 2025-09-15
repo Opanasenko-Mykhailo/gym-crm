@@ -26,7 +26,7 @@ import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-class TrainerWorkloadSenderTest {
+class WorkloadMessagingClientTest {
 
     @Mock
     private JmsTemplate jmsTemplate;
@@ -35,7 +35,7 @@ class TrainerWorkloadSenderTest {
     @Captor
     private ArgumentCaptor<MessagePostProcessor> postProcessorCaptor;
     @InjectMocks
-    private TrainerWorkloadSender sender;
+    private WorkloadMessagingClient sender;
 
     @BeforeEach
     void setUp() {

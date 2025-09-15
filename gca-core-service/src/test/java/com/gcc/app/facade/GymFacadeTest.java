@@ -49,7 +49,7 @@ import com.gcc.app.service.TrainerService;
 import com.gcc.app.service.TrainingService;
 import com.gcc.app.service.TrainingTypeService;
 import com.gcc.app.service.UserService;
-import com.gcc.app.service.integration.workload.WorkloadServiceConnector;
+import com.gcc.app.service.integration.workload.WorkloadClientFacade;
 import com.gcc.app.service.integration.workload.dto.TrainerSummaryResponseDto;
 import com.gcc.app.service.integration.workload.dto.TrainerWorkloadRequestDto;
 import com.gcc.app.service.integration.workload.dto.TrainerWorkloadRequestDto.ActionType;
@@ -127,7 +127,7 @@ class GymFacadeTest {
     @Mock
     private AuthService authService;
     @Mock
-    private WorkloadServiceConnector workloadServiceConnector;
+    private WorkloadClientFacade workloadClientFacade;
     @Mock
     private TraineeMapper traineeMapper;
     @Mock
@@ -186,7 +186,7 @@ class GymFacadeTest {
 
         facade.deleteTraineeByUsername(TRAINEE_USERNAME);
 
-        verify(workloadServiceConnector).processTrainerWorkload(workloadCaptor.capture());
+        verify(workloadClientFacade).notifyWorkloadService(workloadCaptor.capture());
         TrainerWorkloadRequestDto captured = workloadCaptor.getValue();
 
         assertEquals(TRAINER_USERNAME, captured.getUsername());
@@ -321,7 +321,7 @@ class GymFacadeTest {
 
         verify(trainingMapper).toTrainingCreateRequestDto(restRequest);
         verify(trainingService).createTraining(dto);
-        verify(workloadServiceConnector).processTrainerWorkload(workloadCaptor.capture());
+        verify(workloadClientFacade).notifyWorkloadService(workloadCaptor.capture());
 
         TrainerWorkloadRequestDto capturedWorkload = workloadCaptor.getValue();
         assertEquals(TRAINER_USERNAME, capturedWorkload.getUsername());
@@ -492,7 +492,7 @@ class GymFacadeTest {
         expectedSummary.setFirstName(TRAINER_FIRST_NAME);
         expectedSummary.setLastName(TRAINER_LAST_NAME);
 
-        when(workloadServiceConnector.getTrainerSummary(TRAINER_USERNAME)).thenReturn(expectedSummary);
+        when(workloadClientFacade.getTrainerSummary(TRAINER_USERNAME)).thenReturn(expectedSummary);
 
         TrainerSummaryResponseDto actual = facade.getTrainerSummary(TRAINER_USERNAME);
 
@@ -500,7 +500,7 @@ class GymFacadeTest {
         assertEquals(expectedSummary.getFirstName(), actual.getFirstName());
         assertEquals(expectedSummary.getLastName(), actual.getLastName());
 
-        verify(workloadServiceConnector).getTrainerSummary(TRAINER_USERNAME);
+        verify(workloadClientFacade).getTrainerSummary(TRAINER_USERNAME);
     }
 
     private Trainee createTrainee() {

@@ -16,13 +16,13 @@ import java.io.IOException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
-class TrainerSummaryClientFallbackTest {
+class WorkloadSummaryClientFallbackTest {
 
     private static final String TEST_USERNAME = "alice.smith";
     private static MockWebServer mockWebServer;
 
     @Autowired
-    private TrainerSummaryClient client;
+    private WorkloadSummaryClient client;
 
     @BeforeAll
     static void setupServer() throws IOException {

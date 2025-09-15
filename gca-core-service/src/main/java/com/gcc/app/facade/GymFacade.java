@@ -46,7 +46,7 @@ import com.gcc.app.service.TrainerService;
 import com.gcc.app.service.TrainingService;
 import com.gcc.app.service.TrainingTypeService;
 import com.gcc.app.service.UserService;
-import com.gcc.app.service.integration.workload.WorkloadServiceConnector;
+import com.gcc.app.service.integration.workload.WorkloadClientFacade;
 import com.gcc.app.service.integration.workload.dto.TrainerSummaryResponseDto;
 import com.gcc.app.service.integration.workload.dto.TrainerWorkloadRequestDto;
 import com.gcc.app.service.integration.workload.dto.TrainerWorkloadRequestDto.ActionType;
@@ -67,7 +67,7 @@ public class GymFacade {
     private final TrainingTypeService trainingTypeService;
     private final UserService userService;
     private final AuthService authService;
-    private final WorkloadServiceConnector workloadServiceConnector;
+    private final WorkloadClientFacade workloadClientFacade;
     private final TraineeMapper traineeMapper;
     private final TrainerMapper trainerMapper;
     private final TrainingMapper trainingMapper;
@@ -102,7 +102,7 @@ public class GymFacade {
         criteria.setUsername(username);
 
         traineeService.getTraineeTrainings(criteria)
-                .forEach(training -> workloadServiceConnector.processTrainerWorkload(
+                .forEach(training -> workloadClientFacade.notifyWorkloadService(
                         buildWorkloadRequest(training, ActionType.DELETE)));
 
         traineeService.deleteTraineeByUsername(username);
@@ -170,7 +170,7 @@ public class GymFacade {
 
         Training training = trainingService.createTraining(createRequestDto);
 
-        workloadServiceConnector.processTrainerWorkload(buildWorkloadRequest(training, ActionType.ADD));
+        workloadClientFacade.notifyWorkloadService(buildWorkloadRequest(training, ActionType.ADD));
     }
 
     public TrainingResponseDto getTraining(Long id) {
@@ -239,7 +239,7 @@ public class GymFacade {
     }
 
     public TrainerSummaryResponseDto getTrainerSummary(String username) {
-        return workloadServiceConnector.getTrainerSummary(username);
+        return workloadClientFacade.getTrainerSummary(username);
     }
 
     private TrainerWorkloadRequestDto buildWorkloadRequest(Training training, ActionType actionType) {

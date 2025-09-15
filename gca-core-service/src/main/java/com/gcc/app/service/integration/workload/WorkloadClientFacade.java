@@ -9,13 +9,13 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class WorkloadServiceConnector {
+public class WorkloadClientFacade {
 
-    private final TrainerWorkloadSender workloadSender;
-    private final TrainerSummaryClient summaryClient;
+    private final WorkloadMessagingClient messagingClient;
+    private final WorkloadSummaryClient summaryClient;
 
-    public void processTrainerWorkload(TrainerWorkloadRequestDto request) {
-        workloadSender.sendTrainerWorkload(request);
+    public void notifyWorkloadService(TrainerWorkloadRequestDto request) {
+        messagingClient.sendTrainerWorkload(request);
     }
 
     public TrainerSummaryResponseDto getTrainerSummary(String username) {

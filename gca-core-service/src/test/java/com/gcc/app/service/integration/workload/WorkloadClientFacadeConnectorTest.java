@@ -10,22 +10,22 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class WorkloadServiceConnectorTest {
+class WorkloadClientFacadeConnectorTest {
 
     @Mock
-    private TrainerWorkloadSender workloadSender;
+    private WorkloadMessagingClient messagingClient;
     @Mock
-    private TrainerSummaryClient summaryClient;
+    private WorkloadSummaryClient summaryClient;
     @InjectMocks
-    private WorkloadServiceConnector connector;
+    private WorkloadClientFacade connector;
 
     @Test
     void processTrainerWorkload_delegatesToSender() {
         TrainerWorkloadRequestDto request = TrainerWorkloadRequestDto.builder().build();
 
-        connector.processTrainerWorkload(request);
+        connector.notifyWorkloadService(request);
 
-        verify(workloadSender).sendTrainerWorkload(request);
+        verify(messagingClient).sendTrainerWorkload(request);
     }
 
     @Test

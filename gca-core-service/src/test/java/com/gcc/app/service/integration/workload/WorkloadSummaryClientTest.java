@@ -17,10 +17,10 @@ import org.springframework.web.reactive.function.client.WebClient;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class TrainerSummaryClientTest {
+class WorkloadSummaryClientTest {
 
     private static MockWebServer mockWebServer;
-    private TrainerSummaryClient client;
+    private WorkloadSummaryClient client;
 
     @BeforeAll
     static void setupServer() throws Exception {
@@ -36,7 +36,7 @@ class TrainerSummaryClientTest {
     @BeforeEach
     void setUp() {
         WebClient.Builder builder = WebClient.builder();
-        client = new TrainerSummaryClient(builder);
+        client = new WorkloadSummaryClient(builder);
         ReflectionTestUtils.setField(client, "baseUrl", mockWebServer.url("/").toString());
         SecurityContextHolder.clearContext();
     }

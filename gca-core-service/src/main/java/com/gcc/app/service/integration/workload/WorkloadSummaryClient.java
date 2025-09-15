@@ -18,7 +18,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class TrainerSummaryClient {
+public class WorkloadSummaryClient {
 
     private static final String TRANSACTION_ID_HEADER = "X-Transaction-Id";
 

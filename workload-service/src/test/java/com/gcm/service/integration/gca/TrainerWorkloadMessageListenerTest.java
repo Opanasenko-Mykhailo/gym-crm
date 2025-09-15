@@ -23,7 +23,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class WorkloadConsumerServiceTest {
+class TrainerWorkloadMessageListenerTest {
 
     @Mock
     private WorkloadService workloadService;
@@ -38,7 +38,7 @@ class WorkloadConsumerServiceTest {
     private ArgumentCaptor<TrainerWorkloadRequest> requestCaptor;
 
     @InjectMocks
-    private WorkloadConsumerService service;
+    private TrainerWorkloadMessageListener listener;
 
     @Test
     void receiveTrainerWorkload_processesRequestSuccessfully() throws JMSException {
@@ -50,7 +50,7 @@ class WorkloadConsumerServiceTest {
         when(workloadMapper.toRestModel(dto)).thenReturn(restModel);
         when(jmsMessage.getStringProperty("X-Transaction-Id")).thenReturn("txn-123");
 
-        service.receiveTrainerWorkload(dto, jmsMessage);
+        listener.onMessage(dto, jmsMessage);
 
         verify(workloadMapper).toRestModel(dto);
         verify(workloadService).processTrainerWorkload(requestCaptor.capture());
@@ -68,7 +68,7 @@ class WorkloadConsumerServiceTest {
         doThrow(new RuntimeException("Processing failed")).when(workloadService).processTrainerWorkload(restModel);
 
         RuntimeException ex = assertThrows(RuntimeException.class,
-                () -> service.receiveTrainerWorkload(dto, jmsMessage));
+                () -> listener.onMessage(dto, jmsMessage));
 
         assertEquals("Processing failed", ex.getMessage());
         assertNull(MDC.get("transactionId"), "MDC should be cleared after exception");
