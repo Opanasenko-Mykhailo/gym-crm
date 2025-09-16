@@ -1,6 +1,6 @@
-package com.gcc.app.service.integration.workload;
+package com.gcc.app.integration.workload;
 
-import com.gcc.app.service.integration.workload.dto.TrainerWorkloadRequestDto;
+import com.gcc.app.integration.workload.dto.TrainerWorkloadRequestDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -10,30 +10,30 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class WorkloadClientFacadeConnectorTest {
+class WorkloadServiceTest {
 
     @Mock
-    private WorkloadMessagingClient messagingClient;
+    private WorkloadMessageSender messageSender;
     @Mock
-    private WorkloadSummaryClient summaryClient;
+    private WorkloadHttpClient httpClient;
     @InjectMocks
-    private WorkloadClientFacade connector;
+    private WorkloadService service;
 
     @Test
     void processTrainerWorkload_delegatesToSender() {
         TrainerWorkloadRequestDto request = TrainerWorkloadRequestDto.builder().build();
 
-        connector.notifyWorkloadService(request);
+        service.notifyWorkloadChange(request);
 
-        verify(messagingClient).sendTrainerWorkload(request);
+        verify(messageSender).sendTrainerWorkload(request);
     }
 
     @Test
     void getTrainerSummary_delegatesToClient() {
         String username = "alice.smith";
 
-        connector.getTrainerSummary(username);
+        service.getTrainerSummary(username);
 
-        verify(summaryClient).getTrainerSummary(username);
+        verify(httpClient).getTrainerSummary(username);
     }
 }

@@ -1,4 +1,4 @@
-package com.gcm.service.integration.gca;
+package com.gcm.integration.gca;
 
 import com.gcm.mapper.TrainerWorkloadMapper;
 import com.gcm.service.WorkloadService;

@@ -1,4 +1,4 @@
-package com.gcc.app.service.integration.workload;
+package com.gcc.app.integration.workload;
 
 import com.gcc.app.exception.MicroserviceUnavailableException;
 import okhttp3.mockwebserver.MockResponse;
@@ -16,13 +16,13 @@ import java.io.IOException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
-class WorkloadSummaryClientFallbackTest {
+class WorkloadHttpClientFallbackTest {
 
     private static final String TEST_USERNAME = "alice.smith";
     private static MockWebServer mockWebServer;
 
     @Autowired
-    private WorkloadSummaryClient client;
+    private WorkloadHttpClient client;
 
     @BeforeAll
     static void setupServer() throws IOException {

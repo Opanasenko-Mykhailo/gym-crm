@@ -1,7 +1,7 @@
-package com.gcc.app.service.integration.workload;
+package com.gcc.app.integration.workload;
 
 import com.gcc.app.exception.UserNotAuthenticatedException;
-import com.gcc.app.service.integration.workload.dto.TrainerSummaryResponseDto;
+import com.gcc.app.integration.workload.dto.TrainerSummaryResponseDto;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
@@ -17,10 +17,10 @@ import org.springframework.web.reactive.function.client.WebClient;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class WorkloadSummaryClientTest {
+class WorkloadHttpClientTest {
 
     private static MockWebServer mockWebServer;
-    private WorkloadSummaryClient client;
+    private WorkloadHttpClient client;
 
     @BeforeAll
     static void setupServer() throws Exception {
@@ -36,7 +36,7 @@ class WorkloadSummaryClientTest {
     @BeforeEach
     void setUp() {
         WebClient.Builder builder = WebClient.builder();
-        client = new WorkloadSummaryClient(builder);
+        client = new WorkloadHttpClient(builder);
         ReflectionTestUtils.setField(client, "baseUrl", mockWebServer.url("/").toString());
         SecurityContextHolder.clearContext();
     }

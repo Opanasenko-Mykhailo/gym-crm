@@ -6,11 +6,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.annotation.EnableJms;
+import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.connection.CachingConnectionFactory;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.support.converter.MappingJackson2MessageConverter;
 import org.springframework.jms.support.converter.MessageType;
-import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +27,7 @@ public class JmsConfig {
         converter.setObjectMapper(objectMapper);
 
         Map<String, Class<?>> typeIdMappings = new HashMap<>();
-        typeIdMappings.put("com.gcc.app.service.integration.workload.dto.TrainerWorkloadRequestDto", TrainerWorkloadRequestDto.class);
+        typeIdMappings.put("com.gcc.app.integration.workload.dto.TrainerWorkloadRequestDto", TrainerWorkloadRequestDto.class);
         converter.setTypeIdMappings(typeIdMappings);
 
         return converter;
@@ -36,7 +36,7 @@ public class JmsConfig {
     @Bean
     public JmsTemplate jmsTemplate(CachingConnectionFactory connectionFactory,
                                    MappingJackson2MessageConverter converter,
-            @Value("${jms.request-timeout-ms:5000}") long receiveTimeout) {
+                                   @Value("${jms.request-timeout-ms:5000}") long receiveTimeout) {
         JmsTemplate template = new JmsTemplate(connectionFactory);
         template.setMessageConverter(converter);
         template.setReceiveTimeout(receiveTimeout);

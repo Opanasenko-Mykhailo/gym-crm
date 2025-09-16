@@ -1,7 +1,7 @@
-package com.gcc.app.service.integration.workload;
+package com.gcc.app.integration.workload;
 
 import com.gcc.app.exception.JmsMessageException;
-import com.gcc.app.service.integration.workload.dto.TrainerWorkloadRequestDto;
+import com.gcc.app.integration.workload.dto.TrainerWorkloadRequestDto;
 import jakarta.jms.JMSException;
 import jakarta.jms.Message;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class WorkloadMessagingClient {
+public class WorkloadMessageSender {
 
     private static final String TRANSACTION_ID_HEADER = "X-Transaction-Id";
 

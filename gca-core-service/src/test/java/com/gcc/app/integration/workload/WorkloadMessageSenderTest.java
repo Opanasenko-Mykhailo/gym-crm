@@ -1,7 +1,7 @@
-package com.gcc.app.service.integration.workload;
+package com.gcc.app.integration.workload;
 
 import com.gcc.app.exception.JmsMessageException;
-import com.gcc.app.service.integration.workload.dto.TrainerWorkloadRequestDto;
+import com.gcc.app.integration.workload.dto.TrainerWorkloadRequestDto;
 import jakarta.jms.Message;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,7 +26,7 @@ import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-class WorkloadMessagingClientTest {
+class WorkloadMessageSenderTest {
 
     @Mock
     private JmsTemplate jmsTemplate;
@@ -35,7 +35,7 @@ class WorkloadMessagingClientTest {
     @Captor
     private ArgumentCaptor<MessagePostProcessor> postProcessorCaptor;
     @InjectMocks
-    private WorkloadMessagingClient sender;
+    private WorkloadMessageSender sender;
 
     @BeforeEach
     void setUp() {

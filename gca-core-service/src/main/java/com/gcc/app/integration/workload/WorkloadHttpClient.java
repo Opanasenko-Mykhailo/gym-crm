@@ -1,8 +1,8 @@
-package com.gcc.app.service.integration.workload;
+package com.gcc.app.integration.workload;
 
 import com.gcc.app.exception.MicroserviceUnavailableException;
 import com.gcc.app.exception.UserNotAuthenticatedException;
-import com.gcc.app.service.integration.workload.dto.TrainerSummaryResponseDto;
+import com.gcc.app.integration.workload.dto.TrainerSummaryResponseDto;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +18,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class WorkloadSummaryClient {
+public class WorkloadHttpClient {
 
     private static final String TRANSACTION_ID_HEADER = "X-Transaction-Id";
 
@@ -34,32 +34,32 @@ public class WorkloadSummaryClient {
 
         log.info("Fetching trainer summary for username: {}", username);
 
-        try {
-            return webClientBuilder.build()
-                    .get()
-                    .uri(baseUrl + "/api/workload/{username}", username)
-                    .header("Authorization", "Bearer " + token)
-                    .header(TRANSACTION_ID_HEADER, transactionId)
-                    .retrieve()
-                    .bodyToMono(TrainerSummaryResponseDto.class)
-                    .block();
-        } catch (Exception ex) {
-            throw new MicroserviceUnavailableException(
-                    "Workload service temporarily unavailable for trainer summary", ex);
-        }
+        return webClientBuilder.build()
+                .get()
+                .uri(baseUrl + "/api/workload/{username}", username)
+                .header("Authorization", "Bearer " + token)
+                .header(TRANSACTION_ID_HEADER, transactionId)
+                .retrieve()
+                .bodyToMono(TrainerSummaryResponseDto.class)
+                .block();
     }
 
     private String getCurrentUserToken() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
         if (auth != null && auth.getCredentials() instanceof String token) {
             return token;
         }
+
         throw new UserNotAuthenticatedException("No JWT token found for current user");
     }
 
     private String getCurrentTransactionId() {
         String transactionId = MDC.get("transactionId");
-        return transactionId != null ? transactionId : UUID.randomUUID().toString();
+
+        return transactionId != null
+                ? transactionId
+                : UUID.randomUUID().toString();
     }
 
     public TrainerSummaryResponseDto getTrainerSummaryFallback(String username, Exception ex) {
