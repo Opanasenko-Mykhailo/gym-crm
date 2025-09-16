@@ -16,6 +16,7 @@ public class WorkloadService {
 
     public void notifyWorkloadChange(TrainerWorkloadRequestDto request) {
         log.info("Notifying workload service about trainer workload change: {}", request);
+
         messageSender.sendTrainerWorkload(request);
     }
 

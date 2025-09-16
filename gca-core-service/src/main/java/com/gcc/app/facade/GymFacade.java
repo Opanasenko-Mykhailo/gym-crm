@@ -100,8 +100,8 @@ public class GymFacade {
 
     public void deleteTraineeByUsername(String username) {
         log.info("Deleting trainee with username: {}", username);
-
         traineeService.deleteTraineeByUsername(username);
+
         notifyOnWorkloadRemoval(username);
     }
 
@@ -158,6 +158,7 @@ public class GymFacade {
     public TrainerGetResponse getTrainerByUsername(String username) {
         log.info("Retrieving trainer by username: {}", username);
         Trainer trainer = trainerService.getByUsername(username);
+
         return trainerMapper.toRestModel(trainer);
     }
 
@@ -236,6 +237,8 @@ public class GymFacade {
     }
 
     public TrainerSummaryResponseDto getTrainerSummary(String username) {
+        log.info("Retrieving trainer summary for username: {}", username);
+
         return workloadService.getTrainerSummary(username);
     }
 

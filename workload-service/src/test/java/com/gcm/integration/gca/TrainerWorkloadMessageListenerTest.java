@@ -44,7 +44,7 @@ class TrainerWorkloadMessageListenerTest {
     void receiveTrainerWorkload_processesRequestSuccessfully() throws JMSException {
         TrainerWorkloadRequestDto dto = new TrainerWorkloadRequestDto();
         dto.setUsername("trainer.jane");
-        com.gcm.app.rest.TrainerWorkloadRequest restModel = new com.gcm.app.rest.TrainerWorkloadRequest();
+        TrainerWorkloadRequest restModel = new TrainerWorkloadRequest();
         restModel.setUsername("trainer.jane");
 
         when(workloadMapper.toRestModel(dto)).thenReturn(restModel);
