@@ -101,8 +101,8 @@ public class GymFacade {
     public void deleteTraineeByUsername(String username) {
         log.info("Deleting trainee with username: {}", username);
 
-        notifyOnWorkloadRemoval(username);
         traineeService.deleteTraineeByUsername(username);
+        notifyOnWorkloadRemoval(username);
     }
 
     public TraineeGetResponse getTraineeByUsername(String username) {
