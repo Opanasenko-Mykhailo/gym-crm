@@ -19,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class WorkloadHttpClientFallbackTest {
 
     private static final String TEST_USERNAME = "alice.smith";
+
     private static MockWebServer mockWebServer;
 
     @Autowired

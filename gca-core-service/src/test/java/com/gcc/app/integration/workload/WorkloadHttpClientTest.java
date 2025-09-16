@@ -20,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class WorkloadHttpClientTest {
 
     private static MockWebServer mockWebServer;
+
     private WorkloadHttpClient client;
 
     @BeforeAll

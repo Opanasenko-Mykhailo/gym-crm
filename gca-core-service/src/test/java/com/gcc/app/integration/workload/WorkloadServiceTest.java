@@ -14,8 +14,10 @@ class WorkloadServiceTest {
 
     @Mock
     private WorkloadMessageSender messageSender;
+
     @Mock
     private WorkloadHttpClient httpClient;
+
     @InjectMocks
     private WorkloadService service;
 

@@ -30,10 +30,13 @@ class WorkloadMessageSenderTest {
 
     @Mock
     private JmsTemplate jmsTemplate;
+
     @Captor
     private ArgumentCaptor<TrainerWorkloadRequestDto> requestCaptor;
+
     @Captor
     private ArgumentCaptor<MessagePostProcessor> postProcessorCaptor;
+
     @InjectMocks
     private WorkloadMessageSender sender;
 
