@@ -14,6 +14,9 @@ import com.gcc.app.facade.dto.TrainerUpdateRequestDto;
 import com.gcc.app.facade.dto.TrainingCreateRequestDto;
 import com.gcc.app.facade.dto.TrainingResponseDto;
 import com.gcc.app.facade.dto.TrainingTypeResponseDto;
+import com.gcc.app.integration.workload.WorkloadService;
+import com.gcc.app.integration.workload.dto.TrainerSummaryResponseDto;
+import com.gcc.app.integration.workload.dto.TrainerWorkloadRequestDto;
 import com.gcc.app.mapper.TraineeMapper;
 import com.gcc.app.mapper.TrainerMapper;
 import com.gcc.app.mapper.TrainingMapper;
@@ -49,10 +52,6 @@ import com.gcc.app.service.TrainerService;
 import com.gcc.app.service.TrainingService;
 import com.gcc.app.service.TrainingTypeService;
 import com.gcc.app.service.UserService;
-import com.gcc.app.service.integration.workload.WorkloadServiceConnector;
-import com.gcc.app.service.integration.workload.dto.TrainerSummaryResponseDto;
-import com.gcc.app.service.integration.workload.dto.TrainerWorkloadRequestDto;
-import com.gcc.app.service.integration.workload.dto.TrainerWorkloadRequestDto.ActionType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -64,6 +63,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDate;
 import java.util.List;
 
+import static com.gcc.app.integration.workload.dto.TrainerWorkloadRequestDto.ActionType.ADD;
+import static com.gcc.app.integration.workload.dto.TrainerWorkloadRequestDto.ActionType.DELETE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
@@ -127,7 +128,7 @@ class GymFacadeTest {
     @Mock
     private AuthService authService;
     @Mock
-    private WorkloadServiceConnector workloadServiceConnector;
+    private WorkloadService workloadService;
     @Mock
     private TraineeMapper traineeMapper;
     @Mock
@@ -186,7 +187,7 @@ class GymFacadeTest {
 
         facade.deleteTraineeByUsername(TRAINEE_USERNAME);
 
-        verify(workloadServiceConnector).processTrainerWorkload(workloadCaptor.capture());
+        verify(workloadService).notifyWorkloadChange(workloadCaptor.capture());
         TrainerWorkloadRequestDto captured = workloadCaptor.getValue();
 
         assertEquals(TRAINER_USERNAME, captured.getUsername());
@@ -194,7 +195,7 @@ class GymFacadeTest {
         assertEquals(TRAINER_LAST_NAME, captured.getLastName());
         assertEquals(TRAINING_DATE, captured.getTrainingDate());
         assertEquals(TRAINING_DURATION, captured.getDurationInMinutes());
-        assertEquals(ActionType.DELETE, captured.getActionType());
+        assertEquals(DELETE, captured.getActionType());
         verify(traineeService).deleteTraineeByUsername(TRAINEE_USERNAME);
     }
 
@@ -321,7 +322,7 @@ class GymFacadeTest {
 
         verify(trainingMapper).toTrainingCreateRequestDto(restRequest);
         verify(trainingService).createTraining(dto);
-        verify(workloadServiceConnector).processTrainerWorkload(workloadCaptor.capture());
+        verify(workloadService).notifyWorkloadChange(workloadCaptor.capture());
 
         TrainerWorkloadRequestDto capturedWorkload = workloadCaptor.getValue();
         assertEquals(TRAINER_USERNAME, capturedWorkload.getUsername());
@@ -329,7 +330,7 @@ class GymFacadeTest {
         assertEquals(TRAINER_LAST_NAME, capturedWorkload.getLastName());
         assertEquals(TRAINING_DATE, capturedWorkload.getTrainingDate());
         assertEquals(TRAINING_DURATION, capturedWorkload.getDurationInMinutes());
-        assertEquals(TrainerWorkloadRequestDto.ActionType.ADD, capturedWorkload.getActionType());
+        assertEquals(ADD, capturedWorkload.getActionType());
     }
 
     @Test
@@ -492,7 +493,7 @@ class GymFacadeTest {
         expectedSummary.setFirstName(TRAINER_FIRST_NAME);
         expectedSummary.setLastName(TRAINER_LAST_NAME);
 
-        when(workloadServiceConnector.getTrainerSummary(TRAINER_USERNAME)).thenReturn(expectedSummary);
+        when(workloadService.getTrainerSummary(TRAINER_USERNAME)).thenReturn(expectedSummary);
 
         TrainerSummaryResponseDto actual = facade.getTrainerSummary(TRAINER_USERNAME);
 
@@ -500,7 +501,7 @@ class GymFacadeTest {
         assertEquals(expectedSummary.getFirstName(), actual.getFirstName());
         assertEquals(expectedSummary.getLastName(), actual.getLastName());
 
-        verify(workloadServiceConnector).getTrainerSummary(TRAINER_USERNAME);
+        verify(workloadService).getTrainerSummary(TRAINER_USERNAME);
     }
 
     private Trainee createTrainee() {
@@ -615,6 +616,7 @@ class GymFacadeTest {
         dto.setType(createTrainingType());
         dto.setDate(TRAINING_DATE);
         dto.setDuration(TRAINING_DURATION);
+
         return dto;
     }
 

@@ -1,9 +1,8 @@
-package com.gcc.app.service.integration.workload;
+package com.gcc.app.integration.workload;
 
 import com.gcc.app.exception.MicroserviceUnavailableException;
 import com.gcc.app.exception.UserNotAuthenticatedException;
-import com.gcc.app.service.integration.workload.dto.TrainerSummaryResponseDto;
-import com.gcc.app.service.integration.workload.dto.TrainerWorkloadRequestDto;
+import com.gcc.app.integration.workload.dto.TrainerSummaryResponseDto;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +18,8 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class WorkloadServiceConnector {
+public class WorkloadHttpClient {
+
     private static final String TRANSACTION_ID_HEADER = "X-Transaction-Id";
 
     private final WebClient.Builder webClientBuilder;
@@ -27,30 +27,12 @@ public class WorkloadServiceConnector {
     @Value("${workload.service.base-url}")
     private String baseUrl;
 
-    @CircuitBreaker(name = "workload-service", fallbackMethod = "processTrainerWorkloadFallback")
-    public void processTrainerWorkload(TrainerWorkloadRequestDto request) {
-        String token = getCurrentUserToken();
-        String transactionId = getCurrentTransactionId();
-
-        log.info("Processing trainer workload for request: {}", request);
-
-        webClientBuilder.build()
-                .post()
-                .uri(baseUrl + "/api/workload")
-                .header("Authorization", "Bearer " + token)
-                .header(TRANSACTION_ID_HEADER, transactionId)
-                .bodyValue(request)
-                .retrieve()
-                .toBodilessEntity()
-                .block();
-    }
-
     @CircuitBreaker(name = "workload-service", fallbackMethod = "getTrainerSummaryFallback")
     public TrainerSummaryResponseDto getTrainerSummary(String username) {
         String token = getCurrentUserToken();
         String transactionId = getCurrentTransactionId();
 
-        log.info("Getting trainer summary for username: {}", username);
+        log.info("Fetching trainer summary for username: {}", username);
 
         return webClientBuilder.build()
                 .get()
@@ -65,20 +47,19 @@ public class WorkloadServiceConnector {
     private String getCurrentUserToken() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        if (auth != null && auth.getCredentials() instanceof String) {
-            return (String) auth.getCredentials();
+        if (auth != null && auth.getCredentials() instanceof String token) {
+            return token;
         }
+
         throw new UserNotAuthenticatedException("No JWT token found for current user");
     }
 
     private String getCurrentTransactionId() {
         String transactionId = MDC.get("transactionId");
-        return transactionId != null ? transactionId : UUID.randomUUID().toString();
-    }
 
-    public void processTrainerWorkloadFallback(TrainerWorkloadRequestDto request, Exception ex) {
-        throw new MicroserviceUnavailableException(
-                "Workload service is temporarily unavailable for processing trainer workload", ex);
+        return transactionId != null
+                ? transactionId
+                : UUID.randomUUID().toString();
     }
 
     public TrainerSummaryResponseDto getTrainerSummaryFallback(String username, Exception ex) {

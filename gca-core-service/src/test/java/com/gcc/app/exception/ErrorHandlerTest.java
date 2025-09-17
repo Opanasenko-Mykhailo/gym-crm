@@ -57,9 +57,10 @@ class ErrorHandlerTest {
     private static final String TYPE_MISMATCH_MSG = "Failed to convert value 'abc' to required type 'java.time.LocalDate'";
     private static final String REFRESH_TOKEN_ERROR_MSG = "Refresh token is invalid or expired";
     private static final String INVALID_CREDENTIALS_MSG = "Invalid username or password";
-    private static final String BRUTE_FORCE_BLOCKED_MSG =  "Too many failed login attempts, try again later";
+    private static final String BRUTE_FORCE_BLOCKED_MSG = "Too many failed login attempts, try again later";
     private static final String ACCESS_DENIED_MSG = "Access denied: insufficient permissions";
     private static final String MICROSERVICE_UNAVAILABLE_MSG = "External service is temporarily unavailable: Workload service is temporarily unavailable for processing trainer workload";
+    private static final String JMS_ERROR_MSG = "Failed to send JMS message for trainer workload";
 
     @InjectMocks
     private ErrorHandler errorHandler;
@@ -256,6 +257,18 @@ class ErrorHandlerTest {
         assertEquals(ApiError.MICROSERVICE_UNAVAILABLE.getHttpStatus(), result.getStatusCode());
         assertEquals(ApiError.MICROSERVICE_UNAVAILABLE.getCode(), result.getBody().getErrorCode());
         assertTrue(result.getBody().getErrorMessage().contains(MICROSERVICE_UNAVAILABLE_MSG));
+    }
+
+    @Test
+    void handleJmsMessageException_whenThrown_returnsJmsError() {
+        JmsMessageException ex = new JmsMessageException(JMS_ERROR_MSG);
+
+        ResponseEntity<ErrorResponse> result = errorHandler.handleJmsMessageException(ex);
+
+        assertNotNull(result.getBody());
+        assertEquals(ApiError.JMS_ERROR.getHttpStatus(), result.getStatusCode());
+        assertEquals(ApiError.JMS_ERROR.getCode(), result.getBody().getErrorCode());
+        assertTrue(result.getBody().getErrorMessage().contains(JMS_ERROR_MSG));
     }
 
     public void dummyMethod(String param) {

@@ -13,6 +13,10 @@ import com.gcc.app.facade.dto.TrainerUpdateRequestDto;
 import com.gcc.app.facade.dto.TrainingCreateRequestDto;
 import com.gcc.app.facade.dto.TrainingResponseDto;
 import com.gcc.app.facade.dto.TrainingTypeResponseDto;
+import com.gcc.app.integration.workload.WorkloadService;
+import com.gcc.app.integration.workload.dto.TrainerSummaryResponseDto;
+import com.gcc.app.integration.workload.dto.TrainerWorkloadRequestDto;
+import com.gcc.app.integration.workload.dto.TrainerWorkloadRequestDto.ActionType;
 import com.gcc.app.mapper.TraineeMapper;
 import com.gcc.app.mapper.TrainerMapper;
 import com.gcc.app.mapper.TrainingMapper;
@@ -46,15 +50,14 @@ import com.gcc.app.service.TrainerService;
 import com.gcc.app.service.TrainingService;
 import com.gcc.app.service.TrainingTypeService;
 import com.gcc.app.service.UserService;
-import com.gcc.app.service.integration.workload.WorkloadServiceConnector;
-import com.gcc.app.service.integration.workload.dto.TrainerSummaryResponseDto;
-import com.gcc.app.service.integration.workload.dto.TrainerWorkloadRequestDto;
-import com.gcc.app.service.integration.workload.dto.TrainerWorkloadRequestDto.ActionType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+
+import static com.gcc.app.integration.workload.dto.TrainerWorkloadRequestDto.ActionType.ADD;
+import static com.gcc.app.integration.workload.dto.TrainerWorkloadRequestDto.ActionType.DELETE;
 
 @Component
 @RequiredArgsConstructor
@@ -67,7 +70,7 @@ public class GymFacade {
     private final TrainingTypeService trainingTypeService;
     private final UserService userService;
     private final AuthService authService;
-    private final WorkloadServiceConnector workloadServiceConnector;
+    private final WorkloadService workloadService;
     private final TraineeMapper traineeMapper;
     private final TrainerMapper trainerMapper;
     private final TrainingMapper trainingMapper;
@@ -97,15 +100,9 @@ public class GymFacade {
 
     public void deleteTraineeByUsername(String username) {
         log.info("Deleting trainee with username: {}", username);
-
-        TraineeTrainingSearchCriteriaDto criteria = new TraineeTrainingSearchCriteriaDto();
-        criteria.setUsername(username);
-
-        traineeService.getTraineeTrainings(criteria)
-                .forEach(training -> workloadServiceConnector.processTrainerWorkload(
-                        buildWorkloadRequest(training, ActionType.DELETE)));
-
         traineeService.deleteTraineeByUsername(username);
+
+        notifyOnWorkloadRemoval(username);
     }
 
     public TraineeGetResponse getTraineeByUsername(String username) {
@@ -161,6 +158,7 @@ public class GymFacade {
     public TrainerGetResponse getTrainerByUsername(String username) {
         log.info("Retrieving trainer by username: {}", username);
         Trainer trainer = trainerService.getByUsername(username);
+
         return trainerMapper.toRestModel(trainer);
     }
 
@@ -170,7 +168,7 @@ public class GymFacade {
 
         Training training = trainingService.createTraining(createRequestDto);
 
-        workloadServiceConnector.processTrainerWorkload(buildWorkloadRequest(training, ActionType.ADD));
+        workloadService.notifyWorkloadChange(buildWorkloadRequest(training, ADD));
     }
 
     public TrainingResponseDto getTraining(Long id) {
@@ -239,7 +237,18 @@ public class GymFacade {
     }
 
     public TrainerSummaryResponseDto getTrainerSummary(String username) {
-        return workloadServiceConnector.getTrainerSummary(username);
+        log.info("Retrieving trainer summary for username: {}", username);
+
+        return workloadService.getTrainerSummary(username);
+    }
+
+    private void notifyOnWorkloadRemoval(String traineeUsername) {
+        TraineeTrainingSearchCriteriaDto criteria = new TraineeTrainingSearchCriteriaDto();
+        criteria.setUsername(traineeUsername);
+
+        traineeService.getTraineeTrainings(criteria)
+                .forEach(training -> workloadService.notifyWorkloadChange(
+                        buildWorkloadRequest(training, DELETE)));
     }
 
     private TrainerWorkloadRequestDto buildWorkloadRequest(Training training, ActionType actionType) {

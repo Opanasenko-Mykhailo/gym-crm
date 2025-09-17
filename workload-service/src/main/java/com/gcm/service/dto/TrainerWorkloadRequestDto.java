@@ -1,4 +1,4 @@
-package com.gcc.app.service.integration.workload.dto;
+package com.gcm.service.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

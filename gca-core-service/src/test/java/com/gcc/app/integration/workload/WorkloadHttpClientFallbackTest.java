@@ -1,7 +1,6 @@
-package com.gcc.app.service.integration.workload;
+package com.gcc.app.integration.workload;
 
 import com.gcc.app.exception.MicroserviceUnavailableException;
-import com.gcc.app.service.integration.workload.dto.TrainerWorkloadRequestDto;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.AfterAll;
@@ -17,17 +16,17 @@ import java.io.IOException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
-class WorkloadServiceConnectorFallbackTest {
+class WorkloadHttpClientFallbackTest {
 
     private static final String TEST_USERNAME = "alice.smith";
 
     private static MockWebServer mockWebServer;
 
     @Autowired
-    private WorkloadServiceConnector service;
+    private WorkloadHttpClient client;
 
     @BeforeAll
-    static void startServer() throws IOException {
+    static void setupServer() throws IOException {
         mockWebServer = new MockWebServer();
         mockWebServer.start();
     }
@@ -38,29 +37,17 @@ class WorkloadServiceConnectorFallbackTest {
     }
 
     @BeforeEach
-    void setBaseUrl() {
+    void init() {
         String mockBaseUrl = mockWebServer.url("/").toString();
-        ReflectionTestUtils.setField(service, "baseUrl", mockBaseUrl);
+        ReflectionTestUtils.setField(client, "baseUrl", mockBaseUrl);
     }
 
     @Test
-    void givenWorkloadServiceReturns500_whenGetTrainerSummary_thenFallbackThrowsServiceUnavailable() {
+    void getTrainerSummary_whenServiceReturns500_thenFallbackThrowsMicroserviceUnavailable() {
         mockWebServer.enqueue(new MockResponse().setResponseCode(500));
 
-        assertThatThrownBy(() -> service.getTrainerSummary(TEST_USERNAME))
+        assertThatThrownBy(() -> client.getTrainerSummary(TEST_USERNAME))
                 .isInstanceOf(MicroserviceUnavailableException.class)
                 .hasMessageContaining("Workload service is temporarily unavailable for retrieving trainer summary");
-    }
-
-    @Test
-    void givenWorkloadServiceReturns500_whenProcessTrainerWorkload_thenFallbackThrowsServiceUnavailable() {
-        mockWebServer.enqueue(new MockResponse().setResponseCode(500));
-
-        TrainerWorkloadRequestDto requestDto = new TrainerWorkloadRequestDto();
-        requestDto.setUsername(TEST_USERNAME);
-
-        assertThatThrownBy(() -> service.processTrainerWorkload(requestDto))
-                .isInstanceOf(MicroserviceUnavailableException.class)
-                .hasMessageContaining("Workload service is temporarily unavailable for processing trainer workload");
     }
 }
