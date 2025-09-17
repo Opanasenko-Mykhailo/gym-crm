@@ -1,7 +1,5 @@
 package com.gcm.integration.gca;
 
-import com.gcm.app.rest.TrainerWorkloadRequest;
-import com.gcm.mapper.TrainerWorkloadMapper;
 import com.gcm.service.WorkloadService;
 import com.gcm.service.dto.TrainerWorkloadRequestDto;
 import jakarta.jms.JMSException;
@@ -29,13 +27,10 @@ class TrainerWorkloadMessageListenerTest {
     private WorkloadService workloadService;
 
     @Mock
-    private TrainerWorkloadMapper workloadMapper;
-
-    @Mock
     private Message jmsMessage;
 
     @Captor
-    private ArgumentCaptor<TrainerWorkloadRequest> requestCaptor;
+    private ArgumentCaptor<TrainerWorkloadRequestDto> dtoCaptor;
 
     @InjectMocks
     private TrainerWorkloadMessageListener listener;
@@ -44,28 +39,24 @@ class TrainerWorkloadMessageListenerTest {
     void receiveTrainerWorkload_processesRequestSuccessfully() throws JMSException {
         TrainerWorkloadRequestDto dto = new TrainerWorkloadRequestDto();
         dto.setUsername("trainer.jane");
-        TrainerWorkloadRequest restModel = new TrainerWorkloadRequest();
-        restModel.setUsername("trainer.jane");
 
-        when(workloadMapper.toRestModel(dto)).thenReturn(restModel);
         when(jmsMessage.getStringProperty("X-Transaction-Id")).thenReturn("txn-123");
 
         listener.onMessage(dto, jmsMessage);
 
-        verify(workloadMapper).toRestModel(dto);
-        verify(workloadService).processTrainerWorkload(requestCaptor.capture());
-        assertEquals("trainer.jane", requestCaptor.getValue().getUsername());
+        verify(workloadService).processTrainerWorkload(dtoCaptor.capture());
+        assertEquals("trainer.jane", dtoCaptor.getValue().getUsername());
         assertNull(MDC.get("transactionId"), "MDC should be cleared after processing");
     }
 
     @Test
     void receiveTrainerWorkload_logsAndThrowsOnException() throws JMSException {
         TrainerWorkloadRequestDto dto = new TrainerWorkloadRequestDto();
-        TrainerWorkloadRequest restModel = new TrainerWorkloadRequest();
+        dto.setUsername("trainer.jane");
 
-        when(workloadMapper.toRestModel(dto)).thenReturn(restModel);
         when(jmsMessage.getStringProperty("X-Transaction-Id")).thenReturn("txn-456");
-        doThrow(new RuntimeException("Processing failed")).when(workloadService).processTrainerWorkload(restModel);
+        doThrow(new RuntimeException("Processing failed"))
+                .when(workloadService).processTrainerWorkload(dto);
 
         RuntimeException ex = assertThrows(RuntimeException.class,
                 () -> listener.onMessage(dto, jmsMessage));
