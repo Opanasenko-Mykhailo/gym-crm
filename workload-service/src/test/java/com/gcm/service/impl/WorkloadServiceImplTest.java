@@ -1,12 +1,13 @@
 package com.gcm.service.impl;
 
-import com.gcm.app.rest.TrainerSummaryResponse;
-import com.gcm.app.rest.TrainerWorkloadRequest;
 import com.gcm.mapper.TrainerSummaryMapper;
 import com.gcm.model.MonthlySummary;
 import com.gcm.model.TrainerSummary;
 import com.gcm.model.YearlySummary;
 import com.gcm.repository.TrainerSummaryRepository;
+import com.gcm.service.dto.TrainerSummaryResponseDto;
+import com.gcm.service.dto.TrainerWorkloadRequestDto;
+import com.gcm.service.dto.TrainerWorkloadRequestDto.ActionType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -18,8 +19,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import static com.gcm.app.rest.TrainerWorkloadRequest.ActionTypeEnum.ADD;
-import static com.gcm.app.rest.TrainerWorkloadRequest.ActionTypeEnum.DELETE;
+import static com.gcm.service.dto.TrainerWorkloadRequestDto.ActionType.ADD;
+import static com.gcm.service.dto.TrainerWorkloadRequestDto.ActionType.DELETE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -38,7 +39,7 @@ class WorkloadServiceImplTest {
 
     @Test
     void givenNewTrainer_whenProcessAddWorkload_thenTrainerCreated() {
-        TrainerWorkloadRequest request = createWorkloadRequest("alice.smith", ADD, 45, LocalDate.of(2025, 9, 1));
+        TrainerWorkloadRequestDto request = createWorkloadRequestDto("alice.smith", ADD, 45L, LocalDate.of(2025, 9, 1));
         when(trainerRepo.findByUsername("alice.smith")).thenReturn(Optional.empty());
 
         service.processTrainerWorkload(request);
@@ -58,7 +59,7 @@ class WorkloadServiceImplTest {
     @Test
     void givenExistingTrainer_whenDeleteWorkload_thenDurationReduced() {
         TrainerSummary trainer = createTrainerWithWorkload();
-        TrainerWorkloadRequest request = createWorkloadRequest("bob.jones", DELETE, 30, LocalDate.of(2025, 9, 2));
+        TrainerWorkloadRequestDto request = createWorkloadRequestDto("bob.jones", DELETE, 30L, LocalDate.of(2025, 9, 2));
 
         when(trainerRepo.findByUsername("bob.jones")).thenReturn(Optional.of(trainer));
 
@@ -72,27 +73,27 @@ class WorkloadServiceImplTest {
     @Test
     void givenTrainer_whenGetTrainerSummary_thenMappedToRestModel() {
         TrainerSummary trainer = createTrainer("charlie.brown");
-        TrainerSummaryResponse mapped = new TrainerSummaryResponse();
+        TrainerSummaryResponseDto mapped = new TrainerSummaryResponseDto();
 
         mapped.setUsername("charlie.brown");
 
         when(trainerRepo.findByUsername("charlie.brown")).thenReturn(Optional.of(trainer));
-        when(trainerMapper.toRestModel(trainer)).thenReturn(mapped);
+        when(trainerMapper.toDto(trainer)).thenReturn(mapped);
 
-        TrainerSummaryResponse result = service.getTrainerSummary("charlie.brown");
+        TrainerSummaryResponseDto actual = service.getTrainerSummary("charlie.brown");
 
-        assertThat(result).isNotNull();
-        assertThat(result.getUsername()).isEqualTo("charlie.brown");
+        assertThat(actual).isNotNull();
+        assertThat(actual.getUsername()).isEqualTo("charlie.brown");
     }
 
-    private TrainerWorkloadRequest createWorkloadRequest(String username, TrainerWorkloadRequest.ActionTypeEnum actionType, int duration, LocalDate date) {
-        TrainerWorkloadRequest request = new TrainerWorkloadRequest();
+    private TrainerWorkloadRequestDto createWorkloadRequestDto(String username, ActionType actionType, Long duration, LocalDate date) {
+        TrainerWorkloadRequestDto request = new TrainerWorkloadRequestDto();
         request.setUsername(username);
         request.setFirstName(capitalize(username.split("\\.")[0]));
         request.setLastName(capitalize(username.split("\\.")[1]));
         request.setActive(true);
         request.setTrainingDate(date);
-        request.setDurationInMinutes(duration);
+        request.setDurationInMinutes((duration));
         request.setActionType(actionType);
 
         return request;

@@ -3,8 +3,12 @@ package com.gcm.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gcm.app.rest.TrainerSummaryResponse;
 import com.gcm.app.rest.TrainerWorkloadRequest;
+import com.gcm.mapper.TrainerSummaryMapper;
+import com.gcm.mapper.TrainerWorkloadMapper;
 import com.gcm.security.JwtService;
 import com.gcm.service.WorkloadService;
+import com.gcm.service.dto.TrainerSummaryResponseDto;
+import com.gcm.service.dto.TrainerWorkloadRequestDto;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -18,7 +22,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.LocalDate;
 
 import static com.gcm.app.rest.TrainerWorkloadRequest.ActionTypeEnum.ADD;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -43,6 +46,12 @@ class WorkloadControllerTest {
     @MockitoBean
     private JwtService jwtService;
 
+    @MockitoBean
+    private TrainerWorkloadMapper workloadMapper;
+
+    @MockitoBean
+    private TrainerSummaryMapper summaryMapper;
+
     @Captor
     private ArgumentCaptor<TrainerWorkloadRequest> workloadCaptor;
 
@@ -57,23 +66,27 @@ class WorkloadControllerTest {
         request.setActionType(ADD);
         request.setTrainingDate(LocalDate.now());
 
+        given(workloadMapper.toDto(request)).willReturn(new TrainerWorkloadRequestDto());
+
         mockMvc.perform(post("/api/workload")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk());
 
-        then(service).should().processTrainerWorkload(workloadCaptor.capture());
-        assertThat(workloadCaptor.getValue())
-                .extracting(TrainerWorkloadRequest::getUsername)
-                .isEqualTo("alice.smith");
+        then(service).should().processTrainerWorkload(workloadMapper.toDto(request));
     }
 
     @Test
     void givenExistingTrainer_whenGetSummary_thenReturnsOk() throws Exception {
-        TrainerSummaryResponse summary = new TrainerSummaryResponse();
-        summary.setUsername("alice.smith");
-        given(service.getTrainerSummary("alice.smith")).willReturn(summary);
+        TrainerSummaryResponseDto dto = new TrainerSummaryResponseDto();
+        dto.setUsername("alice.smith");
+
+        TrainerSummaryResponse response = new TrainerSummaryResponse();
+        response.setUsername("alice.smith");
+
+        given(service.getTrainerSummary("alice.smith")).willReturn(dto);
+        given(summaryMapper.toRestModel(dto)).willReturn(response);
 
         mockMvc.perform(get("/api/workload/alice.smith"))
                 .andExpect(status().isOk())

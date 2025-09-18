@@ -1,13 +1,13 @@
 package com.gcm.service.impl;
 
-import com.gcm.app.rest.TrainerSummaryResponse;
-import com.gcm.app.rest.TrainerWorkloadRequest;
 import com.gcm.mapper.TrainerSummaryMapper;
 import com.gcm.model.MonthlySummary;
 import com.gcm.model.TrainerSummary;
 import com.gcm.model.YearlySummary;
 import com.gcm.repository.TrainerSummaryRepository;
 import com.gcm.service.WorkloadService;
+import com.gcm.service.dto.TrainerSummaryResponseDto;
+import com.gcm.service.dto.TrainerWorkloadRequestDto;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +25,7 @@ public class WorkloadServiceImpl implements WorkloadService {
 
     @Override
     @Transactional
-    public void processTrainerWorkload(TrainerWorkloadRequest request) {
+    public void processTrainerWorkload(TrainerWorkloadRequestDto request) {
         log.info("Processing workload for {}", request.getUsername());
 
         TrainerSummary trainer = getOrCreateTrainer(request);
@@ -39,13 +39,13 @@ public class WorkloadServiceImpl implements WorkloadService {
     }
 
     @Override
-    public TrainerSummaryResponse getTrainerSummary(String username) {
-        return trainerMapper.toRestModel(
+    public TrainerSummaryResponseDto getTrainerSummary(String username) {
+        return trainerMapper.toDto(
                 trainerRepo.findByUsername(username).orElse(null)
         );
     }
 
-    private TrainerSummary getOrCreateTrainer(TrainerWorkloadRequest request) {
+    private TrainerSummary getOrCreateTrainer(TrainerWorkloadRequestDto request) {
         return trainerRepo.findByUsername(request.getUsername())
                 .orElseGet(() -> buildNewTrainerSummary(request));
     }
@@ -72,12 +72,12 @@ public class WorkloadServiceImpl implements WorkloadService {
                 .orElseGet(() -> buildNewMonthlySummary(yearly, month));
     }
 
-    private TrainerSummary buildNewTrainerSummary(TrainerWorkloadRequest request) {
+    private TrainerSummary buildNewTrainerSummary(TrainerWorkloadRequestDto request) {
         return TrainerSummary.builder()
                 .username(request.getUsername())
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
-                .active(request.getActive())
+                .active(request.isActive())
                 .years(new ArrayList<>())
                 .build();
     }
@@ -106,12 +106,12 @@ public class WorkloadServiceImpl implements WorkloadService {
         return monthly;
     }
 
-    private void updateMonthlyDuration(MonthlySummary monthly, TrainerWorkloadRequest request) {
+    private void updateMonthlyDuration(MonthlySummary monthly, TrainerWorkloadRequestDto request) {
         switch (request.getActionType()) {
             case ADD ->
-                    monthly.setTotalDurationMinutes(monthly.getTotalDurationMinutes() + request.getDurationInMinutes());
+                    monthly.setTotalDurationMinutes(monthly.getTotalDurationMinutes() + request.getDurationInMinutes().intValue());
             case DELETE ->
-                    monthly.setTotalDurationMinutes(Math.max(0, monthly.getTotalDurationMinutes() - request.getDurationInMinutes()));
+                    monthly.setTotalDurationMinutes(Math.max(0, monthly.getTotalDurationMinutes() - request.getDurationInMinutes().intValue()));
         }
     }
 }

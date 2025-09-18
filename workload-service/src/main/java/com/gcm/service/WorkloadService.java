@@ -1,10 +1,10 @@
 package com.gcm.service;
 
-import com.gcm.app.rest.TrainerSummaryResponse;
-import com.gcm.app.rest.TrainerWorkloadRequest;
+import com.gcm.service.dto.TrainerSummaryResponseDto;
+import com.gcm.service.dto.TrainerWorkloadRequestDto;
 
 public interface WorkloadService {
-    void processTrainerWorkload(TrainerWorkloadRequest request);
+    void processTrainerWorkload(TrainerWorkloadRequestDto dto);
 
-    TrainerSummaryResponse getTrainerSummary(String username);
+    TrainerSummaryResponseDto getTrainerSummary(String username);
 }
