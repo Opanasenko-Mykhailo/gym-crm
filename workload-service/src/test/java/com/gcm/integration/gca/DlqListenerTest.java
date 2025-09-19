@@ -32,7 +32,7 @@ class DlqListenerTest {
         dlqListener.onDlqMessage(mockMessage);
 
         assertThat(listAppender.list).hasSize(1);
-        assertThat(listAppender.list.get(0).getLevel().toString()).isEqualTo("ERROR");
+        assertThat(listAppender.list.get(0).getLevel()).hasToString("ERROR");
         assertThat(listAppender.list.get(0).getFormattedMessage()).contains("Received message in DLQ:");
 
         logger.detachAppender(listAppender);
@@ -48,7 +48,7 @@ class DlqListenerTest {
         dlqListener.onDlqMessage(null);
 
         assertThat(listAppender.list).hasSize(1);
-        assertThat(listAppender.list.get(0).getLevel().toString()).isEqualTo("ERROR");
+        assertThat(listAppender.list.get(0).getLevel()).hasToString("ERROR");
         assertThat(listAppender.list.get(0).getFormattedMessage()).contains("Received message in DLQ: null");
 
         logger.detachAppender(listAppender);
