@@ -36,6 +36,8 @@ eureka:
 workload:
   queue:
     name: trainer.workload.queue
+  dlq:
+    name: ActiveMQ.DLQ
 
 jms:
   request-timeout-ms: 5000
