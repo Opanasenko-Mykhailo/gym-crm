@@ -1,4 +1,9 @@
 # Workload-Service
+![Build](https://github.com/Opanasenko-Mykhailo/gym-crm/actions/workflows/ci.yml/badge.svg?branch=dev)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Opanasenko-Mykhailo_workload-service&metric=coverage)](https://sonarcloud.io/summary/overall?id=Opanasenko-Mykhailo_gym-crm-system)
+[![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=Opanasenko-Mykhailo_workload-service&metric=alert_status)](https://sonarcloud.io/summary/overall?id=Opanasenko-Mykhailo_gym-crm-system)
+![Java](https://img.shields.io/badge/java-17-blue.svg)
+![Last Commit](https://img.shields.io/github/last-commit/Opanasenko-Mykhailo/gym-crm)
 
 Spring Boot microservice that serves as a dedicated service for calculating and tracking trainers' monthly workload.
 

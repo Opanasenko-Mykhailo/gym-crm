@@ -1,9 +1,9 @@
 # Gym CRM Core
-![Build](https://github.com/Opanasenko-Mykhailo/gym-crm-system/actions/workflows/ci.yml/badge.svg?branch=dev)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Opanasenko-Mykhailo_gym-crm-system&metric=coverage)](https://sonarcloud.io/summary/overall?id=Opanasenko-Mykhailo_gym-crm-system)
-[![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=Opanasenko-Mykhailo_gym-crm-system&metric=alert_status)](https://sonarcloud.io/summary/overall?id=Opanasenko-Mykhailo_gym-crm-system)
+![Build](https://github.com/Opanasenko-Mykhailo/gym-crm/actions/workflows/ci.yml/badge.svg?branch=dev)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Opanasenko-Mykhailo_gca-core-service&metric=coverage)](https://sonarcloud.io/summary/overall?id=Opanasenko-Mykhailo_gym-crm-system)
+[![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=Opanasenko-Mykhailo_gca-core-service&metric=alert_status)](https://sonarcloud.io/summary/overall?id=Opanasenko-Mykhailo_gym-crm-system)
 ![Java](https://img.shields.io/badge/java-17-blue.svg)
-![Last Commit](https://img.shields.io/github/last-commit/Opanasenko-Mykhailo/gym-crm-system)
+![Last Commit](https://img.shields.io/github/last-commit/Opanasenko-Mykhailo/gym-crm)
 
 ## Prerequisites
 
@@ -13,30 +13,10 @@ To run this application, you should have the following installed:
 - **Maven**
 - **PostgreSQL** 13+
 - **Git**
+- **ActiveMQ**
 
 ---
 
-## Setup Instructions
-
-Run the following SQL script to create the database and user:
-
-```sql
-CREATE DATABASE "gym_db";
-CREATE USER gcs WITH PASSWORD 'gcs';
-GRANT ALL PRIVILEGES ON DATABASE "gym_db" TO gcs;
-```
-
----
-
-## Clone & Build
-
-```bash
-git clone https://github.com/Opanasenko-Mykhailo/gym-crm-system.git
-cd gym-crm-system
-mvn clean install
-```
-
----
 # Local Development Setup
 
 For local development, you need to create a `.env` file in the root of the microservice and add the JWT secret.
