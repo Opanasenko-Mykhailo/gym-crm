@@ -4,6 +4,8 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
 import jakarta.jms.Message;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,37 +22,41 @@ class DlqListenerTest {
     private Message mockMessage;
 
     @InjectMocks
-    private DlqListener dlqListener;
+    private DlqListener sut;
 
-    @Test
-    void shouldLogErrorMessageWhenDlqMessageReceived() {
-        Logger logger = (Logger) LoggerFactory.getLogger(DlqListener.class);
-        ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
+    private Logger logger;
+    private ListAppender<ILoggingEvent> listAppender;
+
+    @BeforeEach
+    void setUp() {
+        logger = (Logger) LoggerFactory.getLogger(DlqListener.class);
+        listAppender = new ListAppender<>();
         listAppender.start();
         logger.addAppender(listAppender);
+    }
 
-        dlqListener.onDlqMessage(mockMessage);
-
-        assertThat(listAppender.list).hasSize(1);
-        assertThat(listAppender.list.get(0).getLevel()).hasToString("ERROR");
-        assertThat(listAppender.list.get(0).getFormattedMessage()).contains("Received message in DLQ:");
-
+    @AfterEach
+    void tearDown() {
         logger.detachAppender(listAppender);
     }
 
     @Test
-    void shouldHandleNullMessageGracefully() {
-        Logger logger = (Logger) LoggerFactory.getLogger(DlqListener.class);
-        ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
-        listAppender.start();
-        logger.addAppender(listAppender);
-
-        dlqListener.onDlqMessage(null);
+    void shouldLogErrorMessageWhenDlqMessageReceived() {
+        sut.onDlqMessage(mockMessage);
 
         assertThat(listAppender.list).hasSize(1);
         assertThat(listAppender.list.get(0).getLevel()).hasToString("ERROR");
-        assertThat(listAppender.list.get(0).getFormattedMessage()).contains("Received message in DLQ: null");
+        assertThat(listAppender.list.get(0).getFormattedMessage())
+                .contains("Received message in DLQ:");
+    }
 
-        logger.detachAppender(listAppender);
+    @Test
+    void shouldHandleNullMessageGracefully() {
+        sut.onDlqMessage(null);
+
+        assertThat(listAppender.list).hasSize(1);
+        assertThat(listAppender.list.get(0).getLevel()).hasToString("ERROR");
+        assertThat(listAppender.list.get(0).getFormattedMessage())
+                .contains("Received message in DLQ: null");
     }
 }
