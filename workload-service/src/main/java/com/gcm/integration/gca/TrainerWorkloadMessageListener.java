@@ -2,8 +2,10 @@ package com.gcm.integration.gca;
 
 import com.gcm.service.WorkloadService;
 import com.gcm.service.dto.TrainerWorkloadRequestDto;
+import com.gcm.validator.ValidateMessage;
 import jakarta.jms.JMSException;
 import jakarta.jms.Message;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
@@ -19,6 +21,7 @@ public class TrainerWorkloadMessageListener {
 
     private final WorkloadService workloadService;
 
+    @ValidateMessage
     @JmsListener(destination = "${workload.queue.name}", containerFactory = "jmsListenerContainerFactory")
     public void onMessage(TrainerWorkloadRequestDto request, Message message) throws JMSException {
         String transactionId = message.getStringProperty(TRANSACTION_ID_HEADER);
