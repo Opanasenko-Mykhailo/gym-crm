@@ -115,13 +115,11 @@ class WorkloadServiceImplTest {
 
         YearlySummary yearly = new YearlySummary();
         yearly.setYearNumber(2025);
-        yearly.setTrainerSummary(trainer);
         yearly.setMonths(new ArrayList<>());
 
         MonthlySummary monthly = new MonthlySummary();
         monthly.setMonthNumber(9);
         monthly.setTotalDurationMinutes(120);
-        monthly.setYearlySummary(yearly);
 
         yearly.getMonths().add(monthly);
         trainer.getYears().add(yearly);

@@ -85,7 +85,6 @@ public class WorkloadServiceImpl implements WorkloadService {
     private YearlySummary buildNewYearlySummary(TrainerSummary trainer, int year) {
         YearlySummary yearly = YearlySummary.builder()
                 .yearNumber(year)
-                .trainerSummary(trainer)
                 .months(new ArrayList<>())
                 .build();
 
@@ -98,7 +97,6 @@ public class WorkloadServiceImpl implements WorkloadService {
         MonthlySummary monthly = MonthlySummary.builder()
                 .monthNumber(month)
                 .totalDurationMinutes(0)
-                .yearlySummary(yearly)
                 .build();
 
         yearly.getMonths().add(monthly);
