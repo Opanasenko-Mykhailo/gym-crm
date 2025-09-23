@@ -7,6 +7,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.containers.MongoDBContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +20,15 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataMongoTest
+@Testcontainers
 class TrainerSummaryRepositoryTest {
+    @Container
+    static MongoDBContainer mongoContainer = new MongoDBContainer("mongo:7.0.5");
+
+    @DynamicPropertySource
+    static void setProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.data.mongodb.uri", mongoContainer::getReplicaSetUrl);
+    }
 
     @Autowired
     private TrainerSummaryRepository repository;
@@ -29,9 +42,9 @@ class TrainerSummaryRepositoryTest {
     void save_shouldPersistTrainerSummary() {
         TrainerSummary trainerSummary = createTrainerSummary("alice.smith", "Alice", "Smith");
 
-        TrainerSummary saved = repository.save(trainerSummary);
+        TrainerSummary actual = repository.save(trainerSummary);
 
-        assertThat(saved.getId()).isNotNull();
+        assertThat(actual.getId()).isNotNull();
         Optional<TrainerSummary> fetched = repository.findByUsername("alice.smith");
         assertThat(fetched).isPresent();
         assertThat(fetched.get().getFirstName()).isEqualTo("Alice");
@@ -42,10 +55,10 @@ class TrainerSummaryRepositoryTest {
         TrainerSummary trainerSummary = createTrainerSummary("bob.builder", "Bob", "Builder");
         repository.save(trainerSummary);
 
-        Optional<TrainerSummary> fetchedOpt = repository.findByUsername("bob.builder");
+        Optional<TrainerSummary> actual = repository.findByUsername("bob.builder");
 
-        assertThat(fetchedOpt).isPresent();
-        TrainerSummary fetched = fetchedOpt.get();
+        assertThat(actual).isPresent();
+        TrainerSummary fetched = actual.get();
         assertThat(fetched.getYears()).hasSize(1);
 
         YearlySummary year = fetched.getYears().get(0);
@@ -62,12 +75,12 @@ class TrainerSummaryRepositoryTest {
         TrainerSummary trainerSummary = createTrainerSummary("carol.doe", "Carol", "Doe");
         repository.save(trainerSummary);
 
-        TrainerSummary fetched = repository.findByUsername("carol.doe").orElseThrow();
-        YearlySummary year = fetched.getYears().get(0);
+        TrainerSummary actual = repository.findByUsername("carol.doe").orElseThrow();
+        YearlySummary year = actual.getYears().get(0);
         MonthlySummary jan = year.getMonths().get(0);
         jan.setTotalDurationMinutes(500);
 
-        repository.save(fetched);
+        repository.save(actual);
 
         TrainerSummary updated = repository.findByUsername("carol.doe").orElseThrow();
         assertThat(updated.getYears().get(0).getMonths().get(0).getTotalDurationMinutes())
@@ -76,9 +89,9 @@ class TrainerSummaryRepositoryTest {
 
     @Test
     void findByUsername_shouldReturnEmptyWhenTrainerNotExists() {
-        Optional<TrainerSummary> fetched = repository.findByUsername("non.existing");
+        Optional<TrainerSummary> actual = repository.findByUsername("non.existing");
 
-        assertThat(fetched).isEmpty();
+        assertThat(actual).isEmpty();
     }
 
     private TrainerSummary createTrainerSummary(String username, String firstName, String lastName) {
