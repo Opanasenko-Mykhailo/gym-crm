@@ -32,17 +32,20 @@ public class ValidationAspect {
         Set<ConstraintViolation<Object>> violations = validator.validate(request);
 
         if (!violations.isEmpty()) {
-            String reason = violations.stream()
-                    .map(v -> v.getPropertyPath() + ": " + v.getMessage())
-                    .collect(Collectors.joining(", "));
-
-            log.error("Validation failed for message, sending to DLQ: {}", reason);
-            sendToDlq(message, "VALIDATION_FAILED: " + reason);
-
+            handleValidationFailure(message, violations);
             return null;
         }
 
         return joinPoint.proceed();
+    }
+
+    private void handleValidationFailure(Message message, Set<ConstraintViolation<Object>> violations) {
+        String reason = violations.stream()
+                .map(v -> v.getPropertyPath() + ": " + v.getMessage())
+                .collect(Collectors.joining(", "));
+
+        log.error("Validation failed for message, sending to DLQ: {}", reason);
+        sendToDlq(message, "VALIDATION_FAILED: " + reason);
     }
 
     private void sendToDlq(Message originalMessage, String reason) {
