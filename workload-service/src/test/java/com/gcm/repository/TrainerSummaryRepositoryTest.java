@@ -16,10 +16,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataMongoTest
-class TrainerSummaryRepositoryTest extends AbstractMongoRepositoryTest {
-
-    @Autowired
-    private TrainerSummaryRepository repository;
+class TrainerSummaryRepositoryTest extends AbstractMongoRepositoryTest<TrainerSummaryRepository> {
 
     @BeforeEach
     void setUp() {
