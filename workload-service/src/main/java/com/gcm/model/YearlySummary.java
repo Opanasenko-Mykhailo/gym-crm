@@ -7,9 +7,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.List;
 
+@Document(collection = "year_summary")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -21,5 +24,6 @@ public class YearlySummary {
     @Min(2000)
     private Integer yearNumber;
 
+    @Field(name = "monthly_summaries")
     private List<MonthlySummary> months;
 }

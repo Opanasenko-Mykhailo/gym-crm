@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.List;
 
@@ -36,5 +37,6 @@ public class TrainerSummary {
     @NotNull
     private Boolean active;
 
+    @Field(name = "yearly_summaries")
     private List<YearlySummary> years;
 }

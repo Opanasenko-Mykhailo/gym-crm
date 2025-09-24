@@ -7,34 +7,22 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.MongoDBContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataMongoTest
-@Testcontainers
-class TrainerSummaryRepositoryTest {
-    @Container
-    static MongoDBContainer mongoContainer = new MongoDBContainer("mongo:7.0.5");
-
-    @DynamicPropertySource
-    static void setProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.data.mongodb.uri", mongoContainer::getReplicaSetUrl);
-    }
+class TrainerSummaryRepositoryTest extends AbstractMongoRepositoryTest {
 
     @Autowired
     private TrainerSummaryRepository repository;
 
     @BeforeEach
-    void cleanDb() {
+    void setUp() {
         repository.deleteAll();
     }
 
@@ -61,30 +49,33 @@ class TrainerSummaryRepositoryTest {
         TrainerSummary fetched = actual.get();
         assertThat(fetched.getYears()).hasSize(1);
 
-        YearlySummary year = fetched.getYears().get(0);
+        Iterator<YearlySummary> yearIterator = fetched.getYears().iterator();
+        YearlySummary year = yearIterator.next();
         assertThat(year.getYearNumber()).isEqualTo(2025);
         assertThat(year.getMonths()).hasSize(2);
 
-        MonthlySummary jan = year.getMonths().get(0);
-        assertThat(jan.getMonthNumber()).isEqualTo(1);
-        assertThat(jan.getTotalDurationMinutes()).isEqualTo(120);
+        Iterator<MonthlySummary> monthIterator = year.getMonths().iterator();
+        MonthlySummary january = monthIterator.next();
+        assertThat(january.getMonthNumber()).isEqualTo(1);
+        assertThat(january.getTotalDurationMinutes()).isEqualTo(120);
     }
 
     @Test
     void updateMonthlyDuration_shouldPersistNewValue() {
-        TrainerSummary trainerSummary = createTrainerSummary("carol.doe", "Carol", "Doe");
-        repository.save(trainerSummary);
+        prepareTestDataForUpdate();
 
         TrainerSummary actual = repository.findByUsername("carol.doe").orElseThrow();
-        YearlySummary year = actual.getYears().get(0);
-        MonthlySummary jan = year.getMonths().get(0);
-        jan.setTotalDurationMinutes(500);
-
+        Iterator<YearlySummary> yearIterator = actual.getYears().iterator();
+        YearlySummary year = yearIterator.next();
+        Iterator<MonthlySummary> monthIterator = year.getMonths().iterator();
+        MonthlySummary january = monthIterator.next();
+        january.setTotalDurationMinutes(500);
         repository.save(actual);
 
         TrainerSummary updated = repository.findByUsername("carol.doe").orElseThrow();
-        assertThat(updated.getYears().get(0).getMonths().get(0).getTotalDurationMinutes())
-                .isEqualTo(500);
+        Iterator<YearlySummary> updatedYearIterator = updated.getYears().iterator();
+        Iterator<MonthlySummary> updatedMonthIterator = updatedYearIterator.next().getMonths().iterator();
+        assertThat(updatedMonthIterator.next().getTotalDurationMinutes()).isEqualTo(500);
     }
 
     @Test
@@ -92,6 +83,11 @@ class TrainerSummaryRepositoryTest {
         Optional<TrainerSummary> actual = repository.findByUsername("non.existing");
 
         assertThat(actual).isEmpty();
+    }
+
+    private void prepareTestDataForUpdate() {
+        TrainerSummary trainerSummary = createTrainerSummary("carol.doe", "Carol", "Doe");
+        repository.save(trainerSummary);
     }
 
     private TrainerSummary createTrainerSummary(String username, String firstName, String lastName) {
