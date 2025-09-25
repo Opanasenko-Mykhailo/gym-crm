@@ -1,8 +1,8 @@
 package com.gcm.service.dto;
 
+import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,7 +29,7 @@ public class TrainerWorkloadRequestDto {
     private boolean active;
 
     @NotNull(message = "Training date is required")
-    @PastOrPresent(message = "Training date cannot be in the future")
+    @FutureOrPresent(message = "Training date cannot be in the past")
     private LocalDate trainingDate;
 
     @NotNull(message = "Duration is required")

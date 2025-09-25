@@ -1,18 +1,18 @@
 # Gym CRM
 
 Gym CRM System is a microservices-based application for managing gyms, trainers, trainees, and workouts.  
-The system is built with **Java 17**, **Spring Boot**, **PostgreSQL**, **ActiveMQ**, and **Resilience4j**.
+The system is built with **Java 17**, **Spring Boot**, **PostgreSQL**, **MongoDB**, **ActiveMQ**, and **Resilience4j**.
 
 ---
 
 ## Services
 
-| Service             | Port | Description | Database |
-|--------------------|------|-------------|----------|
-| `discovery-server` | 8761 | Eureka Server for service discovery | - |
-| `gateway-service`   | 8080 | API Gateway with routing and circuit breakers | - |
-| `gca-core-service`      | 8081 | CRUD operations, authentication, JWT, Liquibase migrations | PostgreSQL |
-| `workload-service`  | 8082 | Trainer workload management via JMS and REST | H2 (in-memory) |
+| Service            | Port | Description                                                | Database   |
+|--------------------|------|------------------------------------------------------------|------------|
+| `discovery-server` | 8761 | Eureka Server for service discovery                        | -          |
+| `gateway-service`  | 8080 | API Gateway with routing and circuit breakers              | -          |
+| `gca-core-service` | 8081 | CRUD operations, authentication, JWT, Liquibase migrations | PostgreSQL |
+| `workload-service` | 8082 | Trainer workload management via JMS and REST               | MongoDB    |
 
 ---
 
@@ -20,7 +20,8 @@ The system is built with **Java 17**, **Spring Boot**, **PostgreSQL**, **ActiveM
 
 - **Java Development Kit (JDK) 17**
 - **Maven**
-- **PostgreSQL 13+** (for gca-core-service)
+- **PostgreSQL 13+** (for `gca-core-service`)
+- **MongoDB 6+** (for `workload-service`)
 - **Apache ActiveMQ** (for message queuing between services)
 - **Git**
 
@@ -39,6 +40,7 @@ mvn clean install
 ### 2. Setup PostgreSQL Database
 
 #### Install PostgreSQL
+
 ```bash
 # Ubuntu/Debian
 sudo apt update
@@ -51,22 +53,73 @@ brew install postgresql
 ```
 
 #### Create Database and User
+
 ```sql
 -- Connect to PostgreSQL as superuser
 sudo -u postgres psql
 
 -- Create database and user
-CREATE DATABASE "gym_db";
+CREATE
+DATABASE "gym_db";
 CREATE USER gcs WITH PASSWORD 'gcs';
 GRANT ALL PRIVILEGES ON DATABASE "gym_db" TO gcs;
 
 -- Exit
-\q
+\
+q
 ```
 
-### 3. Install and Start Apache ActiveMQ
+# 3. MongoDB Setup (for workload-service)
+
+The `workload-service` uses **MongoDB** to store trainer workload summaries.
+
+---
+
+## Option A: Install Locally
+
+### macOS (Homebrew)
+
+```bash
+brew tap mongodb/brew
+brew install mongodb-community@6.0
+brew services start mongodb-community@6.0
+```
+
+### Ubuntu/Debian
+
+```bash
+sudo apt update
+sudo apt install -y mongodb
+sudo systemctl start mongodb
+sudo systemctl enable mongodb
+```
+
+### Windows
+
+Download the [MongoDB MSI Installer](https://www.mongodb.com/try/download/community)
+
+Install and select MongoDB as a Service during setup.
+
+MongoDB will start automatically on port 27017.
+
+---
+
+### Option B: Run with Docker
+
+```bash
+docker run -d \
+  --name mongo \
+  -p 27017:27017 \
+  -e MONGO_INITDB_ROOT_USERNAME=gym \
+  -e MONGO_INITDB_ROOT_PASSWORD=gym \
+  -e MONGO_INITDB_DATABASE=workloaddb \
+  mongo:6.0
+```
+
+### 4. Install and Start Apache ActiveMQ
 
 #### Option A: Download and Run Locally
+
 1. Download Apache ActiveMQ from [official website](https://activemq.apache.org/components/classic/download/)
 2. Extract the archive to your preferred directory
 3. Navigate to the ActiveMQ directory and start the broker:
@@ -81,6 +134,7 @@ GRANT ALL PRIVILEGES ON DATABASE "gym_db" TO gcs;
 5. Access the web console at `http://localhost:8161/admin` (default credentials: admin/admin)
 
 #### Option B: Using Docker
+
 ```bash
 # Run ActiveMQ in Docker container
 docker run -d \
@@ -92,8 +146,10 @@ docker run -d \
   apache/activemq-classic:latest
 ```
 
-### 2. Configure ActiveMQ Users (if needed)
+### Configure ActiveMQ Users (if needed)
+
 If you need to set up custom users (gca/gca as shown in config), edit the ActiveMQ configuration:
+
 1. Navigate to `conf/users.properties` and add:
    ```properties
    gca=gca
@@ -103,7 +159,7 @@ If you need to set up custom users (gca/gca as shown in config), edit the Active
    admins=admin,gca
    ```
 
-### 4. Start the Services
+### 5. Start the Services
 
 #### Service Startup Order (Important!)
 
@@ -117,17 +173,28 @@ If you need to set up custom users (gca/gca as shown in config), edit the Active
    
    # Windows - use Services panel or PostgreSQL service
    ```
+2. **Start MongoDB** (if not already running):
 
-2. **Start ActiveMQ** (see step 3 above)
+   ```bash
+   # Ubuntu/Debian
+   sudo systemctl start mongodb
+   
+   # macOS (Homebrew)
+   brew services start mongodb-community@6.0
 
-3. **Start Discovery Server** (Eureka Server) - **MUST BE FIRST**:
+   # Windows - MongoDB service should start automatically
+   ```
+
+3. **Start ActiveMQ** (see step 3 above)
+
+4. **Start Discovery Server** (Eureka Server) - **MUST BE FIRST**:
    ```bash
    cd discovery-server
    mvn spring-boot:run
    ```
    Access at: `http://localhost:8761`
 
-4. **Start Core Service**:
+5. **Start Core Service**:
    ```bash
    cd gca-core-service
    mvn spring-boot:run
@@ -136,15 +203,15 @@ If you need to set up custom users (gca/gca as shown in config), edit the Active
     - Service will register with Eureka
     - Access at: `http://localhost:8081`
 
-5. **Start Workload Service**:
+6. **Start Workload Service**:
    ```bash
    cd workload-service
    mvn spring-boot:run
    ```
-    - Uses H2 in-memory database (auto-configured)
+    - Uses MongoDB database
     - Service will register with Eureka
 
-6. **Start Gateway Service** - **MUST BE LAST**:
+7. **Start Gateway Service** - **MUST BE LAST**:
    ```bash
    cd gateway-service
    mvn spring-boot:run
@@ -161,18 +228,21 @@ If you need to set up custom users (gca/gca as shown in config), edit the Active
 For local development, you need to create `.env` files in each microservice directory:
 
 #### gca-core-service/.env
+
 ```env
 # JWT secret for local development  
 JWT_SECRET=gym-crm-secret-key-1234567890XXABCD
 ```
 
 #### gateway-service/.env
+
 ```env
 # JWT secret for local development (must match core service)
 JWT_SECRET=gym-crm-secret-key-1234567890XXABCD
 ```
 
 #### workload-service/.env
+
 ```env
 # JWT secret for local development (must match core service)
 JWT_SECRET=gym-crm-secret-key-1234567890XXABCD
@@ -184,20 +254,23 @@ JWT_SECRET=gym-crm-secret-key-1234567890XXABCD
 ### Database Configuration
 
 #### PostgreSQL (gca-core-service)
+
 - **URL**: `jdbc:postgresql://localhost:5432/gym_db`
 - **Username**: `gcs`
 - **Password**: `gcs`
 - **Migrations**: Liquibase (automatic on startup)
 
-#### H2 (workload-service)
-- **URL**: `jdbc:h2:mem:workloaddb`
+#### MongoDB (workload-service)
+
+- **URL**: `mongodb://gym:gym@localhost:27017/workloaddb`
 - **Username**: `gym`
 - **Password**: `gym`
-- **Type**: In-memory (data lost on restart)
+- **Database**: workloaddb
 
 ### ActiveMQ Configuration
 
 The system uses the following ActiveMQ settings:
+
 - **Broker URL**: `tcp://localhost:61616`
 - **Username**: `gca`
 - **Password**: `gca`
@@ -208,10 +281,10 @@ The system uses the following ActiveMQ settings:
 
 The gateway service routes requests to the appropriate microservices:
 
-| Route Path | Target Service | Description |
-|------------|---------------|-------------|
+| Route Path             | Target Service   | Description                         |
+|------------------------|------------------|-------------------------------------|
 | `/gym-crm-core/api/**` | gca-core-service | Core business logic, authentication |
-| `/api/workload/**` | workload-service | Trainer workload management |
+| `/api/workload/**`     | workload-service | Trainer workload management         |
 
 ### Security Features
 

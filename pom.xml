@@ -48,6 +48,7 @@
         <json-path.version>2.9.0</json-path.version>
         <mockwebserver.version>4.11.0</mockwebserver.version>
         <h2.version>2.3.232</h2.version>
+        <mongodb.test.version>1.21.3</mongodb.test.version>
         <reactor-test.version>3.8.0-M6</reactor-test.version>
 
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
@@ -183,6 +184,18 @@
                 <groupId>io.projectreactor</groupId>
                 <artifactId>reactor-test</artifactId>
                 <version>${reactor-test.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>junit-jupiter</artifactId>
+                <version>${mongodb.test.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>mongodb</artifactId>
+                <version>${mongodb.test.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>

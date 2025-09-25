@@ -5,6 +5,7 @@ import com.gcm.app.rest.TrainerSummaryResponse;
 import com.gcm.app.rest.TrainerWorkloadRequest;
 import com.gcm.mapper.TrainerSummaryMapper;
 import com.gcm.mapper.TrainerWorkloadMapper;
+import com.gcm.repository.TrainerSummaryRepository;
 import com.gcm.security.JwtService;
 import com.gcm.service.WorkloadService;
 import com.gcm.service.dto.TrainerSummaryResponseDto;
@@ -45,6 +46,9 @@ class WorkloadControllerTest {
 
     @MockitoBean
     private JwtService jwtService;
+
+    @MockitoBean
+    private TrainerSummaryRepository trainerSummaryRepository;
 
     @MockitoBean
     private TrainerWorkloadMapper workloadMapper;

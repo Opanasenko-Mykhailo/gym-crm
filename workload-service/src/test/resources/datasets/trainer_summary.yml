@@ -1,6 +1,0 @@
-trainer_summary:
-  - id: 1
-    username: alice.smith
-    first_name: Alice
-    last_name: Smith
-    active: true

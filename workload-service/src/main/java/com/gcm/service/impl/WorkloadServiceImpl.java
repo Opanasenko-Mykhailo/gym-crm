@@ -21,6 +21,7 @@ import java.util.ArrayList;
 public class WorkloadServiceImpl implements WorkloadService {
 
     private final TrainerSummaryRepository trainerRepo;
+
     private final TrainerSummaryMapper trainerMapper;
 
     @Override
@@ -40,9 +41,10 @@ public class WorkloadServiceImpl implements WorkloadService {
 
     @Override
     public TrainerSummaryResponseDto getTrainerSummary(String username) {
+        log.info("Retrieving trainer summary for username: {}", username);
+
         return trainerMapper.toDto(
-                trainerRepo.findByUsername(username).orElse(null)
-        );
+                trainerRepo.findByUsername(username).orElse(null));
     }
 
     private TrainerSummary getOrCreateTrainer(TrainerWorkloadRequestDto request) {
@@ -85,7 +87,6 @@ public class WorkloadServiceImpl implements WorkloadService {
     private YearlySummary buildNewYearlySummary(TrainerSummary trainer, int year) {
         YearlySummary yearly = YearlySummary.builder()
                 .yearNumber(year)
-                .trainerSummary(trainer)
                 .months(new ArrayList<>())
                 .build();
 
@@ -98,7 +99,6 @@ public class WorkloadServiceImpl implements WorkloadService {
         MonthlySummary monthly = MonthlySummary.builder()
                 .monthNumber(month)
                 .totalDurationMinutes(0)
-                .yearlySummary(yearly)
                 .build();
 
         yearly.getMonths().add(monthly);
@@ -108,10 +108,8 @@ public class WorkloadServiceImpl implements WorkloadService {
 
     private void updateMonthlyDuration(MonthlySummary monthly, TrainerWorkloadRequestDto request) {
         switch (request.getActionType()) {
-            case ADD ->
-                    monthly.setTotalDurationMinutes(monthly.getTotalDurationMinutes() + request.getDurationInMinutes().intValue());
-            case DELETE ->
-                    monthly.setTotalDurationMinutes(Math.max(0, monthly.getTotalDurationMinutes() - request.getDurationInMinutes().intValue()));
+            case ADD -> monthly.setTotalDurationMinutes(monthly.getTotalDurationMinutes() + request.getDurationInMinutes().intValue());
+            case DELETE -> monthly.setTotalDurationMinutes(Math.max(0, monthly.getTotalDurationMinutes() - request.getDurationInMinutes().intValue()));
         }
     }
 }
