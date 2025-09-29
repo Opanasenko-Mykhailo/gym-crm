@@ -49,6 +49,8 @@
         <mockwebserver.version>4.11.0</mockwebserver.version>
         <h2.version>2.3.232</h2.version>
         <mongodb.test.version>1.21.3</mongodb.test.version>
+        <cucumber.version>7.29.0</cucumber.version>
+        <restassured.version>5.5.6</restassured.version>
         <reactor-test.version>3.8.0-M6</reactor-test.version>
 
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
@@ -187,6 +189,30 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
+                <groupId>io.cucumber</groupId>
+                <artifactId>cucumber-java</artifactId>
+                <version>${cucumber.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.cucumber</groupId>
+                <artifactId>cucumber-spring</artifactId>
+                <version>${cucumber.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.cucumber</groupId>
+                <artifactId>cucumber-junit-platform-engine</artifactId>
+                <version>${cucumber.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.rest-assured</groupId>
+                <artifactId>rest-assured</artifactId>
+                <version>${restassured.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
                 <groupId>org.testcontainers</groupId>
                 <artifactId>junit-jupiter</artifactId>
                 <version>${mongodb.test.version}</version>
@@ -312,5 +338,6 @@
         <module>gateway-service</module>
         <module>workload-service</module>
         <module>gca-core-service</module>
+        <module>integration-tests</module>
     </modules>
 </project>
