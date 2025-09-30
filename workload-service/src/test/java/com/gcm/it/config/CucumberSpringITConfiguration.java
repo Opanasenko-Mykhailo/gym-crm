@@ -1,21 +1,24 @@
-package com.gcm.repository;
+package com.gcm.it.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.CrudRepository;
+import io.cucumber.spring.CucumberContextConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+@CucumberContextConfiguration
+@SpringBootTest
 @Testcontainers
-public abstract class AbstractMongoRepositoryTest<R extends CrudRepository<?, ?>> {
+public class CucumberSpringITConfiguration {
 
     @Container
     static MongoDBContainer mongoContainer = new MongoDBContainer("mongo:latest");
 
-    @Autowired
-    protected R repository;
+    static {
+        mongoContainer.start();
+    }
 
     @DynamicPropertySource
     static void setProperties(DynamicPropertyRegistry registry) {

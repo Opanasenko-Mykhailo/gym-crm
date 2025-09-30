@@ -1,0 +1,19 @@
+spring:
+  jms:
+    enabled: false
+  activemq:
+    broker-url: vm://embedded?broker.persistent=false
+    user: ""
+    password: ""
+eureka:
+  client:
+    enabled: false
+
+workload:
+  queue:
+    name: trainer.workload.queue
+  dlq:
+    name: ActiveMQ.DLQ
+
+jwt:
+  secret: test-secret
