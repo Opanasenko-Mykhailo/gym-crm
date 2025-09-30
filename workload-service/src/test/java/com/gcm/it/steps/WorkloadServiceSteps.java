@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class WorkloadServiceSteps {
 
     private static final String DEFAULT_FIRST_NAME = "Jane";
-    private static final String DEFAULT_LAST_NAME = "Doe";
+    private static final String DEFAULT_LAST_NAME = "Silver";
     private static final boolean DEFAULT_ACTIVE = true;
 
     @Autowired

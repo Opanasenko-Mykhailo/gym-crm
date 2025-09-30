@@ -4,9 +4,9 @@ Feature: Workload Service
 
   @PositiveCase
   Scenario: Add workload for existing trainer
-    Given a trainer exists with username "john.doe"
-    When I add a workload of 120 minutes for "john.doe" in month 9 of 2030
-    Then the trainer summary for "john.doe" should contain 120 minutes for month 9 of 2030
+    Given a trainer exists with username "john.cruz"
+    When I add a workload of 120 minutes for "john.cruz" in month 9 of 2030
+    Then the trainer summary for "john.cruz" should contain 120 minutes for month 9 of 2030
 
   @PositiveCase
   Scenario: Add multiple workloads for the same trainer
