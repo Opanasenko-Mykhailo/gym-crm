@@ -1,6 +1,4 @@
 spring:
-  jms:
-    enabled: false
   activemq:
     broker-url: vm://embedded?broker.persistent=false
     user: ""

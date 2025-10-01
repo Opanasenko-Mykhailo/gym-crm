@@ -1,7 +1,8 @@
-package com.gcm.it.steps;
+package com.gcm.steps;
 
 import com.gcm.model.MonthlySummary;
 import com.gcm.model.TrainerSummary;
+import com.gcm.model.YearlySummary;
 import com.gcm.repository.TrainerSummaryRepository;
 import com.gcm.service.WorkloadService;
 import com.gcm.service.dto.TrainerWorkloadRequestDto;
@@ -9,12 +10,13 @@ import com.gcm.service.dto.TrainerWorkloadRequestDto.ActionType;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import jakarta.validation.ConstraintViolationException;
-
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -57,15 +59,27 @@ public class WorkloadServiceSteps {
 
     @Then("the trainer summary for {string} should contain {int} minutes for month {int} of {int}")
     public void the_trainer_summary_should_contain(String username, int minutes, int month, int year) {
-        TrainerSummary summary = trainerRepo.findByUsername(username).orElseThrow();
-        MonthlySummary monthly = summary.getYears().stream()
-                .filter(y -> y.getYearNumber() == year)
-                .flatMap(y -> y.getMonths().stream())
-                .filter(m -> m.getMonthNumber() == month)
-                .findFirst()
-                .orElseThrow();
+        Optional<TrainerSummary> summaryOpt = trainerRepo.findByUsername(username);
+        assertThat(summaryOpt).isPresent();
 
-        assertThat(monthly.getTotalDurationMinutes()).isEqualTo(minutes);
+        TrainerSummary summary = summaryOpt.get();
+        List<YearlySummary> years = summary.getYears();
+        assertThat(years).isNotEmpty();
+
+        YearlySummary targetYearly = years.get(0);
+        assertThat(targetYearly.getYearNumber()).isEqualTo(year);
+
+        List<MonthlySummary> monthsList = targetYearly.getMonths();
+        assertThat(monthsList).isNotEmpty();
+
+        MonthlySummary targetMonthly = monthsList.get(0);
+
+        if (targetMonthly.getMonthNumber() != month) {
+            targetMonthly = monthsList.get(1);
+        }
+
+        assertThat(targetMonthly.getMonthNumber()).isEqualTo(month);
+        assertThat(targetMonthly.getTotalDurationMinutes()).isEqualTo(minutes);
     }
 
     private TrainerSummary createTrainer(String username) {
