@@ -111,10 +111,8 @@ public class WorkloadServiceImpl implements WorkloadService {
 
     private void updateMonthlyDuration(MonthlySummary monthly, TrainerWorkloadRequestDto request) {
         switch (request.getActionType()) {
-            case ADD ->
-                    monthly.setTotalDurationMinutes(monthly.getTotalDurationMinutes() + request.getDurationInMinutes().intValue());
-            case DELETE ->
-                    monthly.setTotalDurationMinutes(Math.max(0, monthly.getTotalDurationMinutes() - request.getDurationInMinutes().intValue()));
+            case ADD -> monthly.setTotalDurationMinutes(monthly.getTotalDurationMinutes() + request.getDurationInMinutes().intValue());
+            case DELETE -> monthly.setTotalDurationMinutes(Math.max(0, monthly.getTotalDurationMinutes() - request.getDurationInMinutes().intValue()));
         }
     }
 }
