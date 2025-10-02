@@ -1,9 +1,11 @@
 spring:
+  config:
+    import: optional:file:./.env[.properties]
   application:
     name: cucumber-integration-tests
 
 jwt:
-  secret: test-secret-key-for-integration-tests
+  secret: ${JWT_SECRET}
 
 workload:
   test:

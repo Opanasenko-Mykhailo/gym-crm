@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -22,8 +21,7 @@ public class JwtTokenGenerator {
     }
 
     public static String generateToken(String username) {
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("roles", List.of("ROLE_TRAINER"));
+        Map<String, Object> claims = Map.of("roles", List.of("ROLE_TRAINER"));
 
         return Jwts.builder()
                 .claims(claims)

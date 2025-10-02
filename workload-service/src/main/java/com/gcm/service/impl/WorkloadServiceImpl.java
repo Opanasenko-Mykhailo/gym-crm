@@ -9,17 +9,14 @@ import com.gcm.service.WorkloadService;
 import com.gcm.service.dto.TrainerSummaryResponseDto;
 import com.gcm.service.dto.TrainerWorkloadRequestDto;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
 
 import java.util.ArrayList;
 
 @Slf4j
 @Service
-@Validated
 @RequiredArgsConstructor
 public class WorkloadServiceImpl implements WorkloadService {
 
@@ -29,7 +26,7 @@ public class WorkloadServiceImpl implements WorkloadService {
 
     @Override
     @Transactional
-    public void processTrainerWorkload(@Valid TrainerWorkloadRequestDto request) {
+    public void processTrainerWorkload(TrainerWorkloadRequestDto request) {
         log.info("Processing workload for {}", request.getUsername());
 
         TrainerSummary trainer = getOrCreateTrainer(request);

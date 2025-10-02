@@ -2,11 +2,8 @@ spring:
   data:
     mongodb:
       database: test
-
   activemq:
     broker-url: vm://embedded?broker.persistent=false
-    user: ""
-    password: ""
 
 de:
   flapdoodle:
@@ -28,4 +25,4 @@ jms:
   request-timeout-ms: 5000
 
 jwt:
-  secret: test-secret-key-for-integration-tests
+  secret: ${JWT_TEST_SECRET}
