@@ -40,6 +40,7 @@
         <jjwt-new.version>0.12.6</jjwt-new.version>
         <resilience4j.version>2.1.0</resilience4j.version>
         <caffeine.version>3.2.2</caffeine.version>
+        <activemq.version>6.1.7</activemq.version>
         <postgresql.version>42.7.7</postgresql.version>
         <liquibase.version>4.32.0</liquibase.version>
         <commons-codec.version>1.15</commons-codec.version>
@@ -49,6 +50,7 @@
         <mockwebserver.version>4.11.0</mockwebserver.version>
         <h2.version>2.3.232</h2.version>
         <mongodb.test.version>1.21.3</mongodb.test.version>
+        <flapdoodle.embed.version>4.11.0</flapdoodle.embed.version>
         <cucumber.version>7.29.0</cucumber.version>
         <restassured.version>5.5.6</restassured.version>
         <reactor-test.version>3.8.0-M6</reactor-test.version>
@@ -115,6 +117,16 @@
                 <groupId>com.github.ben-manes.caffeine</groupId>
                 <artifactId>caffeine</artifactId>
                 <version>${caffeine.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.activemq</groupId>
+                <artifactId>activemq-broker</artifactId>
+                <version>${activemq.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.activemq</groupId>
+                <artifactId>activemq-client</artifactId>
+                <version>${activemq.version}</version>
             </dependency>
             <dependency>
                 <groupId>commons-codec</groupId>
@@ -223,6 +235,11 @@
                 <artifactId>mongodb</artifactId>
                 <version>${mongodb.test.version}</version>
                 <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>de.flapdoodle.embed</groupId>
+                <artifactId>de.flapdoodle.embed.mongo.spring30x</artifactId>
+                <version>${flapdoodle.embed.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.github.database-rider</groupId>

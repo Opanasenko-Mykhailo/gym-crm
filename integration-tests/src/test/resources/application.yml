@@ -1,17 +1,11 @@
 spring:
-  activemq:
-    broker-url: vm://embedded?broker.persistent=false
-    user: ""
-    password: ""
-eureka:
-  client:
-    enabled: false
-
-workload:
-  queue:
-    name: trainer.workload.queue
-  dlq:
-    name: ActiveMQ.DLQ
+  application:
+    name: cucumber-integration-tests
 
 jwt:
-  secret: test-secret
+  secret: test-secret-key-for-integration-tests
+
+workload:
+  test:
+    url: http://localhost
+    port: 8082
