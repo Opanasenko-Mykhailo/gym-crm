@@ -227,8 +227,7 @@ public class WorkloadSteps {
     private Map<String, String> extractData(DataTable dataTable) {
         if (dataTable.height() > 1 && dataTable.width() == 2) {
             return dataTable.asMap(String.class, String.class);
-        } else {
-            return dataTable.asMaps().get(0);
         }
+        return dataTable.asMaps().get(0);
     }
 }
