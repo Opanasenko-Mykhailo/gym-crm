@@ -28,6 +28,9 @@ touch .env
 ```env
 # JWT secret for local development
 JWT_SECRET=gym-crm-secret-key-1234567890XXABCD
+
+# JWT secret for automation-test
+JWT_TEST_SECRET=test-secret-key-for-integration-tests
 ```
 
 > 💡 **Note:** This secret is used only for local development and can be safely committed to the repository.

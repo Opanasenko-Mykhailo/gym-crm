@@ -1,0 +1,13 @@
+spring:
+  config:
+    import: optional:file:./.env[.properties]
+  application:
+    name: cucumber-integration-tests
+
+jwt:
+  secret: ${JWT_SECRET}
+
+workload:
+  test:
+    url: http://localhost
+    port: 8082

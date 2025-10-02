@@ -12,7 +12,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 public abstract class AbstractMongoRepositoryTest<R extends CrudRepository<?, ?>> {
 
     @Container
-    static MongoDBContainer mongoContainer = new MongoDBContainer("mongo:7.0.5");
+    static MongoDBContainer mongoContainer = new MongoDBContainer("mongo:latest");
 
     @Autowired
     protected R repository;
