@@ -11,6 +11,7 @@ import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import org.springframework.beans.factory.annotation.Value;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static io.restassured.RestAssured.given;
@@ -52,6 +53,7 @@ public class WorkloadSteps {
     @Given("trainer {string} exists with following workload:")
     public void trainerExistsWithWorkload(String username, DataTable dataTable) {
         Map<String, String> data = dataTable.asMaps().get(0);
+        data = normalizeEmptyValues(data);
 
         String requestBody = createAddWorkloadBody(username, data.get("year"), data.get("month"), data.get("duration"));
 
@@ -74,6 +76,7 @@ public class WorkloadSteps {
     @When("I submit a workload request:")
     public void iSubmitWorkloadRequest(DataTable dataTable) {
         Map<String, String> data = extractData(dataTable);
+        data = normalizeEmptyValues(data);
 
         String requestBody = createGeneralWorkloadBody(
                 data.get("username"),
@@ -229,5 +232,12 @@ public class WorkloadSteps {
             return dataTable.asMap(String.class, String.class);
         }
         return dataTable.asMaps().get(0);
+    }
+
+    private Map<String, String> normalizeEmptyValues(Map<String, String> data) {
+        Map<String, String> normalized = new HashMap<>(data);
+        normalized.replaceAll((k, v) -> v == null ? "" : v);
+
+        return normalized;
     }
 }

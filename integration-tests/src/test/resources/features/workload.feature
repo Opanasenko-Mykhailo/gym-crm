@@ -10,14 +10,14 @@ Feature: Trainer Workload Management
   Scenario: Add new training session for trainer (vertical table)
     Given trainer "ethan.woodward" does not exist
     When I submit a workload request:
-      | field             | value           |
-      | username          | ethan.woodward  |
-      | firstName         | Ethan           |
-      | lastName          | Woodward        |
-      | active            | true            |
-      | trainingDate      | 2025-10-15      |
-      | durationInMinutes | 60              |
-      | actionType        | ADD             |
+      | field             | value          |
+      | username          | ethan.woodward |
+      | firstName         | Ethan          |
+      | lastName          | Woodward       |
+      | active            | true           |
+      | trainingDate      | 2025-10-15     |
+      | durationInMinutes | 60             |
+      | actionType        | ADD            |
     Then the request is successful
     And trainer "ethan.woodward" has total duration of 60 minutes for October 2025
 
@@ -59,4 +59,46 @@ Feature: Trainer Workload Management
     When I submit a workload request:
       | username        | firstName | lastName   | active | trainingDate | durationInMinutes | actionType |
       | nora.fitzgerald | Nora      | Fitzgerald | true   | 2025-10-15   | -60               | ADD        |
+    Then the request is unsuccessful with status 400
+
+  @NegativeCase
+  Scenario: Add training session with empty first name
+    Given trainer "alex.blank" does not exist
+    When I submit a workload request:
+      | field             | value      |
+      | username          | alex.blank |
+      | firstName         |            |
+      | lastName          | Blank      |
+      | active            | true       |
+      | trainingDate      | 2025-10-15 |
+      | durationInMinutes | 60         |
+      | actionType        | ADD        |
+    Then the request is unsuccessful with status 400
+
+  @NegativeCase
+  Scenario: Add training session with empty first username
+    Given trainer "alex.blank" does not exist
+    When I submit a workload request:
+      | field             | value      |
+      | username          |            |
+      | firstName         | Alex       |
+      | lastName          | Blank      |
+      | active            | true       |
+      | trainingDate      | 2025-10-15 |
+      | durationInMinutes | 60         |
+      | actionType        | ADD        |
+    Then the request is unsuccessful with status 400
+
+  @NegativeCase
+  Scenario: Add training session with old training date
+    Given trainer "michael.old" does not exist
+    When I submit a workload request:
+      | field             | value         |
+      | username          | michael.old   |
+      | firstName         | Michael      |
+      | lastName          | Old          |
+      | active            | true         |
+      | trainingDate      | 2020-05-15   |
+      | durationInMinutes | 60           |
+      | actionType        | ADD          |
     Then the request is unsuccessful with status 400
