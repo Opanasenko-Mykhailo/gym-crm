@@ -1,19 +1,7 @@
 spring:
-  data:
-    mongodb:
-      database: test
-  activemq:
-    broker-url: vm://embedded?broker.persistent=false
-
-de:
-  flapdoodle:
-    mongodb:
-      embedded:
-        version: 6.0.5
-
-eureka:
-  client:
-    enabled: false
+  autoconfigure:
+    exclude:
+      - de.flapdoodle.embed.mongo.spring.autoconfigure.EmbeddedMongoAutoConfiguration
 
 workload:
   queue:
