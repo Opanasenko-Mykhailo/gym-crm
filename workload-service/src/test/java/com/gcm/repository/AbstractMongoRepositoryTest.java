@@ -20,5 +20,7 @@ public abstract class AbstractMongoRepositoryTest<R extends CrudRepository<?, ?>
     @DynamicPropertySource
     static void setProperties(DynamicPropertyRegistry registry) {
         registry.add("spring.data.mongodb.uri", mongoContainer::getReplicaSetUrl);
+        registry.add("spring.autoconfigure.exclude",
+                () -> "de.flapdoodle.embed.mongo.spring.autoconfigure.EmbeddedMongoAutoConfiguration");
     }
 }
