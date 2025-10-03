@@ -54,11 +54,11 @@ class GlobalExceptionHandlerTest {
     @Test
     void givenConstraintViolation_whenHandleConstraintViolation_thenReturnsBadRequest() {
         ConstraintViolation<?> violation = mock(ConstraintViolation.class);
+        ConstraintViolationException ex = new ConstraintViolationException(Set.of(violation));
+
         when(violation.getPropertyPath()).thenReturn(mock(Path.class));
         when(violation.getPropertyPath().toString()).thenReturn(FIELD_TRAINING_DATE);
         when(violation.getMessage()).thenReturn(ERROR_MESSAGE);
-
-        ConstraintViolationException ex = new ConstraintViolationException(Set.of(violation));
 
         ResponseEntity<Map<String, String>> response = handler.handleConstraintViolation(ex);
 
