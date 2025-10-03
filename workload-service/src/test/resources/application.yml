@@ -1,0 +1,10 @@
+spring:
+  autoconfigure:
+    exclude:
+      - de.flapdoodle.embed.mongo.spring.autoconfigure.EmbeddedMongoAutoConfiguration
+
+workload:
+  queue:
+    name: trainer.workload.queue
+  dlq:
+    name: ActiveMQ.DLQ

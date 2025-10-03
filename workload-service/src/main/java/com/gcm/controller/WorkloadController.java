@@ -35,7 +35,7 @@ public class WorkloadController {
 
     @GetMapping("/{username}")
     public ResponseEntity<TrainerSummaryResponse> getTrainerSummary(@PathVariable String username) {
-        TrainerSummaryResponseDto summary =service.getTrainerSummary(username);
+        TrainerSummaryResponseDto summary = service.getTrainerSummary(username);
 
         if (summary == null) {
             throw new ResourceNotFoundException(String.format("Trainer with username %s not found", username));
