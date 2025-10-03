@@ -9,14 +9,17 @@ import com.gcm.service.WorkloadService;
 import com.gcm.service.dto.TrainerSummaryResponseDto;
 import com.gcm.service.dto.TrainerWorkloadRequestDto;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.ArrayList;
 
 @Slf4j
 @Service
+@Validated
 @RequiredArgsConstructor
 public class WorkloadServiceImpl implements WorkloadService {
 
@@ -26,7 +29,7 @@ public class WorkloadServiceImpl implements WorkloadService {
 
     @Override
     @Transactional
-    public void processTrainerWorkload(TrainerWorkloadRequestDto request) {
+    public void processTrainerWorkload(@Valid TrainerWorkloadRequestDto request) {
         log.info("Processing workload for {}", request.getUsername());
 
         TrainerSummary trainer = getOrCreateTrainer(request);
@@ -108,8 +111,10 @@ public class WorkloadServiceImpl implements WorkloadService {
 
     private void updateMonthlyDuration(MonthlySummary monthly, TrainerWorkloadRequestDto request) {
         switch (request.getActionType()) {
-            case ADD -> monthly.setTotalDurationMinutes(monthly.getTotalDurationMinutes() + request.getDurationInMinutes().intValue());
-            case DELETE -> monthly.setTotalDurationMinutes(Math.max(0, monthly.getTotalDurationMinutes() - request.getDurationInMinutes().intValue()));
+            case ADD ->
+                    monthly.setTotalDurationMinutes(monthly.getTotalDurationMinutes() + request.getDurationInMinutes().intValue());
+            case DELETE ->
+                    monthly.setTotalDurationMinutes(Math.max(0, monthly.getTotalDurationMinutes() - request.getDurationInMinutes().intValue()));
         }
     }
 }
