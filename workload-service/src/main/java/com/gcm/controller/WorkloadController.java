@@ -10,7 +10,6 @@ import com.gcm.service.dto.TrainerSummaryResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,7 +35,7 @@ public class WorkloadController {
 
     @GetMapping("/{username}")
     public ResponseEntity<TrainerSummaryResponse> getTrainerSummary(@PathVariable String username) {
-        TrainerSummaryResponseDto summary =service.getTrainerSummary(username);
+        TrainerSummaryResponseDto summary = service.getTrainerSummary(username);
 
         if (summary == null) {
             throw new ResourceNotFoundException(String.format("Trainer with username %s not found", username));
