@@ -21,7 +21,9 @@ public class JwtTokenGenerator {
     }
 
     public static String generateToken(String username) {
-        Map<String, Object> claims = Map.of("roles", List.of("ROLE_TRAINER"));
+        Map<String, Object> claims = Map.of(
+                "roles", List.of("ROLE_TRAINER"),
+                "type", "access");
 
         return Jwts.builder()
                 .claims(claims)

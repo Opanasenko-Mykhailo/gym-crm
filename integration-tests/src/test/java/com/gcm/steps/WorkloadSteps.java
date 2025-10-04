@@ -11,9 +11,10 @@ import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import org.springframework.beans.factory.annotation.Value;
 
-import java.util.HashMap;
 import java.util.Map;
 
+import static com.gcm.testutils.DataTableUtils.extractData;
+import static com.gcm.testutils.DataTableUtils.normalizeEmptyValues;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -225,19 +226,5 @@ public class WorkloadSteps {
 
     private String capitalize(String str) {
         return str.substring(0, 1).toUpperCase() + str.substring(1);
-    }
-
-    private Map<String, String> extractData(DataTable dataTable) {
-        if (dataTable.height() > 1 && dataTable.width() == 2) {
-            return dataTable.asMap(String.class, String.class);
-        }
-        return dataTable.asMaps().get(0);
-    }
-
-    private Map<String, String> normalizeEmptyValues(Map<String, String> data) {
-        Map<String, String> normalized = new HashMap<>(data);
-        normalized.replaceAll((k, v) -> v == null ? "" : v);
-
-        return normalized;
     }
 }
