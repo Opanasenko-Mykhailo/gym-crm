@@ -2,6 +2,7 @@ package com.gcc.app.facade.dto;
 
 import com.gcc.app.model.TrainingType;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
@@ -19,5 +20,6 @@ public class TrainerUpdateRequestDto {
 
     private Boolean isActive;
 
+    @NotNull(message = "Specialization (training type) is required")
     private TrainingType specialization;
 }

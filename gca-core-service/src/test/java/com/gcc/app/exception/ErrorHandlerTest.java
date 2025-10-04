@@ -1,7 +1,6 @@
 package com.gcc.app.exception;
 
 import com.gcc.app.rest.ErrorResponse;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

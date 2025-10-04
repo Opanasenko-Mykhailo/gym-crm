@@ -1,6 +1,6 @@
 package com.gcc.app.service.impl;
 
-import com.gcc.app.exception.ServiceException;
+import com.gcc.app.exception.EntityNotFoundException;
 import com.gcc.app.model.Role;
 import com.gcc.app.model.enums.RoleType;
 import com.gcc.app.repository.RoleRepository;
@@ -17,6 +17,6 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public Role getByType(RoleType type) {
         return roleRepository.findByRoleType(type)
-                .orElseThrow(() -> new ServiceException("Role not found: " + type));
+                .orElseThrow(() -> new EntityNotFoundException("Role not found: " + type));
     }
 }

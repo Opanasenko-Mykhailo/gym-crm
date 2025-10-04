@@ -1,6 +1,6 @@
 package com.gcc.app.service.impl;
 
-import com.gcc.app.exception.ServiceException;
+import com.gcc.app.exception.EntityNotFoundException;
 import com.gcc.app.facade.dto.TrainingCreateRequestDto;
 import com.gcc.app.mapper.TrainingMapper;
 import com.gcc.app.model.Training;
@@ -55,7 +55,7 @@ public class TrainingServiceImpl implements TrainingService {
     public Training getTraining(Long id) {
         log.info("Retrieving training with id: {}", id);
 
-        Training training = validateTrainingExists(id).orElseThrow(() -> new ServiceException(String.format("Training with id %d not found", id)));
+        Training training = validateTrainingExists(id).orElseThrow(() -> new EntityNotFoundException(String.format("Training with id %d not found", id)));
         log.info("Training retrieved: {}", training);
 
         return training;
@@ -65,7 +65,7 @@ public class TrainingServiceImpl implements TrainingService {
         Optional<Training> training = trainingRepository.findById(id);
 
         if (training.isEmpty()) {
-            throw new ServiceException(String.format("Training with id %d not found", id));
+            throw new EntityNotFoundException(String.format("Training with id %d not found", id));
         }
 
         return training;

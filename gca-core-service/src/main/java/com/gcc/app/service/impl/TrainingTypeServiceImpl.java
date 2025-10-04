@@ -1,6 +1,6 @@
 package com.gcc.app.service.impl;
 
-import com.gcc.app.exception.ServiceException;
+import com.gcc.app.exception.EntityNotFoundException;
 import com.gcc.app.facade.dto.TrainingTypeResponseDto;
 import com.gcc.app.mapper.TrainingTypeMapper;
 import com.gcc.app.model.TrainingType;
@@ -35,6 +35,6 @@ public class TrainingTypeServiceImpl implements TrainingTypeService {
         log.info("Fetching TrainingType by name: {}", trainingTypeName);
 
         return trainingTypeRepository.findByName(trainingTypeName)
-                .orElseThrow(() -> new ServiceException(String.format("TrainingType not found with name: %s", trainingTypeName)));
+                .orElseThrow(() -> new EntityNotFoundException(String.format("TrainingType not found with name: %s", trainingTypeName)));
     }
 }

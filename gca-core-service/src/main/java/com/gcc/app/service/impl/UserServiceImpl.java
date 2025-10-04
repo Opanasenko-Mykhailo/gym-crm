@@ -1,5 +1,6 @@
 package com.gcc.app.service.impl;
 
+import com.gcc.app.exception.EntityNotFoundException;
 import com.gcc.app.exception.ServiceException;
 import com.gcc.app.facade.dto.PasswordChangeRequestDto;
 import com.gcc.app.model.User;
@@ -28,7 +29,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getByUsername(String username) {
         return userRepository.findByUsername(username)
-                .orElseThrow(() -> new ServiceException("User not found: " + username));
+                .orElseThrow(() -> new EntityNotFoundException("User not found: " + username));
     }
 
     @Transactional(readOnly = true)
@@ -43,7 +44,7 @@ public class UserServiceImpl implements UserService {
         log.info("Changing password for username: {}", dto.getUsername());
 
         User user = userRepository.findByUsername(dto.getUsername())
-                .orElseThrow(() -> new ServiceException("User not found: " + dto.getUsername()));
+                .orElseThrow(() -> new EntityNotFoundException("User not found: " + dto.getUsername()));
 
         if (!credentialsService.isPasswordCorrect(dto.getOldPassword(), user.getPassword())) {
             throw new ServiceException("Old password is incorrect");

@@ -1,7 +1,6 @@
 package com.gcc.app.exception;
 
 import com.gcc.app.rest.ErrorResponse;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
