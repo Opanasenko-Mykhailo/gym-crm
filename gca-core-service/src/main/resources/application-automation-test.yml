@@ -11,23 +11,5 @@ eureka:
   client:
     enabled: false
 
-workload:
-  queue:
-    name: trainer.workload.queue
-
-jms:
-  request-timeout-ms: 5000
-
 jwt:
   secret: ${JWT_TEST_SECRET}
-  expiration: 900000
-  refresh-expiration: 604800000
-
-refresh-token:
-  cleanup:
-    every-milliseconds: 3600000
-
-bruteforce:
-  max-attempts: 3
-  max-size: 10000
-  expire-minutes: 5
