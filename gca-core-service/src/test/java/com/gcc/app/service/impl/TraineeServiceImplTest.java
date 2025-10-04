@@ -1,6 +1,6 @@
 package com.gcc.app.service.impl;
 
-import com.gcc.app.exception.ServiceException;
+import com.gcc.app.exception.EntityNotFoundException;
 import com.gcc.app.facade.dto.TraineeCreateRequestDto;
 import com.gcc.app.facade.dto.TraineeUpdateRequestDto;
 import com.gcc.app.mapper.TraineeMapper;
@@ -128,7 +128,7 @@ class TraineeServiceImplTest {
     void updateTrainee_whenTraineeDoesNotExist_throwsServiceException() {
         when(traineeRepository.findByUsername(USERNAME)).thenReturn(Optional.empty());
 
-        ServiceException ex = assertThrows(ServiceException.class, () -> service.updateTrainee(UPDATE_REQUEST));
+        EntityNotFoundException ex = assertThrows(EntityNotFoundException.class, () -> service.updateTrainee(UPDATE_REQUEST));
 
         assertEquals(TRAINEE_NOT_FOUND_MESSAGE, ex.getMessage());
         verify(traineeRepository).findByUsername(USERNAME);
@@ -148,7 +148,7 @@ class TraineeServiceImplTest {
     void deleteTraineeByUsername_whenTraineeDoesNotExist_throwsServiceException() {
         when(traineeRepository.findByUsername(USERNAME)).thenReturn(Optional.empty());
 
-        ServiceException ex = assertThrows(ServiceException.class, () -> service.deleteTraineeByUsername(USERNAME));
+        EntityNotFoundException ex = assertThrows(EntityNotFoundException.class, () -> service.deleteTraineeByUsername(USERNAME));
 
         assertEquals(TRAINEE_NOT_FOUND_MESSAGE, ex.getMessage());
         verify(traineeRepository).findByUsername(USERNAME);
@@ -174,7 +174,7 @@ class TraineeServiceImplTest {
     void getByUsername_whenTraineeDoesNotExist_throwsServiceException() {
         when(traineeRepository.findByUsername(USERNAME)).thenReturn(Optional.empty());
 
-        ServiceException ex = assertThrows(ServiceException.class, () -> service.getByUsername(USERNAME));
+        EntityNotFoundException ex = assertThrows(EntityNotFoundException.class, () -> service.getByUsername(USERNAME));
 
         assertEquals(format("Trainee not found with username: %s", USERNAME), ex.getMessage());
         verify(traineeRepository).findByUsername(USERNAME);
@@ -199,7 +199,7 @@ class TraineeServiceImplTest {
     void setTraineeActive_whenTraineeNotFound_throwsServiceException() {
         when(traineeRepository.findByUsername(USERNAME)).thenReturn(Optional.empty());
 
-        ServiceException ex = assertThrows(ServiceException.class,
+        EntityNotFoundException ex = assertThrows(EntityNotFoundException.class,
                 () -> service.setTraineeActivationStatus(USERNAME, true));
 
         assertEquals(format("Trainee not found with username: %s", USERNAME), ex.getMessage());
@@ -223,7 +223,7 @@ class TraineeServiceImplTest {
     void getUnassignedTrainers_whenTraineeNotFound_throwsServiceException() {
         when(traineeRepository.findByUsername(USERNAME)).thenReturn(Optional.empty());
 
-        ServiceException ex = assertThrows(ServiceException.class,
+        EntityNotFoundException ex = assertThrows(EntityNotFoundException.class,
                 () -> service.getUnassignedTrainers(USERNAME));
 
         assertEquals(format("Trainee not found with username: %s", USERNAME), ex.getMessage());
@@ -262,7 +262,7 @@ class TraineeServiceImplTest {
     void updateTraineeTrainers_whenTraineeNotFound_throwsServiceException() {
         when(traineeRepository.findByUsername(USERNAME)).thenReturn(Optional.empty());
 
-        ServiceException ex = assertThrows(ServiceException.class,
+        EntityNotFoundException ex = assertThrows(EntityNotFoundException.class,
                 () -> service.updateTraineeTrainers(USERNAME, List.of("trainer1")));
 
         assertEquals(format("Trainee not found with username: %s", USERNAME), ex.getMessage());

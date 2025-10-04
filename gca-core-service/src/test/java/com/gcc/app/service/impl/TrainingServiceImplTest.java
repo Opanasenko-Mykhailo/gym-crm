@@ -1,6 +1,6 @@
 package com.gcc.app.service.impl;
 
-import com.gcc.app.exception.ServiceException;
+import com.gcc.app.exception.EntityNotFoundException;
 import com.gcc.app.facade.dto.TrainingCreateRequestDto;
 import com.gcc.app.mapper.TrainingMapper;
 import com.gcc.app.model.Trainee;
@@ -112,7 +112,7 @@ class TrainingServiceImplTest {
     void getTraining_whenTrainingDoesNotExist_throwsServiceException() {
         when(trainingRepository.findById(1L)).thenReturn(Optional.empty());
 
-        ServiceException ex = assertThrows(ServiceException.class, () -> service.getTraining(1L));
+        EntityNotFoundException ex = assertThrows(EntityNotFoundException.class, () -> service.getTraining(1L));
 
         assertEquals("Training with id 1 not found", ex.getMessage());
 

@@ -1,5 +1,6 @@
 package com.gcc.app.service.impl;
 
+import com.gcc.app.exception.EntityNotFoundException;
 import com.gcc.app.exception.ServiceException;
 import com.gcc.app.facade.dto.TrainerCreateRequestDto;
 import com.gcc.app.facade.dto.TrainerTrainingSearchCriteriaDto;
@@ -78,7 +79,7 @@ public class TrainerServiceImpl implements TrainerService {
     public Trainer updateTrainer(@Valid TrainerUpdateRequestDto dto) {
         String username = dto.getUsername();
         Trainer existing = trainerRepository.findByUsername(username)
-                .orElseThrow(() -> new ServiceException(String.format(TRAINER_NOT_FOUND_MSG, username)));
+                .orElseThrow(() -> new EntityNotFoundException(String.format(TRAINER_NOT_FOUND_MSG, username)));
 
         Trainer updated = buildUpdatedTrainer(existing, dto);
 
@@ -91,7 +92,7 @@ public class TrainerServiceImpl implements TrainerService {
         log.info("Getting trainer by username: {}", username);
 
         return trainerRepository.findByUsername(username)
-                .orElseThrow(() -> new ServiceException(String.format(TRAINER_NOT_FOUND_MSG, username)));
+                .orElseThrow(() -> new EntityNotFoundException(String.format(TRAINER_NOT_FOUND_MSG, username)));
     }
 
     @Transactional(readOnly = true)
@@ -106,7 +107,7 @@ public class TrainerServiceImpl implements TrainerService {
     @Override
     public void setTrainerActivationStatus(String username, boolean isActive) {
         Trainer trainer = trainerRepository.findByUsername(username)
-                .orElseThrow(() -> new ServiceException(String.format(TRAINER_NOT_FOUND_MSG, username)));
+                .orElseThrow(() -> new EntityNotFoundException(String.format(TRAINER_NOT_FOUND_MSG, username)));
 
         User updatedUser = trainer.getUser().toBuilder()
                 .isActive(isActive)

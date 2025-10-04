@@ -1,5 +1,6 @@
 package com.gcc.app.service.impl;
 
+import com.gcc.app.exception.EntityNotFoundException;
 import com.gcc.app.exception.ServiceException;
 import com.gcc.app.facade.dto.PasswordChangeRequestDto;
 import com.gcc.app.model.User;
@@ -89,7 +90,7 @@ class UserServiceImplTest {
 
         when(userRepository.findByUsername(USERNAME)).thenReturn(Optional.empty());
 
-        ServiceException ex = assertThrows(ServiceException.class, () -> service.changePassword(dto));
+        EntityNotFoundException ex = assertThrows(EntityNotFoundException.class, () -> service.changePassword(dto));
 
         assertEquals("User not found: " + USERNAME, ex.getMessage());
         verify(userRepository).findByUsername(USERNAME);

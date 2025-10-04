@@ -1,6 +1,6 @@
 package com.gcc.app.service.impl;
 
-import com.gcc.app.exception.ServiceException;
+import com.gcc.app.exception.EntityNotFoundException;
 import com.gcc.app.facade.dto.TrainerCreateRequestDto;
 import com.gcc.app.facade.dto.TrainerTrainingSearchCriteriaDto;
 import com.gcc.app.facade.dto.TrainerUpdateRequestDto;
@@ -141,7 +141,7 @@ class TrainerServiceImplTest {
     void updateTrainer_whenTrainerDoesNotExist_throwsServiceException() {
         when(trainerRepository.findByUsername(USERNAME)).thenReturn(Optional.empty());
 
-        ServiceException ex = assertThrows(ServiceException.class, () -> service.updateTrainer(UPDATE_REQUEST));
+        EntityNotFoundException ex = assertThrows(EntityNotFoundException.class, () -> service.updateTrainer(UPDATE_REQUEST));
 
         assertEquals(TRAINER_NOT_FOUND_MESSAGE, ex.getMessage());
         verify(trainerRepository).findByUsername(USERNAME);
@@ -161,7 +161,7 @@ class TrainerServiceImplTest {
     void getByUsername_whenTrainerDoesNotExist_throwsServiceException() {
         when(trainerRepository.findByUsername(USERNAME)).thenReturn(Optional.empty());
 
-        ServiceException ex = assertThrows(ServiceException.class, () -> service.getByUsername(USERNAME));
+        EntityNotFoundException ex = assertThrows(EntityNotFoundException.class, () -> service.getByUsername(USERNAME));
 
         assertEquals(format("Trainer not found with username: %s", USERNAME), ex.getMessage());
         verify(trainerRepository).findByUsername(USERNAME);
@@ -186,7 +186,7 @@ class TrainerServiceImplTest {
     void setTrainerActive_whenTrainerDoesNotExist_throwsServiceException() {
         when(trainerRepository.findByUsername(USERNAME)).thenReturn(Optional.empty());
 
-        ServiceException ex = assertThrows(ServiceException.class,
+        EntityNotFoundException ex = assertThrows(EntityNotFoundException.class,
                 () -> service.setTrainerActivationStatus(USERNAME, true));
 
         assertEquals(format("Trainer not found with username: %s", USERNAME), ex.getMessage());

@@ -1,6 +1,6 @@
 package com.gcc.app.service.impl;
 
-import com.gcc.app.exception.ServiceException;
+import com.gcc.app.exception.EntityNotFoundException;
 import com.gcc.app.model.Role;
 import com.gcc.app.model.enums.RoleType;
 import com.gcc.app.repository.RoleRepository;
@@ -41,7 +41,7 @@ class RoleServiceImplTest {
         RoleType roleType = RoleType.ROLE_TRAINEE;
         when(roleRepository.findByRoleType(roleType)).thenReturn(Optional.empty());
 
-        ServiceException exception = assertThrows(ServiceException.class, () -> roleService.getByType(roleType));
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> roleService.getByType(roleType));
 
         assertEquals("Role not found: " + roleType, exception.getMessage());
     }
