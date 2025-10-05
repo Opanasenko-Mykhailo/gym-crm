@@ -11,3 +11,8 @@ workload:
   test:
     url: http://localhost
     port: 8082
+
+gca:
+  test:
+    url: http://localhost
+    port: 8081

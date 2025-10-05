@@ -25,10 +25,20 @@ JWT_SECRET=test-secret-key-for-integration-tests
 > For production environments, secrets should be stored in environment variables and **not** committed.
 
 
-## Running Workload Service for Integration Tests
+## Running Services for Integration Tests
 
-Integration tests require the Workload Service to be running under the `automation-test` profile. You can start it using Maven:
+Integration tests require both the GCA Service and Workload Service to be running under the `automation-test` profile.
+
+### Running GCA Service
+
+```bash
+cd gca-core-service
+mvn spring-boot:run -Dspring-boot.run.profiles=automation-test
+```
+
+### Running Workload Service
 
 ```bash
 cd workload-service
 mvn spring-boot:run -Dspring-boot.run.profiles=automation-test
+```
