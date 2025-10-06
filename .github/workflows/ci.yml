@@ -65,12 +65,24 @@ jobs:
         continue-on-error: true
         run: |
           echo "Using PROJECT_KEY=$PROJECT_KEY"
-          mvn clean verify sonar:sonar \
-            -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
-            -Dsonar.projectKey=$PROJECT_KEY \
-            -Dsonar.projectBaseDir=. \
-            -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
-            -Dsonar.exclusions=**/mapper/**,**/constant/**,**/dto/**,**/model/**,**/config/**
+          
+          if [ "${{ matrix.service }}" = "integration-tests" ]; then
+            # Integration tests: без coverage
+            mvn clean verify sonar:sonar \
+              -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
+              -Dsonar.projectKey=$PROJECT_KEY \
+              -Dsonar.projectBaseDir=. \
+              -Dsonar.coverage.jacoco.xmlReportPaths="" \
+              -Dsonar.exclusions=**
+          else
+            # Для workload-service та gca-core-service з coverage
+            mvn clean verify sonar:sonar \
+              -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
+              -Dsonar.projectKey=$PROJECT_KEY \
+              -Dsonar.projectBaseDir=. \
+              -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
+              -Dsonar.exclusions=**/mapper/**,**/constant/**,**/dto/**,**/model/**,**/config/**
+          fi
 
       - name: Wait for SonarCloud analysis to finish
         env:
