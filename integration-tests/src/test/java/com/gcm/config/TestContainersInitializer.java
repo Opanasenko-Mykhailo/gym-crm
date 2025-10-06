@@ -21,7 +21,7 @@ public class TestContainersInitializer implements ApplicationContextInitializer<
                         Wait.forHttp("/gym-crm-core/api/v1/trainees/nobody")
                                 .withMethod("GET")
                                 .forStatusCode(401)
-                                .withStartupTimeout(Duration.ofSeconds(120)))
+                                .withStartupTimeout(Duration.ofSeconds(180)))
                 .withExposedService("workload-service", 8082)
                 .withLocalCompose(true);
 

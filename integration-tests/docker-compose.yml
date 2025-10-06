@@ -22,7 +22,7 @@ services:
     depends_on:
       - activemq
     environment:
-      JWT_TEST_SECRET: test-secret-key-for-integration-tests
+      JWT_TEST_SECRET: ${JWT_SECRET}
 
   workload-service:
     ports:
@@ -35,4 +35,4 @@ services:
       - mongodb
     environment:
       TEST_MONGODB_URI: "mongodb://test_user:test_password@mongodb:27017/workloaddb?authSource=admin"
-      JWT_TEST_SECRET: test-secret-key-for-integration-tests
+      JWT_TEST_SECRET: ${JWT_SECRET}
