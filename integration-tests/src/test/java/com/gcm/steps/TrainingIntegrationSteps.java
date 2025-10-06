@@ -1,5 +1,6 @@
 package com.gcm.steps;
 
+import com.gcm.config.TestContainersInitializer;
 import com.gcm.testutils.DataTableUtils;
 import com.gcm.testutils.JwtTokenGenerator;
 import io.cucumber.datatable.DataTable;
@@ -12,12 +13,14 @@ import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import org.springframework.beans.factory.annotation.Value;
 
+import java.io.IOException;
 import java.util.Map;
 
 import static io.restassured.RestAssured.given;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.http.HttpStatus.OK;
 import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
@@ -45,6 +48,7 @@ public class TrainingIntegrationSteps {
 
     private Response trainingResponse;
     private Response summaryResponse;
+    private Response failedTrainingResponse;
     private String currentTrainerUsername;
 
     @Given("GCA and workload services are running for integration tests")
@@ -86,22 +90,9 @@ public class TrainingIntegrationSteps {
         registerResponse.then().statusCode(OK.value());
     }
 
-    @Then("integration test trainer {string} has total duration of {int} minutes for October {int}")
-    public void integrationTrainerHasTotalDuration(String username, int expectedDuration, int year) {
-        setupWorkloadServiceConnection();
-
-        String authToken = JwtTokenGenerator.generateToken(currentTrainerUsername);
-
-        Response workloadResponse = given()
-                .header(HEADER_AUTHORIZATION, BEARER_PREFIX + authToken)
-                .when()
-                .get(API_WORKLOAD + "/" + username);
-
-        workloadResponse.then().statusCode(OK.value());
-        JsonPath jsonPath = workloadResponse.jsonPath();
-        Integer actualDuration = jsonPath.getInt("years[0].months[0].duration");
-
-        assertEquals(expectedDuration, actualDuration);
+    @Given("ActiveMQ is down")
+    public void activeMqIsDown() throws IOException, InterruptedException {
+        TestContainersInitializer.stopActiveMq();
     }
 
     @When("I create a training in GCA:")
@@ -129,8 +120,31 @@ public class TrainingIntegrationSteps {
                 .post(API_TRAININGS_GCC);
 
         trainingResponse.then().statusCode(OK.value());
-
         waitForTrainingToPropagate();
+    }
+
+    @When("I create a training in GCA expecting JMS failure:")
+    public void createTrainingExpectingJmsFailure(DataTable dataTable) {
+        setupGcaServiceConnection();
+
+        Map<String, String> data = DataTableUtils.extractData(dataTable);
+
+        String requestBody = buildTrainingCreateRequestBody(
+                data.get("traineeUsername"),
+                data.get("trainerUsername"),
+                data.get("trainingName"),
+                data.get("trainingDate"),
+                data.get("trainingDuration"),
+                data.get("trainingTypeName"));
+
+        String authToken = JwtTokenGenerator.generateToken(data.get("trainerUsername"));
+
+        failedTrainingResponse = given()
+                .header(HEADER_AUTHORIZATION, BEARER_PREFIX + authToken)
+                .contentType(ContentType.JSON)
+                .body(requestBody)
+                .when()
+                .post(API_TRAININGS_GCC);
     }
 
     @When("I request workload summary for trainer {string}")
@@ -148,6 +162,33 @@ public class TrainingIntegrationSteps {
     @Then("training creation is successful")
     public void trainingCreationIsSuccessful() {
         trainingResponse.then().statusCode(OK.value());
+    }
+
+    @Then("training creation fails due to JMS error")
+    public void trainingCreationFailsDueToJmsError() {
+        failedTrainingResponse.then().statusCode(503);
+        String errorMessage = failedTrainingResponse.getBody().asString();
+
+        assertTrue(errorMessage.contains("Failed to send JMS message for trainer workload"),
+                "Expected JMS error message but got: " + errorMessage);
+    }
+
+    @Then("integration test trainer {string} has total duration of {int} minutes for October {int}")
+    public void integrationTrainerHasTotalDuration(String username, int expectedDuration, int year) {
+        setupWorkloadServiceConnection();
+
+        String authToken = JwtTokenGenerator.generateToken(currentTrainerUsername);
+
+        Response workloadResponse = given()
+                .header(HEADER_AUTHORIZATION, BEARER_PREFIX + authToken)
+                .when()
+                .get(API_WORKLOAD + "/" + username);
+
+        workloadResponse.then().statusCode(OK.value());
+        JsonPath jsonPath = workloadResponse.jsonPath();
+        Integer actualDuration = jsonPath.getInt("years[0].months[0].duration");
+
+        assertEquals(expectedDuration, actualDuration);
     }
 
     @Then("I receive trainer workload summary with yearly and monthly breakdown")

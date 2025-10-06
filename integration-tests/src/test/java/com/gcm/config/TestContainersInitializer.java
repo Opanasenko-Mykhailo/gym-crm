@@ -7,13 +7,16 @@ import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 
 import java.io.File;
+import java.io.IOException;
 import java.time.Duration;
 
 public class TestContainersInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
+    private static DockerComposeContainer<?> environment;
+
     @Override
     public void initialize(@NotNull ConfigurableApplicationContext applicationContext) {
-        DockerComposeContainer<?> environment = new DockerComposeContainer<>(new File("docker-compose.yml"))
+        environment = new DockerComposeContainer<>(new File("docker-compose.yml"))
                 .withOptions("--compatibility")
                 .withExposedService("activemq", 61616)
                 .withExposedService("mongodb", 27017)
@@ -26,5 +29,11 @@ public class TestContainersInitializer implements ApplicationContextInitializer<
                 .withLocalCompose(true);
 
         environment.start();
+    }
+
+    public static void stopActiveMq() throws IOException, InterruptedException {
+        environment.getContainerByServiceName("activemq_1")
+                .orElseThrow(() -> new RuntimeException("ActiveMQ container not found"))
+                .execInContainer("pkill", "java");
     }
 }
