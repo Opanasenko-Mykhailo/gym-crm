@@ -51,6 +51,7 @@
         <h2.version>2.3.232</h2.version>
         <mongodb.test.version>1.21.3</mongodb.test.version>
         <flapdoodle.embed.version>4.11.0</flapdoodle.embed.version>
+        <awaitility.version>4.3.0</awaitility.version>
         <cucumber.version>7.29.0</cucumber.version>
         <restassured.version>5.5.6</restassured.version>
         <reactor-test.version>3.8.0-M6</reactor-test.version>
@@ -222,6 +223,12 @@
                 <groupId>io.rest-assured</groupId>
                 <artifactId>rest-assured</artifactId>
                 <version>${restassured.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.awaitility</groupId>
+                <artifactId>awaitility</artifactId>
+                <version>${awaitility.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
