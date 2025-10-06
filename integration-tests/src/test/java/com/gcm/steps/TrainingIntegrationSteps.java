@@ -173,6 +173,20 @@ public class TrainingIntegrationSteps {
                 "Expected JMS error message but got: " + errorMessage);
     }
 
+    @Then("workload does not contain trainer {string} after failed JMS")
+    public void workloadDoesNotContainTrainerAfterFailedJms(String username) {
+        setupWorkloadServiceConnection();
+
+        String authToken = JwtTokenGenerator.generateToken(currentTrainerUsername);
+
+        Response workloadResponse = given()
+                .header(HEADER_AUTHORIZATION, BEARER_PREFIX + authToken)
+                .when()
+                .get(API_WORKLOAD + "/" + username);
+
+        assertEquals(404, workloadResponse.statusCode());
+    }
+
     @Then("integration test trainer {string} has total duration of {int} minutes for October {int}")
     public void integrationTrainerHasTotalDuration(String username, int expectedDuration, int year) {
         setupWorkloadServiceConnection();

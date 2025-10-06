@@ -109,3 +109,4 @@ Feature: Training and Workload Synchronization
       | trainingDuration | 60               |
       | trainingTypeName | STRENGTH         |
     Then training creation fails due to JMS error
+    Then workload does not contain trainer "Crash.Trainer" after failed JMS
