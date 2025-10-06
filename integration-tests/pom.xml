@@ -22,7 +22,7 @@
     </description>
 
     <properties>
-        <sonar.projectKey>opanasenko-mykhailo_integration-tests</sonar.projectKey>
+        <sonar.projectKey>Opanasenko-Mykhailo_integration-tests</sonar.projectKey>
     </properties>
 
     <dependencies>
