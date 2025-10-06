@@ -67,15 +67,12 @@ jobs:
           echo "Using PROJECT_KEY=$PROJECT_KEY"
           
           if [ "${{ matrix.service }}" = "integration-tests" ]; then
-            # Integration tests: без coverage
             mvn clean verify sonar:sonar \
               -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
               -Dsonar.projectKey=$PROJECT_KEY \
               -Dsonar.projectBaseDir=. \
-              -Dsonar.coverage.jacoco.xmlReportPaths="" \
               -Dsonar.exclusions=**
           else
-            # Для workload-service та gca-core-service з coverage
             mvn clean verify sonar:sonar \
               -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
               -Dsonar.projectKey=$PROJECT_KEY \
