@@ -4,7 +4,7 @@ Feature: Training and Workload Synchronization
   So that trainer workload is accurately tracked
 
   Background:
-    Given the GCA and workload services are running for integration tests
+    Given GCA and workload services are running for integration tests
 
   @PositiveCase
   Scenario: Creating training in GCA updates workload in Workload service
@@ -24,7 +24,7 @@ Feature: Training and Workload Synchronization
       | trainingDate     | 2025-10-15       |
       | trainingDuration | 60               |
       | trainingTypeName | STRENGTH         |
-    Then the training creation is successful
+    Then training creation is successful
     Then integration test trainer "Alex.Smith" has total duration of 60 minutes for October 2025
 
   @PositiveCase
@@ -59,7 +59,7 @@ Feature: Training and Workload Synchronization
       | trainingDate     | 2025-10-20       |
       | trainingDuration | 30               |
       | trainingTypeName | CARDIO           |
-    Then the training creation is successful
+    Then training creation is successful
     Then integration test trainer "Mike.Brown" has total duration of 135 minutes for October 2025
 
   @PositiveCase
@@ -82,7 +82,7 @@ Feature: Training and Workload Synchronization
       | trainingTypeName | YOGA              |
     And I request workload summary for trainer "Tom.Wilson"
     Then I receive trainer workload summary with yearly and monthly breakdown
-    And the workload summary contains trainer information:
+    And workload summary contains trainer information:
       | username  | Tom.Wilson |
       | firstName | Tom        |
       | lastName  | Wilson     |

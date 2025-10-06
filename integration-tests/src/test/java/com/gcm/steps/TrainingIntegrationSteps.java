@@ -47,7 +47,7 @@ public class TrainingIntegrationSteps {
     private Response summaryResponse;
     private String currentTrainerUsername;
 
-    @Given("the GCA and workload services are running for integration tests")
+    @Given("GCA and workload services are running for integration tests")
     public void bothServicesAreRunning() {
         setupGcaServiceConnection();
         setupWorkloadServiceConnection();
@@ -145,7 +145,7 @@ public class TrainingIntegrationSteps {
                 .get(API_WORKLOAD + "/" + username);
     }
 
-    @Then("the training creation is successful")
+    @Then("training creation is successful")
     public void trainingCreationIsSuccessful() {
         trainingResponse.then().statusCode(OK.value());
     }
@@ -159,7 +159,7 @@ public class TrainingIntegrationSteps {
         assertNotNull(jsonPath.get("years"));
     }
 
-    @Then("the workload summary contains trainer information:")
+    @Then("workload summary contains trainer information:")
     public void workloadSummaryContainsTrainerInfo(DataTable dataTable) {
         Map<String, String> expected = dataTable.asMap(String.class, String.class);
         JsonPath jsonPath = summaryResponse.jsonPath();
