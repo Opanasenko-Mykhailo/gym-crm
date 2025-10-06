@@ -15,7 +15,7 @@ jobs:
       pull-requests: write
     strategy:
       matrix:
-        service: [ workload-service, gca-core-service ]
+        service: [ workload-service, gca-core-service, integration-tests ]
 
     steps:
       - name: Checkout source code
