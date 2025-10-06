@@ -21,6 +21,10 @@
     <description>Integration tests for Core and Workload services using Cucumber, RestAssured, and Testcontainers
     </description>
 
+    <properties>
+        <sonar.projectKey>Opanasenko-Mykhailo_integration-tests</sonar.projectKey>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -121,6 +125,10 @@
                     </includes>
                     <useModulePath>false</useModulePath>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.sonarsource.scanner.maven</groupId>
+                <artifactId>sonar-maven-plugin</artifactId>
             </plugin>
         </plugins>
     </build>

@@ -24,21 +24,16 @@ JWT_SECRET=test-secret-key-for-integration-tests
 > 💡 **Note:** This secret is used only for local development and can be safely committed to the repository.
 > For production environments, secrets should be stored in environment variables and **not** committed.
 
+### What Happens Automatically
 
-## Running Services for Integration Tests
+When you run integration tests:
 
-Integration tests require both the GCA Service and Workload Service to be running under the `automation-test` profile.
+- **Testcontainers** automatically starts the required services defined in `docker-compose.yml`, including:
+    - 📨 **ActiveMQ** (message broker)
+    - 🗄️ **MongoDB** (database for workload)
+    - ⚙️ **GCA Core Service** (`gca-core-service`)
+    - 🧮 **Workload Service** (`workload-service`)
 
-### Running GCA Service
+These services are started in isolated Docker containers **before the tests begin** and are **automatically stopped** after all tests finish.
 
-```bash
-cd gca-core-service
-mvn spring-boot:run -Dspring-boot.run.profiles=automation-test
-```
-
-### Running Workload Service
-
-```bash
-cd workload-service
-mvn spring-boot:run -Dspring-boot.run.profiles=automation-test
-```
+> ⚙️ You don’t need to run Docker containers manually — **Testcontainers** will handle everything.
