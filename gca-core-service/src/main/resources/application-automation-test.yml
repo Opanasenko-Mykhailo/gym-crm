@@ -5,7 +5,7 @@ spring:
     driver-class-name: org.h2.Driver
 
   activemq:
-    broker-url: vm://embedded?broker.persistent=false
+    broker-url: tcp://localhost:61616
 
 eureka:
   client:
