@@ -1,13 +1,13 @@
 Feature: Training and Workload Synchronization
   As a system
-  I want to ensure that trainings created in GCC are synchronized with Workload service
+  I want to ensure that trainings created in GCA are synchronized with Workload service
   So that trainer workload is accurately tracked
 
   Background:
-    Given the GCC and workload services are running for integration tests
+    Given the GCA and workload services are running for integration tests
 
   @PositiveCase
-  Scenario: Creating training in GCC updates workload in Workload service
+  Scenario: Creating training in GCA updates workload in Workload service
     Given integration test trainer "Alex.Smith" exists with trainer data:
       | firstName      | Alex     |
       | lastName       | Smith    |
@@ -17,7 +17,7 @@ Feature: Training and Workload Synchronization
       | lastName    | Jones      |
       | dateOfBirth | 1995-05-15 |
       | address     | 123 Oak St |
-    When I create a training in GCC:
+    When I create a training in GCA:
       | traineeUsername  | Emma.Jones       |
       | trainerUsername  | Alex.Smith       |
       | trainingName     | Morning Strength |
@@ -38,21 +38,21 @@ Feature: Training and Workload Synchronization
       | lastName    | Davis      |
       | dateOfBirth | 1992-11-20 |
       | address     | 456 Elm St |
-    When I create a training in GCC:
+    When I create a training in GCA:
       | traineeUsername  | Sarah.Davis    |
       | trainerUsername  | Mike.Brown     |
       | trainingName     | Morning Cardio |
       | trainingDate     | 2025-10-10     |
       | trainingDuration | 45             |
       | trainingTypeName | CARDIO         |
-    And I create a training in GCC:
+    And I create a training in GCA:
       | traineeUsername  | Sarah.Davis    |
       | trainerUsername  | Mike.Brown     |
       | trainingName     | Evening Cardio |
       | trainingDate     | 2025-10-15     |
       | trainingDuration | 60             |
       | trainingTypeName | CARDIO         |
-    And I create a training in GCC:
+    And I create a training in GCA:
       | traineeUsername  | Sarah.Davis      |
       | trainerUsername  | Mike.Brown       |
       | trainingName     | Afternoon Cardio |
@@ -73,7 +73,7 @@ Feature: Training and Workload Synchronization
       | lastName    | Taylor       |
       | dateOfBirth | 1990-07-12   |
       | address     | 789 Pine Ave |
-    When I create a training in GCC:
+    When I create a training in GCA:
       | traineeUsername  | Lisa.Taylor       |
       | trainerUsername  | Tom.Wilson        |
       | trainingName     | Swimming Practice |

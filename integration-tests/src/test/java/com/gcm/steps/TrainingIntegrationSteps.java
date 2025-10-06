@@ -32,10 +32,10 @@ public class TrainingIntegrationSteps {
     private static final String BEARER_PREFIX = "Bearer ";
 
     @Value("${gca.test.url}")
-    private String gccTestUrl;
+    private String gcaTestUrl;
 
     @Value("${gca.test.port}")
-    private int gccTestPort;
+    private int gcaTestPort;
 
     @Value("${workload.test.url}")
     private String workloadTestUrl;
@@ -47,15 +47,15 @@ public class TrainingIntegrationSteps {
     private Response summaryResponse;
     private String currentTrainerUsername;
 
-    @Given("the GCC and workload services are running for integration tests")
+    @Given("the GCA and workload services are running for integration tests")
     public void bothServicesAreRunning() {
-        setupGccServiceConnection();
+        setupGcaServiceConnection();
         setupWorkloadServiceConnection();
     }
 
     @Given("integration test trainer {string} exists with trainer data:")
     public void integrationTrainerExistsWithData(String username, DataTable dataTable) {
-        setupGccServiceConnection();
+        setupGcaServiceConnection();
 
         Map<String, String> data = dataTable.asMap(String.class, String.class);
 
@@ -72,7 +72,7 @@ public class TrainingIntegrationSteps {
 
     @Given("integration test trainee {string} exists with trainee data:")
     public void integrationTraineeExistsWithData(String username, DataTable dataTable) {
-        setupGccServiceConnection();
+        setupGcaServiceConnection();
 
         Map<String, String> data = dataTable.asMap(String.class, String.class);
 
@@ -104,9 +104,9 @@ public class TrainingIntegrationSteps {
         assertEquals(expectedDuration, actualDuration);
     }
 
-    @When("I create a training in GCC:")
-    public void createTrainingInGCC(DataTable dataTable) {
-        setupGccServiceConnection();
+    @When("I create a training in GCA:")
+    public void createTrainingInGCA(DataTable dataTable) {
+        setupGcaServiceConnection();
 
         Map<String, String> data = DataTableUtils.extractData(dataTable);
         data = DataTableUtils.normalizeEmptyValues(data);
@@ -226,9 +226,9 @@ public class TrainingIntegrationSteps {
                 .post(API_TRAINEES_GCC + REGISTER_PATH);
     }
 
-    private void setupGccServiceConnection() {
-        RestAssured.baseURI = this.gccTestUrl;
-        RestAssured.port = this.gccTestPort;
+    private void setupGcaServiceConnection() {
+        RestAssured.baseURI = this.gcaTestUrl;
+        RestAssured.port = this.gcaTestPort;
         RestAssured.requestSpecification = null;
     }
 
