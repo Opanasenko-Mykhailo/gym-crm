@@ -27,6 +27,13 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: Install Docker Compose V1
+        if: matrix.service == 'integration-tests'
+        run: |
+          sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
+          docker-compose --version
+
       - name: Cache Maven packages
         uses: actions/cache@v4
         with:
