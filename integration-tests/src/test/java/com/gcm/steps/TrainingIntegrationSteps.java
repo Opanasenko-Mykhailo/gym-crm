@@ -60,7 +60,6 @@ public class TrainingIntegrationSteps {
     @Given("integration test trainer {string} exists with trainer data:")
     public void integrationTrainerExistsWithData(String username, DataTable dataTable) {
         setupGcaServiceConnection();
-
         Map<String, String> data = dataTable.asMap(String.class, String.class);
 
         String requestBody = buildTrainerRegistrationBody(
@@ -77,7 +76,6 @@ public class TrainingIntegrationSteps {
     @Given("integration test trainee {string} exists with trainee data:")
     public void integrationTraineeExistsWithData(String username, DataTable dataTable) {
         setupGcaServiceConnection();
-
         Map<String, String> data = dataTable.asMap(String.class, String.class);
 
         String requestBody = buildTraineeRegistrationBody(
@@ -98,10 +96,10 @@ public class TrainingIntegrationSteps {
     @When("I create a training in GCA:")
     public void createTrainingInGCA(DataTable dataTable) {
         setupGcaServiceConnection();
-
         Map<String, String> data = DataTableUtils.extractData(dataTable);
         data = DataTableUtils.normalizeEmptyValues(data);
 
+        String authToken = JwtTokenGenerator.generateToken(currentTrainerUsername);
         String requestBody = buildTrainingCreateRequestBody(
                 data.get("traineeUsername"),
                 data.get("trainerUsername"),
@@ -109,8 +107,6 @@ public class TrainingIntegrationSteps {
                 data.get("trainingDate"),
                 data.get("trainingDuration"),
                 data.get("trainingTypeName"));
-
-        String authToken = JwtTokenGenerator.generateToken(currentTrainerUsername);
 
         trainingResponse = given()
                 .header(HEADER_AUTHORIZATION, BEARER_PREFIX + authToken)
@@ -126,9 +122,9 @@ public class TrainingIntegrationSteps {
     @When("I create a training in GCA expecting JMS failure:")
     public void createTrainingExpectingJmsFailure(DataTable dataTable) {
         setupGcaServiceConnection();
-
         Map<String, String> data = DataTableUtils.extractData(dataTable);
 
+        String authToken = JwtTokenGenerator.generateToken(data.get("trainerUsername"));
         String requestBody = buildTrainingCreateRequestBody(
                 data.get("traineeUsername"),
                 data.get("trainerUsername"),
@@ -136,8 +132,6 @@ public class TrainingIntegrationSteps {
                 data.get("trainingDate"),
                 data.get("trainingDuration"),
                 data.get("trainingTypeName"));
-
-        String authToken = JwtTokenGenerator.generateToken(data.get("trainerUsername"));
 
         failedTrainingResponse = given()
                 .header(HEADER_AUTHORIZATION, BEARER_PREFIX + authToken)
@@ -152,7 +146,6 @@ public class TrainingIntegrationSteps {
         setupWorkloadServiceConnection();
 
         String authToken = JwtTokenGenerator.generateToken(currentTrainerUsername);
-
         summaryResponse = given()
                 .header(HEADER_AUTHORIZATION, BEARER_PREFIX + authToken)
                 .when()
@@ -178,7 +171,6 @@ public class TrainingIntegrationSteps {
         setupWorkloadServiceConnection();
 
         String authToken = JwtTokenGenerator.generateToken(currentTrainerUsername);
-
         Response workloadResponse = given()
                 .header(HEADER_AUTHORIZATION, BEARER_PREFIX + authToken)
                 .when()
@@ -192,7 +184,6 @@ public class TrainingIntegrationSteps {
         setupWorkloadServiceConnection();
 
         String authToken = JwtTokenGenerator.generateToken(currentTrainerUsername);
-
         Response workloadResponse = given()
                 .header(HEADER_AUTHORIZATION, BEARER_PREFIX + authToken)
                 .when()
