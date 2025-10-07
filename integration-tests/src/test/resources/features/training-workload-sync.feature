@@ -87,3 +87,26 @@ Feature: Training and Workload Synchronization
       | firstName | Tom        |
       | lastName  | Wilson     |
       | active    | true       |
+
+  @NegativeCase
+  Scenario: Creating training fails when ActiveMQ is down
+    Given GCA and workload services are running for integration tests
+    And ActiveMQ is down
+    And integration test trainer "Crash.Trainer" exists with trainer data:
+      | firstName      | Crash    |
+      | lastName       | Trainer  |
+      | specialization | STRENGTH |
+    And integration test trainee "Broken.Trainee" exists with trainee data:
+      | firstName   | Broken     |
+      | lastName    | Trainee    |
+      | dateOfBirth | 1999-01-01 |
+      | address     | Nowhere    |
+    When I create a training in GCA expecting JMS failure:
+      | traineeUsername  | Broken.Trainee   |
+      | trainerUsername  | Crash.Trainer    |
+      | trainingName     | JMS Failure Test |
+      | trainingDate     | 2025-10-20       |
+      | trainingDuration | 60               |
+      | trainingTypeName | STRENGTH         |
+    Then training creation fails due to JMS error
+    Then workload does not contain trainer "Crash.Trainer" after failed JMS
