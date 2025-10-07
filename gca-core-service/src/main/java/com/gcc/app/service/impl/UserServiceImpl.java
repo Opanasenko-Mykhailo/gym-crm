@@ -1,7 +1,7 @@
 package com.gcc.app.service.impl;
 
 import com.gcc.app.exception.EntityNotFoundException;
-import com.gcc.app.exception.ServiceException;
+import com.gcc.app.exception.InvalidCredentialsException;
 import com.gcc.app.facade.dto.PasswordChangeRequestDto;
 import com.gcc.app.model.User;
 import com.gcc.app.repository.UserRepository;
@@ -47,7 +47,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new EntityNotFoundException("User not found: " + dto.getUsername()));
 
         if (!credentialsService.isPasswordCorrect(dto.getOldPassword(), user.getPassword())) {
-            throw new ServiceException("Old password is incorrect");
+            throw new InvalidCredentialsException("Old password is incorrect");
         }
 
         String encodedNewPassword = credentialsService.encodePassword(dto.getNewPassword());

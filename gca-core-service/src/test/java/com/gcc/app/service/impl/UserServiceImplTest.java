@@ -1,7 +1,7 @@
 package com.gcc.app.service.impl;
 
 import com.gcc.app.exception.EntityNotFoundException;
-import com.gcc.app.exception.ServiceException;
+import com.gcc.app.exception.InvalidCredentialsException;
 import com.gcc.app.facade.dto.PasswordChangeRequestDto;
 import com.gcc.app.model.User;
 import com.gcc.app.repository.UserRepository;
@@ -113,7 +113,7 @@ class UserServiceImplTest {
         when(userRepository.findByUsername(USERNAME)).thenReturn(Optional.of(existingUser));
         when(credentialsService.isPasswordCorrect("wrongPassword", encodedOldPassword)).thenReturn(false);
 
-        ServiceException ex = assertThrows(ServiceException.class, () -> service.changePassword(dto));
+        InvalidCredentialsException ex = assertThrows(InvalidCredentialsException.class, () -> service.changePassword(dto));
 
         assertEquals("Old password is incorrect", ex.getMessage());
         verify(userRepository).findByUsername(USERNAME);
