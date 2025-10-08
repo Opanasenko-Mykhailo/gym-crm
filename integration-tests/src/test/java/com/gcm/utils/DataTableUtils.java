@@ -1,4 +1,4 @@
-package com.gcm.testutils;
+package com.gcm.utils;
 
 import io.cucumber.datatable.DataTable;
 

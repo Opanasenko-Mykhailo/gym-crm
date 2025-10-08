@@ -1,6 +1,6 @@
 package com.gcm.steps;
 
-import com.gcm.testutils.JwtTokenGenerator;
+import com.gcm.utils.JwtTokenGenerator;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -14,8 +14,8 @@ import org.springframework.beans.factory.annotation.Value;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.gcm.testutils.DataTableUtils.extractData;
-import static com.gcm.testutils.DataTableUtils.normalizeEmptyValues;
+import static com.gcm.utils.DataTableUtils.extractData;
+import static com.gcm.utils.DataTableUtils.normalizeEmptyValues;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -57,7 +57,7 @@ public class TrainerSteps {
     public void trainerStepExistsWith(String username, DataTable dataTable) {
         Map<String, String> data = dataTable.asMap(String.class, String.class);
 
-        String requestBody = buildTrainerRegistrationBody(
+        Map<String, Object> requestBody = buildTrainerRegistrationBody(
                 data.get("firstName"),
                 data.get("lastName"),
                 data.get("specialization"));
@@ -85,7 +85,7 @@ public class TrainerSteps {
 
     @When("I request trainer profile for {string}")
     public void trainerStepRequestProfile(String username) {
-        String authToken = JwtTokenGenerator.generateToken(EXISTING_TRAINER_USERNAME);
+        String authToken = JwtTokenGenerator.generateTrainerToken(EXISTING_TRAINER_USERNAME);
         trainerResponse = sendGetProfileRequest(username, authToken);
     }
 
@@ -94,7 +94,7 @@ public class TrainerSteps {
         Map<String, String> data = extractData(dataTable);
         data = normalizeEmptyValues(data);
 
-        String requestBody = buildTrainerRegistrationBody(
+        Map<String, Object> requestBody = buildTrainerRegistrationBody(
                 data.get("firstName"),
                 data.get("lastName"),
                 data.get("specialization"));
@@ -107,14 +107,44 @@ public class TrainerSteps {
         Map<String, String> data = extractData(dataTable);
         data = normalizeEmptyValues(data);
 
-        String authToken = JwtTokenGenerator.generateToken(username);
-        String requestBody = buildTrainerUpdateBody(
+        String authToken = JwtTokenGenerator.generateTrainerToken(username);
+        Map<String, Object> requestBody = buildTrainerUpdateBody(
                 data.get("firstName"),
                 data.get("lastName"),
                 data.get("specialization"),
                 data.get("isActive"));
 
         trainerResponse = sendUpdateRequest(username, requestBody, authToken);
+    }
+
+    @When("trainer {string} attempts to update trainer {string} profile:")
+    public void trainerAttemptsToUpdateAnotherTrainerProfile(String authenticatedUsername, String targetUsername, DataTable dataTable) {
+        Map<String, String> data = extractData(dataTable);
+        data = normalizeEmptyValues(data);
+
+        String authToken = JwtTokenGenerator.generateTrainerToken(authenticatedUsername);
+        Map<String, Object> requestBody = buildTrainerUpdateBody(
+                data.get("firstName"),
+                data.get("lastName"),
+                data.get("specialization"),
+                data.get("isActive"));
+
+        trainerResponse = sendUpdateRequest(targetUsername, requestBody, authToken);
+    }
+
+    @When("trainee {string} attempts to update trainer {string} profile:")
+    public void traineeAttemptsToUpdateTrainerProfile(String traineeUsername, String targetUsername, DataTable dataTable) {
+        Map<String, String> data = extractData(dataTable);
+        data = normalizeEmptyValues(data);
+
+        String authToken = JwtTokenGenerator.generateTraineeToken(traineeUsername);
+        Map<String, Object> requestBody = buildTrainerUpdateBody(
+                data.get("firstName"),
+                data.get("lastName"),
+                data.get("specialization"),
+                data.get("isActive"));
+
+        trainerResponse = sendUpdateRequest(targetUsername, requestBody, authToken);
     }
 
     @Then("the trainer registration is successful")
@@ -175,7 +205,7 @@ public class TrainerSteps {
 
     @Then("trainer {string} has specialization {string}")
     public void trainerHasSpecialization(String username, String specialization) {
-        String authToken = JwtTokenGenerator.generateToken(EXISTING_TRAINER_USERNAME);
+        String authToken = JwtTokenGenerator.generateTrainerToken(EXISTING_TRAINER_USERNAME);
         Response response = sendGetProfileRequest(username, authToken);
 
         response.then().statusCode(OK.value());
@@ -188,32 +218,26 @@ public class TrainerSteps {
         trainerResponse.then().statusCode(status);
     }
 
-    private String buildTrainerRegistrationBody(String firstName, String lastName, String specialization) {
-        return String.format("""
-                {
-                    "firstName": "%s",
-                    "lastName": "%s",
-                    "specialization": "%s"
-                }
-                """, firstName, lastName, specialization);
+    private Map<String, Object> buildTrainerRegistrationBody(String firstName, String lastName, String specialization) {
+        return Map.of(
+                "firstName", firstName,
+                "lastName", lastName,
+                "specialization", specialization);
     }
 
-    private String buildTrainerUpdateBody(String firstName, String lastName, String specialization, String isActive) {
-        return String.format("""
-                {
-                    "firstName": "%s",
-                    "lastName": "%s",
-                    "specialization": "%s",
-                    "isActive": %s
-                }
-                """, firstName, lastName, specialization, isActive);
+    private Map<String, Object> buildTrainerUpdateBody(String firstName, String lastName, String specialization, String isActive) {
+        return Map.of(
+                "firstName", firstName,
+                "lastName", lastName,
+                "specialization", specialization,
+                "isActive", isActive);
     }
 
-    private String buildDeactivationBody() {
-        return "{\"isActive\": false}";
+    private Map<String, Object> buildDeactivationBody() {
+        return Map.of("isActive", false);
     }
 
-    private Response sendRegistrationRequest(String requestBody) {
+    private Response sendRegistrationRequest(Map<String, Object> requestBody) {
         return given()
                 .contentType(ContentType.JSON)
                 .body(requestBody)
@@ -228,7 +252,7 @@ public class TrainerSteps {
                 .get(API_TRAINERS + "/" + username);
     }
 
-    private Response sendUpdateRequest(String username, String requestBody, String authToken) {
+    private Response sendUpdateRequest(String username, Map<String, Object> requestBody, String authToken) {
         return given()
                 .header(HEADER_AUTHORIZATION, BEARER_PREFIX + authToken)
                 .contentType(ContentType.JSON)
@@ -238,7 +262,7 @@ public class TrainerSteps {
     }
 
     private void deactivateTrainer(String username) {
-        String authToken = JwtTokenGenerator.generateToken(username);
+        String authToken = JwtTokenGenerator.generateTrainerToken(username);
         given()
                 .header(HEADER_AUTHORIZATION, BEARER_PREFIX + authToken)
                 .contentType(ContentType.JSON)
@@ -248,7 +272,7 @@ public class TrainerSteps {
     }
 
     private void createTrainerIfNotExists(String firstName, String lastName, String username) {
-        String requestBody = buildTrainerRegistrationBody(firstName, lastName, "CARDIO");
+        Map<String, Object> requestBody = buildTrainerRegistrationBody(firstName, lastName, "CARDIO");
         Response registerResponse = sendRegistrationRequest(requestBody);
         registerResponse.then().statusCode(OK.value());
 

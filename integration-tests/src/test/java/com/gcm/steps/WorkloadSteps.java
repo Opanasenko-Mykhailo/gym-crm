@@ -1,6 +1,6 @@
 package com.gcm.steps;
 
-import com.gcm.testutils.JwtTokenGenerator;
+import com.gcm.utils.JwtTokenGenerator;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -13,8 +13,8 @@ import org.springframework.beans.factory.annotation.Value;
 
 import java.util.Map;
 
-import static com.gcm.testutils.DataTableUtils.extractData;
-import static com.gcm.testutils.DataTableUtils.normalizeEmptyValues;
+import static com.gcm.utils.DataTableUtils.extractData;
+import static com.gcm.utils.DataTableUtils.normalizeEmptyValues;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -42,7 +42,7 @@ public class WorkloadSteps {
         RestAssured.baseURI = this.workloadTestUrl;
         RestAssured.port = this.workloadTestPort;
 
-        String authToken = JwtTokenGenerator.generateToken("test-admin");
+        String authToken = JwtTokenGenerator.generateTrainerToken("test-admin");
 
         RestAssured.requestSpecification = given().header(HEADER_AUTHORIZATION, BEARER_PREFIX + authToken);
     }
@@ -56,7 +56,7 @@ public class WorkloadSteps {
         Map<String, String> data = dataTable.asMaps().get(0);
         data = normalizeEmptyValues(data);
 
-        String requestBody = createAddWorkloadBody(username, data.get("year"), data.get("month"), data.get("duration"));
+        Map<String, Object> requestBody = createAddWorkloadBody(username, data.get("year"), data.get("month"), data.get("duration"));
 
         given()
                 .contentType(ContentType.JSON)
@@ -79,7 +79,7 @@ public class WorkloadSteps {
         Map<String, String> data = extractData(dataTable);
         data = normalizeEmptyValues(data);
 
-        String requestBody = createGeneralWorkloadBody(
+        Map<String, Object> requestBody = createGeneralWorkloadBody(
                 data.get("username"),
                 data.get("firstName"),
                 data.get("lastName"),
@@ -151,7 +151,7 @@ public class WorkloadSteps {
     }
 
     private void addWorkload(String username, String date, int duration) {
-        String requestBody = createAddWorkloadBodyFromDate(username, date, duration);
+        Map<String, Object> requestBody = createAddWorkloadBodyFromDate(username, date, duration);
 
         given()
                 .contentType(ContentType.JSON)
@@ -160,68 +160,39 @@ public class WorkloadSteps {
                 .post(API_WORKLOAD);
     }
 
-    private String createAddWorkloadBody(String username, String year, String month, String duration) {
-        return String.format("""
-                        {
-                            "username": "%s",
-                            "firstName": "%s",
-                            "lastName": "%s",
-                            "active": true,
-                            "trainingDate": "%s-%s-15",
-                            "durationInMinutes": %s,
-                            "actionType": "%s"
-                        }
-                        """,
-                username,
-                capitalize(username.split("\\.")[0]),
-                capitalize(username.split("\\.")[1]),
-                year,
-                String.format("%02d", Integer.parseInt(month)),
-                duration,
-                ACTION_ADD);
-    }
-
-    private String createAddWorkloadBodyFromDate(String username, String date, int duration) {
+    private Map<String, Object> createAddWorkloadBody(String username, String year, String month, String duration) {
         String[] nameParts = username.split("\\.");
-
-        return String.format("""
-                        {
-                            "username": "%s",
-                            "firstName": "%s",
-                            "lastName": "%s",
-                            "active": true,
-                            "trainingDate": "%s",
-                            "durationInMinutes": %d,
-                            "actionType": "%s"
-                        }
-                        """,
-                username,
-                capitalize(nameParts[0]),
-                capitalize(nameParts[1]),
-                date,
-                duration,
-                ACTION_ADD);
+        return Map.of(
+                "username", username,
+                "firstName", capitalize(nameParts[0]),
+                "lastName", capitalize(nameParts[1]),
+                "active", true,
+                "trainingDate", String.format("%s-%02d-15", year, Integer.parseInt(month)),
+                "durationInMinutes", Integer.parseInt(duration),
+                "actionType", ACTION_ADD);
     }
 
-    private String createGeneralWorkloadBody(String username, String firstName, String lastName, String active, String trainingDate, String durationInMinutes, String actionType) {
-        return String.format("""
-                        {
-                            "username": "%s",
-                            "firstName": "%s",
-                            "lastName": "%s",
-                            "active": %s,
-                            "trainingDate": "%s",
-                            "durationInMinutes": %s,
-                            "actionType": "%s"
-                        }
-                        """,
-                username,
-                firstName,
-                lastName,
-                active,
-                trainingDate,
-                durationInMinutes,
-                actionType);
+    private Map<String, Object> createAddWorkloadBodyFromDate(String username, String date, int duration) {
+        String[] nameParts = username.split("\\.");
+        return Map.of(
+                "username", username,
+                "firstName", capitalize(nameParts[0]),
+                "lastName", capitalize(nameParts[1]),
+                "active", true,
+                "trainingDate", date,
+                "durationInMinutes", duration,
+                "actionType", ACTION_ADD);
+    }
+
+    private Map<String, Object> createGeneralWorkloadBody(String username, String firstName, String lastName, String active, String trainingDate, String durationInMinutes, String actionType) {
+        return Map.of(
+                "username", username,
+                "firstName", firstName,
+                "lastName", lastName,
+                "active", Boolean.parseBoolean(active),
+                "trainingDate", trainingDate,
+                "durationInMinutes", Integer.parseInt(durationInMinutes),
+                "actionType", actionType);
     }
 
     private String capitalize(String str) {
