@@ -10,6 +10,7 @@ import io.restassured.response.Response;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.time.LocalDate;
+import java.util.Map;
 
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -76,7 +77,7 @@ public class AuthSteps {
 
     @When("I refresh the access token using the valid refresh token")
     public void refreshAccessToken() {
-        String body = String.format("{ \"refreshToken\": \"%s\" }", refreshToken);
+        Map<String, String> body = Map.of("refreshToken", refreshToken);
 
         response = given()
                 .contentType(ContentType.JSON)
@@ -100,7 +101,7 @@ public class AuthSteps {
 
     @When("I refresh the access token using the invalid token {string}")
     public void refreshWithInvalidToken(String invalidToken) {
-        String body = String.format("{ \"refreshToken\": \"%s\" }", invalidToken);
+        Map<String, String> body = Map.of("refreshToken", invalidToken);
 
         response = given()
                 .contentType(ContentType.JSON)
@@ -116,7 +117,7 @@ public class AuthSteps {
 
     @When("I log out with the refresh token")
     public void logoutWithRefreshToken() {
-        String body = String.format("{ \"refreshToken\": \"%s\" }", refreshToken);
+        Map<String, String> body = Map.of("refreshToken", refreshToken);
 
         response = given()
                 .contentType(ContentType.JSON)
@@ -132,13 +133,10 @@ public class AuthSteps {
 
     @When("I change the trainee password from current to {string}")
     public void changePassword(String newPassword) {
-        String body = String.format("""
-                {
-                  "username": "%s",
-                  "oldPassword": "%s",
-                  "newPassword": "%s"
-                }
-                """, registeredUsername, registeredPassword, newPassword);
+        Map<String, String> body = Map.of(
+                "username", registeredUsername,
+                "oldPassword", registeredPassword,
+                "newPassword", newPassword);
 
         response = given()
                 .contentType(ContentType.JSON)
@@ -158,13 +156,10 @@ public class AuthSteps {
 
     @When("I attempt to change the trainee password to {string} using old password {string}")
     public void changePasswordWithSpecificOldPassword(String newPassword, String oldPassword) {
-        String body = String.format("""
-                {
-                  "username": "%s",
-                  "oldPassword": "%s",
-                  "newPassword": "%s"
-                }
-                """, registeredUsername, oldPassword, newPassword);
+        Map<String, String> body = Map.of(
+                "username", registeredUsername,
+                "oldPassword", oldPassword,
+                "newPassword", newPassword);
 
         response = given()
                 .contentType(ContentType.JSON)
@@ -207,19 +202,11 @@ public class AuthSteps {
     }
 
     private void createTrainee() {
-        String firstName = "Auth";
-        String lastName = "Trainee";
-        String address = "Test address 44";
-        LocalDate dateOfBirth = LocalDate.of(2000, 1, 1);
-
-        String body = String.format("""
-                {
-                    "firstName": "%s",
-                    "lastName": "%s",
-                    "dateOfBirth": "%s",
-                    "address": "%s"
-                }
-                """, firstName, lastName, dateOfBirth, address);
+        Map<String, Object> body = Map.of(
+                "firstName", "Auth",
+                "lastName", "Trainee",
+                "dateOfBirth", LocalDate.of(2000, 1, 1).toString(),
+                "address", "Test address 44");
 
         response = given()
                 .contentType(ContentType.JSON)
@@ -237,9 +224,9 @@ public class AuthSteps {
     }
 
     private void loginWithCredentials(String username, String password) {
-        String body = String.format("""
-                { "username": "%s", "password": "%s" }
-                """, username, password);
+        Map<String, String> body = Map.of(
+                "username", username,
+                "password", password);
 
         response = given()
                 .contentType(ContentType.JSON)
