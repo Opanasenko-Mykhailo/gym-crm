@@ -23,6 +23,7 @@ The system is built with **Java 17**, **Spring Boot**, **PostgreSQL**, **MongoDB
 - **PostgreSQL 13+** (for `gca-core-service`)
 - **MongoDB 6+** (for `workload-service`)
 - **Apache ActiveMQ** (for message queuing between services)
+- **Docker** (for integration tests with Testcontainers)
 - **Git**
 
 ---
@@ -59,14 +60,12 @@ brew install postgresql
 sudo -u postgres psql
 
 -- Create database and user
-CREATE
-DATABASE "gym_db";
+CREATE DATABASE "gym_db";
 CREATE USER gcs WITH PASSWORD 'gcs';
 GRANT ALL PRIVILEGES ON DATABASE "gym_db" TO gcs;
 
 -- Exit
-\
-q
+\q
 ```
 
 # 3. MongoDB Setup (for workload-service)
@@ -185,7 +184,7 @@ If you need to set up custom users (gca/gca as shown in config), edit the Active
    # Windows - MongoDB service should start automatically
    ```
 
-3. **Start ActiveMQ** (see step 3 above)
+3. **Start ActiveMQ** (see step 4 above)
 
 4. **Start Discovery Server** (Eureka Server) - **MUST BE FIRST**:
    ```bash
@@ -199,25 +198,25 @@ If you need to set up custom users (gca/gca as shown in config), edit the Active
    cd gca-core-service
    mvn spring-boot:run
    ```
-    - Database migrations will run automatically via Liquibase
-    - Service will register with Eureka
-    - Access at: `http://localhost:8081`
+   - Database migrations will run automatically via Liquibase
+   - Service will register with Eureka
+   - Access at: `http://localhost:8081`
 
 6. **Start Workload Service**:
    ```bash
    cd workload-service
    mvn spring-boot:run
    ```
-    - Uses MongoDB database
-    - Service will register with Eureka
+   - Uses MongoDB database
+   - Service will register with Eureka
 
 7. **Start Gateway Service** - **MUST BE LAST**:
    ```bash
    cd gateway-service
    mvn spring-boot:run
    ```
-    - API Gateway available at: `http://localhost:8080`
-    - Routes requests to registered services
+   - API Gateway available at: `http://localhost:8080`
+   - Routes requests to registered services
 
 ---
 
@@ -246,6 +245,13 @@ JWT_SECRET=gym-crm-secret-key-1234567890XXABCD
 ```env
 # JWT secret for local development (must match core service)
 JWT_SECRET=gym-crm-secret-key-1234567890XXABCD
+```
+
+#### integration-tests/.env
+
+```env
+# JWT secret for integration tests
+JWT_SECRET=test-secret-key-for-integration-tests
 ```
 
 > 💡 **Note:** This secret is used only for local development and can be safely committed to the repository.
@@ -294,3 +300,27 @@ The gateway service routes requests to the appropriate microservices:
 - **Circuit Breakers**: Resilience4j for fault tolerance
 
 ---
+
+## Integration Tests
+
+The project includes comprehensive **Cucumber-based integration tests** using **Testcontainers**.
+
+### Prerequisites for Testing
+
+- **Docker** must be running on your machine
+- `.env` file configured in `integration-tests` directory (see Configuration section above)
+
+### What Happens Automatically
+
+When you run integration tests:
+
+- **Testcontainers** automatically starts all required services in Docker containers:
+   - 📨 **ActiveMQ** (message broker)
+   - 🗄️ **MongoDB** (database for workload)
+   - ⚙️ **GCA Core Service** (business logic)
+   - 🧮 **Workload Service** (workload management)
+
+- Services are started **before tests begin** and **automatically stopped** after all tests finish
+- Test data is isolated in containers and cleaned up automatically
+
+> ⚙️ You don't need to run Docker containers manually — **Testcontainers** handles everything.

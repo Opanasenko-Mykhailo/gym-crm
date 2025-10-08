@@ -1,4 +1,4 @@
-package com.gcm.testutils;
+package com.gcm.utils;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -20,11 +20,23 @@ public class JwtTokenGenerator {
         JwtTokenGenerator.key = Keys.hmacShaKeyFor(secret.getBytes());
     }
 
-    public static String generateToken(String username) {
+    public static String generateTrainerToken(String username) {
         Map<String, Object> claims = Map.of(
                 "roles", List.of("ROLE_TRAINER"),
                 "type", "access");
 
+        return generateToken(username, claims);
+    }
+
+    public static String generateTraineeToken(String username) {
+        Map<String, Object> claims = Map.of(
+                "roles", List.of("ROLE_TRAINEE"),
+                "type", "access");
+
+        return generateToken(username, claims);
+    }
+
+    private static String generateToken(String username, Map<String, Object> claims) {
         return Jwts.builder()
                 .claims(claims)
                 .subject(username)

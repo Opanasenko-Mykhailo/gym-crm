@@ -114,3 +114,43 @@ Feature: Trainer Management
       | specialization | CARDIO |
       | isActive       | true   |
     Then the trainer request is unsuccessful with status 400
+
+  @NegativeCase
+  Scenario: Unauthorized trainer update attempt
+    Given trainer "Alice.Cooper" exists with trainer data:
+      | firstName      | Alice  |
+      | lastName       | Cooper |
+      | specialization | YOGA   |
+      | isActive       | true   |
+    And trainer "Bob.Martin" exists with trainer data:
+      | firstName      | Bob    |
+      | lastName       | Martin |
+      | specialization | CARDIO |
+      | isActive       | true   |
+    When trainee "Alice.Cooper" attempts to update trainer "Bob.Martin" profile:
+      | field          | value    |
+      | firstName      | Bob      |
+      | lastName       | Martin   |
+      | specialization | STRENGTH |
+      | isActive       | false    |
+    Then the trainer request is unsuccessful with status 403
+
+  @NegativeCase
+  Scenario: Trainer attempts to update another trainer's profile
+    Given trainer "Nova.Blaze" exists with trainer data:
+      | firstName      | Nova  |
+      | lastName       | Blaze |
+      | specialization | YOGA  |
+      | isActive       | true  |
+    And trainer "Zephyr.Voss" exists with trainer data:
+      | firstName      | Zephyr |
+      | lastName       | Voss   |
+      | specialization | CARDIO |
+      | isActive       | true   |
+    When trainer "Nova.Blaze" attempts to update trainer "Zephyr.Voss" profile:
+      | field          | value    |
+      | firstName      | Zephyr   |
+      | lastName       | Voss     |
+      | specialization | STRENGTH |
+      | isActive       | false    |
+    Then the trainer request is unsuccessful with status 403

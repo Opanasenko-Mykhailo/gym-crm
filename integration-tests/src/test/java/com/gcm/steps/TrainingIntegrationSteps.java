@@ -1,8 +1,8 @@
 package com.gcm.steps;
 
 import com.gcm.config.TestContainersInitializer;
-import com.gcm.testutils.DataTableUtils;
-import com.gcm.testutils.JwtTokenGenerator;
+import com.gcm.utils.DataTableUtils;
+import com.gcm.utils.JwtTokenGenerator;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -62,7 +62,7 @@ public class TrainingIntegrationSteps {
         setupGcaServiceConnection();
         Map<String, String> data = dataTable.asMap(String.class, String.class);
 
-        String requestBody = buildTrainerRegistrationBody(
+        Map<String, Object> requestBody = buildTrainerRegistrationBody(
                 data.get("firstName"),
                 data.get("lastName"),
                 data.get("specialization"));
@@ -78,7 +78,7 @@ public class TrainingIntegrationSteps {
         setupGcaServiceConnection();
         Map<String, String> data = dataTable.asMap(String.class, String.class);
 
-        String requestBody = buildTraineeRegistrationBody(
+        Map<String, Object> requestBody = buildTraineeRegistrationBody(
                 data.get("firstName"),
                 data.get("lastName"),
                 data.get("dateOfBirth"),
@@ -99,8 +99,8 @@ public class TrainingIntegrationSteps {
         Map<String, String> data = DataTableUtils.extractData(dataTable);
         data = DataTableUtils.normalizeEmptyValues(data);
 
-        String authToken = JwtTokenGenerator.generateToken(currentTrainerUsername);
-        String requestBody = buildTrainingCreateRequestBody(
+        String authToken = JwtTokenGenerator.generateTrainerToken(currentTrainerUsername);
+        Map<String, Object> requestBody = buildTrainingCreateRequestBody(
                 data.get("traineeUsername"),
                 data.get("trainerUsername"),
                 data.get("trainingName"),
@@ -124,8 +124,8 @@ public class TrainingIntegrationSteps {
         setupGcaServiceConnection();
         Map<String, String> data = DataTableUtils.extractData(dataTable);
 
-        String authToken = JwtTokenGenerator.generateToken(data.get("trainerUsername"));
-        String requestBody = buildTrainingCreateRequestBody(
+        String authToken = JwtTokenGenerator.generateTrainerToken(data.get("trainerUsername"));
+        Map<String, Object> requestBody = buildTrainingCreateRequestBody(
                 data.get("traineeUsername"),
                 data.get("trainerUsername"),
                 data.get("trainingName"),
@@ -145,7 +145,7 @@ public class TrainingIntegrationSteps {
     public void requestWorkloadSummaryForTrainer(String username) {
         setupWorkloadServiceConnection();
 
-        String authToken = JwtTokenGenerator.generateToken(currentTrainerUsername);
+        String authToken = JwtTokenGenerator.generateTrainerToken(currentTrainerUsername);
         summaryResponse = given()
                 .header(HEADER_AUTHORIZATION, BEARER_PREFIX + authToken)
                 .when()
@@ -170,7 +170,7 @@ public class TrainingIntegrationSteps {
     public void workloadDoesNotContainTrainerAfterFailedJms(String username) {
         setupWorkloadServiceConnection();
 
-        String authToken = JwtTokenGenerator.generateToken(currentTrainerUsername);
+        String authToken = JwtTokenGenerator.generateTrainerToken(currentTrainerUsername);
         Response workloadResponse = given()
                 .header(HEADER_AUTHORIZATION, BEARER_PREFIX + authToken)
                 .when()
@@ -183,7 +183,7 @@ public class TrainingIntegrationSteps {
     public void integrationTrainerHasTotalDuration(String username, int expectedDuration, int year) {
         setupWorkloadServiceConnection();
 
-        String authToken = JwtTokenGenerator.generateToken(currentTrainerUsername);
+        String authToken = JwtTokenGenerator.generateTrainerToken(currentTrainerUsername);
         Response workloadResponse = given()
                 .header(HEADER_AUTHORIZATION, BEARER_PREFIX + authToken)
                 .when()
@@ -216,47 +216,39 @@ public class TrainingIntegrationSteps {
         assertEquals(Boolean.parseBoolean(expected.get("active")), jsonPath.getBoolean("active"));
     }
 
-    private String buildTrainerRegistrationBody(String firstName, String lastName, String specialization) {
-        return String.format("""
-                {
-                    "firstName": "%s",
-                    "lastName": "%s",
-                    "specialization": "%s"
-                }
-                """, firstName, lastName, specialization);
+    private Map<String, Object> buildTrainerRegistrationBody(String firstName, String lastName, String specialization) {
+        return Map.of(
+                "firstName", firstName,
+                "lastName", lastName,
+                "specialization", specialization);
     }
 
-    private String buildTraineeRegistrationBody(String firstName, String lastName, String dateOfBirth, String address) {
-        return String.format("""
-                {
-                    "firstName": "%s",
-                    "lastName": "%s",
-                    "dateOfBirth": "%s",
-                    "address": "%s"
-                }
-                """, firstName, lastName, dateOfBirth, address);
+    private Map<String, Object> buildTraineeRegistrationBody(String firstName, String lastName, String dateOfBirth, String address) {
+        return Map.of(
+                "firstName", firstName,
+                "lastName", lastName,
+                "dateOfBirth", dateOfBirth,
+                "address", address);
     }
 
-    private String buildTrainingCreateRequestBody(
+    private Map<String, Object> buildTrainingCreateRequestBody(
             String traineeUsername,
             String trainerUsername,
             String trainingName,
             String trainingDate,
             String trainingDuration,
             String trainingTypeName) {
-        return String.format("""
-                {
-                    "traineeUsername": "%s",
-                    "trainerUsername": "%s",
-                    "trainingName": "%s",
-                    "trainingDate": "%s",
-                    "trainingDuration": %s,
-                    "trainingTypeName": "%s"
-                }
-                """, traineeUsername, trainerUsername, trainingName, trainingDate, trainingDuration, trainingTypeName);
+
+        return Map.of(
+                "traineeUsername", traineeUsername,
+                "trainerUsername", trainerUsername,
+                "trainingName", trainingName,
+                "trainingDate", trainingDate,
+                "trainingDuration", Integer.parseInt(trainingDuration),
+                "trainingTypeName", trainingTypeName);
     }
 
-    private Response sendTrainerRegistrationRequest(String requestBody) {
+    private Response sendTrainerRegistrationRequest(Map<String, Object> requestBody) {
         return given()
                 .contentType(ContentType.JSON)
                 .body(requestBody)
@@ -264,7 +256,7 @@ public class TrainingIntegrationSteps {
                 .post(API_TRAINERS_GCC + REGISTER_PATH);
     }
 
-    private Response sendTraineeRegistrationRequest(String requestBody) {
+    private Response sendTraineeRegistrationRequest(Map<String, Object> requestBody) {
         return given()
                 .contentType(ContentType.JSON)
                 .body(requestBody)
