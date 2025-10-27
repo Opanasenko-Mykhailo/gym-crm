@@ -31,6 +31,21 @@ JWT_SECRET=gym-crm-secret-key-1234567890XXABCD
 
 # JWT secret for automation-test
 JWT_TEST_SECRET=test-secret-key-for-integration-tests
+
+# Eureka Discovery Server Host
+EUREKA_HOST=localhost
+
+# Database
+MONGO_HOST=localhost
+MONGO_PORT=27017
+MONGO_USER=gym
+MONGO_PASSWORD=gym
+
+# Message broker
+ACTIVEMQ_HOST=localhost
+ACTIVEMQ_PORT=61616
+ACTIVEMQ_USER=gca
+ACTIVEMQ_PASSWORD=gca
 ```
 
 > 💡 **Note:** This secret is used only for local development and can be safely committed to the repository.

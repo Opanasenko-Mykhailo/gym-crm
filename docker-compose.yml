@@ -1,0 +1,133 @@
+services:
+  discovery-server:
+    build:
+      context: .
+      dockerfile: discovery-server/Dockerfile
+    ports:
+      - "8761:8761"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  gateway-service:
+    build:
+      context: .
+      dockerfile: gateway-service/Dockerfile
+    env_file:
+      - ./gateway-service/.env
+    environment:
+      EUREKA_HOST: discovery-server
+    ports:
+      - "8080:8080"
+    depends_on:
+      discovery-server:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  gca-core-service:
+    build:
+      context: .
+      dockerfile: gca-core-service/Dockerfile
+    env_file:
+      - ./gca-core-service/.env
+    environment:
+      DB_HOST: postgres
+      ACTIVEMQ_HOST: activemq
+      EUREKA_HOST: discovery-server
+    ports:
+      - "8081:8081"
+    depends_on:
+      discovery-server:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      activemq:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  workload-service:
+    build:
+      context: .
+      dockerfile: workload-service/Dockerfile
+    env_file:
+      - ./workload-service/.env
+    environment:
+      MONGO_HOST: mongodb
+      ACTIVEMQ_HOST: activemq
+      EUREKA_HOST: discovery-server
+    ports:
+      - "8082:8082"
+    depends_on:
+      discovery-server:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+      activemq:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8082/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_DB: gym_db
+      POSTGRES_USER: gcs
+      POSTGRES_PASSWORD: gcs
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gcs"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mongodb:
+    image: mongo:6
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: gym
+      MONGO_INITDB_ROOT_PASSWORD: gym
+      MONGO_INITDB_DATABASE: workloaddb
+    ports:
+      - "27017:27017"
+    healthcheck:
+      test: [ "CMD", "mongosh", "--username", "gym", "--password", "gym", "--eval", "db.adminCommand('ping')" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+
+  activemq:
+    image: apache/activemq-classic:latest
+    environment:
+      ACTIVEMQ_ADMIN_LOGIN: gca
+      ACTIVEMQ_ADMIN_PASSWORD: gca
+    ports:
+      - "61616:61616"
+      - "8161:8161"
+    healthcheck:
+      test: [ "CMD-SHELL", "pgrep -f activemq || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+
+networks:
+  default:
+    name: gym-crm-net

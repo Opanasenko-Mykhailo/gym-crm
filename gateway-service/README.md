@@ -25,6 +25,9 @@ touch .env
 ```env
 # JWT secret for local development
 JWT_SECRET=gym-crm-secret-key-1234567890XXABCD
+
+# Eureka Discovery Server Host
+EUREKA_HOST=localhost
 ```
 
 > 💡 **Note:** This secret is used only for local development and can be safely committed to the repository.
