@@ -11,4 +11,4 @@ WORKDIR /app
 
 COPY --from=build /app/gca-core-service/target/gca-core-service-*.jar /app/gca-core-service.jar
 
-CMD ["java", "-jar", "/app/gca-core-service.jar", "--spring.profiles.active=automation-test"]
+CMD ["java", "-jar", "/app/gca-core-service.jar"]
