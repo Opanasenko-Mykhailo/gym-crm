@@ -12,4 +12,4 @@ WORKDIR /app
 
 COPY --from=build /app/workload-service/target/workload-service-*.jar /app/workload-service.jar
 
-CMD ["java", "-jar", "/app/workload-service.jar", "--spring.profiles.active=automation-test"]
+CMD ["java", "-jar", "/app/workload-service.jar"]
