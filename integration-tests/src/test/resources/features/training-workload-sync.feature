@@ -21,7 +21,7 @@ Feature: Training and Workload Synchronization
       | traineeUsername  | Emma.Jones       |
       | trainerUsername  | Alex.Smith       |
       | trainingName     | Morning Strength |
-      | trainingDate     | 2025-10-15       |
+      | trainingDate     | 2085-10-15       |
       | trainingDuration | 60               |
       | trainingTypeName | STRENGTH         |
     Then training creation is successful
@@ -42,21 +42,21 @@ Feature: Training and Workload Synchronization
       | traineeUsername  | Sarah.Davis    |
       | trainerUsername  | Mike.Brown     |
       | trainingName     | Morning Cardio |
-      | trainingDate     | 2025-10-10     |
+      | trainingDate     | 2085-10-10     |
       | trainingDuration | 45             |
       | trainingTypeName | CARDIO         |
     And I create a training in GCA:
       | traineeUsername  | Sarah.Davis    |
       | trainerUsername  | Mike.Brown     |
       | trainingName     | Evening Cardio |
-      | trainingDate     | 2025-10-15     |
+      | trainingDate     | 2085-10-15     |
       | trainingDuration | 60             |
       | trainingTypeName | CARDIO         |
     And I create a training in GCA:
       | traineeUsername  | Sarah.Davis      |
       | trainerUsername  | Mike.Brown       |
       | trainingName     | Afternoon Cardio |
-      | trainingDate     | 2025-10-20       |
+      | trainingDate     | 2085-10-20       |
       | trainingDuration | 30               |
       | trainingTypeName | CARDIO           |
     Then training creation is successful
@@ -77,7 +77,7 @@ Feature: Training and Workload Synchronization
       | traineeUsername  | Lisa.Taylor       |
       | trainerUsername  | Tom.Wilson        |
       | trainingName     | Swimming Practice |
-      | trainingDate     | 2025-10-15        |
+      | trainingDate     | 2085-10-15        |
       | trainingDuration | 90                |
       | trainingTypeName | YOGA              |
     And I request workload summary for trainer "Tom.Wilson"
@@ -105,7 +105,7 @@ Feature: Training and Workload Synchronization
       | traineeUsername  | Broken.Trainee   |
       | trainerUsername  | Crash.Trainer    |
       | trainingName     | JMS Failure Test |
-      | trainingDate     | 2025-10-20       |
+      | trainingDate     | 2085-10-20       |
       | trainingDuration | 60               |
       | trainingTypeName | STRENGTH         |
     Then training creation fails due to JMS error

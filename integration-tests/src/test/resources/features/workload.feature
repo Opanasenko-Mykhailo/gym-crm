@@ -15,7 +15,7 @@ Feature: Trainer Workload Management
       | firstName         | Ethan          |
       | lastName          | Woodward       |
       | active            | true           |
-      | trainingDate      | 2025-10-15     |
+      | trainingDate      | 2085-10-15     |
       | durationInMinutes | 60             |
       | actionType        | ADD            |
     Then the request is successful
@@ -25,20 +25,20 @@ Feature: Trainer Workload Management
   Scenario: Add multiple training sessions
     Given trainer "lila.harrington" exists with following workload:
       | year | month | duration |
-      | 2025 | 10    | 120      |
+      | 2085 | 10    | 120      |
     When I add a training session:
       | username        | firstName | lastName   | trainingDate | durationInMinutes | actionType |
-      | lila.harrington | Lila      | Harrington | 2025-10-20   | 90                | ADD        |
+      | lila.harrington | Lila      | Harrington | 2085-10-20   | 90                | ADD        |
     Then trainer "lila.harrington" has total duration of 210 minutes for October 2025
 
   @PositiveCase
   Scenario: Delete training session
     Given trainer "graham.ellison" exists with following workload:
       | year | month | duration |
-      | 2025 | 10    | 180      |
+      | 2085 | 10    | 180      |
     When I delete a training session:
       | username       | firstName | lastName | trainingDate | durationInMinutes | actionType |
-      | graham.ellison | Graham    | Ellison  | 2025-10-10   | 60                | DELETE     |
+      | graham.ellison | Graham    | Ellison  | 2085-10-10   | 60                | DELETE     |
     Then trainer "graham.ellison" has total duration of 120 minutes for October 2025
 
   @PositiveCase
@@ -58,7 +58,7 @@ Feature: Trainer Workload Management
     Given trainer "nora.fitzgerald" does not exist
     When I submit a workload request:
       | username        | firstName | lastName   | active | trainingDate | durationInMinutes | actionType |
-      | nora.fitzgerald | Nora      | Fitzgerald | true   | 2025-10-15   | -60               | ADD        |
+      | nora.fitzgerald | Nora      | Fitzgerald | true   | 2085-10-15   | -60               | ADD        |
     Then the request is unsuccessful with status 400
 
   @NegativeCase
@@ -70,7 +70,7 @@ Feature: Trainer Workload Management
       | firstName         |            |
       | lastName          | Blank      |
       | active            | true       |
-      | trainingDate      | 2025-10-15 |
+      | trainingDate      | 2085-10-15 |
       | durationInMinutes | 60         |
       | actionType        | ADD        |
     Then the request is unsuccessful with status 400
@@ -84,7 +84,7 @@ Feature: Trainer Workload Management
       | firstName         | Alex       |
       | lastName          | Blank      |
       | active            | true       |
-      | trainingDate      | 2025-10-15 |
+      | trainingDate      | 2085-10-15 |
       | durationInMinutes | 60         |
       | actionType        | ADD        |
     Then the request is unsuccessful with status 400

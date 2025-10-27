@@ -23,7 +23,7 @@ The system is built with **Java 17**, **Spring Boot**, **PostgreSQL**, **MongoDB
 - **PostgreSQL 13+** (for `gca-core-service`)
 - **MongoDB 6+** (for `workload-service`)
 - **Apache ActiveMQ** (for message queuing between services)
-- **Docker** (for integration tests with Testcontainers)
+- **Docker**
 - **Git**
 
 ---
@@ -65,7 +65,8 @@ CREATE USER gcs WITH PASSWORD 'gcs';
 GRANT ALL PRIVILEGES ON DATABASE "gym_db" TO gcs;
 
 -- Exit
-\q
+\
+q
 ```
 
 # 3. MongoDB Setup (for workload-service)
@@ -198,27 +199,55 @@ If you need to set up custom users (gca/gca as shown in config), edit the Active
    cd gca-core-service
    mvn spring-boot:run
    ```
-   - Database migrations will run automatically via Liquibase
-   - Service will register with Eureka
-   - Access at: `http://localhost:8081`
+    - Database migrations will run automatically via Liquibase
+    - Service will register with Eureka
+    - Access at: `http://localhost:8081`
 
 6. **Start Workload Service**:
    ```bash
    cd workload-service
    mvn spring-boot:run
    ```
-   - Uses MongoDB database
-   - Service will register with Eureka
+    - Uses MongoDB database
+    - Service will register with Eureka
 
 7. **Start Gateway Service** - **MUST BE LAST**:
    ```bash
    cd gateway-service
    mvn spring-boot:run
    ```
-   - API Gateway available at: `http://localhost:8080`
-   - Routes requests to registered services
+    - API Gateway available at: `http://localhost:8080`
+    - Routes requests to registered services
 
 ---
+
+## Docker Build for Microservices
+
+You can build all the microservices using Docker with the following commands:
+
+### Discovery Server
+
+```bash
+docker build -t discovery-server:latest -f discovery-server/Dockerfile .
+```
+
+### Gateway Service
+
+```bash
+docker build -t gateway-service:latest -f gateway-service/Dockerfile .
+```
+
+### GCA Core Service
+
+```bash
+docker build -t gca-core-service:latest -f gca-core-service/Dockerfile .
+```
+
+### Workload Service
+
+```bash
+docker build -t workload-service:latest -f workload-service/Dockerfile .
+```
 
 ## Configuration
 
@@ -315,10 +344,10 @@ The project includes comprehensive **Cucumber-based integration tests** using **
 When you run integration tests:
 
 - **Testcontainers** automatically starts all required services in Docker containers:
-   - 📨 **ActiveMQ** (message broker)
-   - 🗄️ **MongoDB** (database for workload)
-   - ⚙️ **GCA Core Service** (business logic)
-   - 🧮 **Workload Service** (workload management)
+    - 📨 **ActiveMQ** (message broker)
+    - 🗄️ **MongoDB** (database for workload)
+    - ⚙️ **GCA Core Service** (business logic)
+    - 🧮 **Workload Service** (workload management)
 
 - Services are started **before tests begin** and **automatically stopped** after all tests finish
 - Test data is isolated in containers and cleaned up automatically
