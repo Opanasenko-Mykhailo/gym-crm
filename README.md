@@ -7,14 +7,14 @@ Built with **Java 17**, **Spring Boot**, **PostgreSQL**, **MongoDB**, **ActiveMQ
 
 ## 📋 Table of Contents
 
-1. [Services Overview](#services-overview)
-2. [Prerequisites](#prerequisites)
-3. [Initial Setup](#initial-setup)
-4. [Option A: Docker Compose Deployment (Recommended)](#option-a-docker-compose-deployment-recommended)
-5. [Option B: Local Development Setup](#option-b-local-development-setup)
-6. [Accessing Services](#accessing-services)
-7. [Integration Tests](#integration-tests)
-8. [Configuration Details](#configuration-details)
+1. [Services Overview](#-services-overview)
+2. [Prerequisites](#-prerequisites)
+3. [Initial Setup](#-initial-setup)
+4. [Option A: Docker Compose Deployment (Recommended)](#-option-a-docker-compose-deployment-recommended)
+5. [Option B: Local Development Setup](#-option-b-local-development-setup)
+6. [Accessing Services](#-accessing-services)
+7. [Integration Tests](#-integration-tests)
+8. [Configuration Details](#-configuration-details)
 
 ---
 
