@@ -88,10 +88,10 @@ The application supports the following Spring profiles:
 The application exposes monitoring endpoints via Spring Boot Actuator:
 
 - Health check:
-  [http://localhost:8080/actuator/health](http://localhost:8080/actuator/health)
+  [http://localhost:8081/actuator/health](http://localhost:8080/actuator/health)
 
 - Prometheus metrics:
-  [http://localhost:8080/actuator/prometheus](http://localhost:8080/actuator/prometheus)
+  [http://localhost:8081/actuator/prometheus](http://localhost:8080/actuator/prometheus)
 
 You can use these endpoints for health monitoring and integrating with Prometheus.
 
@@ -100,10 +100,10 @@ You can use these endpoints for health monitoring and integrating with Prometheu
 ## API Documentation
 
 - Swagger UI (auto-generated from controllers):  
-  [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
+  [http://localhost:8081/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
 
 - Swagger UI (generated from `gym.yml` file):  
-  [http://localhost:8080/gym-docs.html](http://localhost:8080/gym-docs.html)
+  [http://localhost:8081/gym-docs.html](http://localhost:8080/gym-docs.html)
 
 ---
 
